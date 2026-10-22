@@ -130,20 +130,19 @@
                 <i class="bi bi-check2-circle me-2"></i>ສະຫຼຸບຂໍ້ມູນຄຳຂໍຈອງລົດ
               </h5>
 
-            <div class="mb-3">
-  <span class="text-muted small d-block mb-1">ລົດທີ່ເລືອກ</span>
-  <div class="fw-bold text-dark fs-6 bg-light p-3 rounded-3 border">
-    <div v-if="selectedVehicle">
-      <i class="bi bi-car-front-fill text-primary me-2"></i>
-      {{ selectedVehicle.brand }} {{ selectedVehicle.name }}
-      <span class="text-muted fw-normal small d-block mt-1 ms-4">
-        ປ້າຍລົດ: <span class="fw-semibold text-dark">{{ selectedVehicle.sign }}</span>
-        | {{ selectedVehicle.capacity }} ບ່ອນນັ່ງ
-      </span>
-    </div>
-    <span v-else class="text-danger small">ຍັງບໍ່ໄດ້ເລືອກລົດ (ກະລຸນາເລືອກລົດດ້ານຊ້າຍ)</span>
-  </div>
-</div>
+            <div class="mb-3"> 
+              <div class="fw-bold text-dark fs-6 bg-light p-3 rounded-3 border">
+                <div v-if="selectedVehicle">
+                  <i class="bi bi-car-front-fill text-primary me-2"></i>
+                  {{ selectedVehicle.brand }} {{ selectedVehicle.name }}
+                  <span class="text-muted fw-normal small d-block mt-1 ms-4">
+                    ປ້າຍລົດ: <span class="fw-semibold text-dark">{{ selectedVehicle.sign }}</span>
+                    | {{ selectedVehicle.capacity }} ບ່ອນນັ່ງ
+                  </span>
+                </div>
+                <span v-else class="text-danger small">ບໍ່ເລືອກລົດ (ໃຫ້ທີມບໍລິຫານເລືອກໃຫ້)</span>
+              </div>
+            </div>
 
               <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
                 <span class="text-muted">ສະຖານະຄົນຂັບ</span>
@@ -160,8 +159,8 @@
               <button
                 @click="submitBooking"
                 type="button"
-                class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm"
-                :disabled="submitting"
+                class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm" 
+                :disabled="submitting || isFormInvalid"
               >
                 <span v-if="submitting" class="spinner-border spinner-border-sm me-2"></span>
                 <i class="bi bi-send-fill me-2"></i> ສົ່ງຄຳຂໍຈອງ
@@ -258,8 +257,15 @@ const loadAvailableVehicles = async () => {
 };
 
 const selectVehicle = (vehicle) => {
-  selectedVehicleId.value = vehicle.id;
-  form.value.booking_id = vehicle.id;
+  if (selectedVehicleId.value === vehicle.id) {
+    // Click the same car again to cancel selection
+    selectedVehicleId.value = null;
+    form.value.booking_id = null;
+  } else {
+    // Select a car
+    selectedVehicleId.value = vehicle.id;
+    form.value.booking_id = vehicle.id;
+  }
 };
 
 const goBack = () => {
@@ -272,8 +278,19 @@ const warn = (title, icon = "warning") =>
     title,
     showConfirmButton: false,
     timer: 3000,
-  }); 
+  });
 
+const isFormInvalid = computed(() => {
+  return (
+    !form.value.description?.trim() ||
+    !form.value.start ||
+    !form.value.stop ||
+    !form.value.number_of_participant ||
+    Number(form.value.number_of_participant) < 1 ||
+    !form.value.tel?.trim() || form.value.tel.replace(/\D/g, "").length < 8 ||
+    new Date(form.value.stop) <= new Date(form.value.start)
+  );
+});
 
 const submitBooking = async () => {
   // Read the actual selected date/time values
@@ -283,7 +300,7 @@ const submitBooking = async () => {
   // Validate required fields
   const missingFields = [];
 
-  if (!form.value.description?.trim()) {
+  if (form.value.description?.trim() == "") {
     missingFields.push("ຈຸດປະສົງການເດີນທາງ");
   }
 
@@ -296,7 +313,6 @@ const submitBooking = async () => {
   ) {
     missingFields.push("ຈຳນວນຜູ້ເຂົ້າຮ່ວມ");
   }
-
   if (!form.value.tel?.trim()) {
     missingFields.push("ເບີໂທລະສັບ");
   }
@@ -407,10 +423,31 @@ const submitBooking = async () => {
 };
 
 
+
 onMounted(() => {
   currentCompany.value =
-    localStorage.getItem("company_name") || "ບສກ. ທາຍໂຊລູຊັ່ນສ໌ ລໍຈິສຕິກສ໌";
+    localStorage.getItem("company_name") ||
+    "ບສກ. ທາຍໂຊລູຊັ່ນສ໌ ລໍຈິສຕິກສ໌";
+
   loadAvailableVehicles();
+
+  const getCurrentMinute = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return now;
+  };
+
+  const getNextMinute = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    now.setMinutes(now.getMinutes() + 1);
+    return now;
+  };
+
+  const getTimeString = (date) =>
+    `${String(date.getHours()).padStart(2, "0")}:${String(
+      date.getMinutes()
+    ).padStart(2, "0")}`;
 
   const baseOptions = {
     enableTime: true,
@@ -418,42 +455,113 @@ onMounted(() => {
     dateFormat: "Y-m-d\\TH:i",
     altInput: true,
     altFormat: "d/m/Y H:i",
+    minuteIncrement: 1,
+    allowInput: false,
+  // Important: use Flatpickr on mobile instead of native picker
+  disableMobile: true,
   };
 
-  const now = getNowToMinute();
-
-  // ວັນເລີ່ມ: ຫ້າມເລືອກຍ້ອນຫຼັງ
+  // START DATE/TIME
   startPicker = flatpickr(startInput.value, {
     ...baseOptions,
-    defaultDate: form.value.start,
-    minDate: now,
-    onChange: (selectedDates, dateStr) => {
+    defaultDate: getNextMinute(),
+    minDate: getCurrentMinute(),
+    minTime: getTimeString(getNextMinute()),
+
+    onReady(_, __, picker) {
+      updateStartLimits(picker);
+    },
+
+    onOpen(_, __, picker) {
+      updateStartLimits(picker);
+    },
+
+    onChange(selectedDates, dateStr) {
       form.value.start = dateStr;
+
       if (!selectedDates.length || !stopPicker) return;
 
       const start = selectedDates[0];
+      const minEnd = new Date(start.getTime() + 60 * 1000);
+      const now = getNextMinute();
 
-      // ວັນສິ້ນສຸດຕ້ອງຫຼາຍກວ່າວັນເລີ່ມ (+1 ນາທີ)
-      stopPicker.set("minDate", new Date(start.getTime() + 60 * 1000));
+      stopPicker.set("minDate", minEnd > now ? minEnd : now);
 
-      // ຖ້າວັນສິ້ນສຸດເດີມ <= ວັນເລີ່ມໃໝ່ ໃຫ້ຕັ້ງໃໝ່ເປັນ +2 ຊົ່ວໂມງ
       const currentStop = stopPicker.selectedDates[0];
-      if (!currentStop || currentStop <= start) {
-        stopPicker.setDate(new Date(start.getTime() + 2 * 60 * 60 * 1000), true);
+
+      if (!currentStop || currentStop < minEnd || currentStop < now) {
+        stopPicker.setDate(
+          new Date(start.getTime() + 2 * 60 * 60 * 1000),
+          true
+        );
       }
+
+      updateStopLimits();
     },
   });
 
-  // ວັນສິ້ນສຸດ: ຕ້ອງຫຼາຍກວ່າວັນເລີ່ມ
+  function updateStartLimits(picker) {
+    const now = getNextMinute();
+    const selected = picker.selectedDates[0];
+
+    picker.set("minDate", getCurrentMinute());
+
+    if (
+      selected &&
+      selected.toDateString() === now.toDateString()
+    ) {
+      picker.set("minTime", getTimeString(now));
+    } else {
+      picker.set("minTime", "00:00");
+    }
+  }
+
+  // END DATE/TIME
   stopPicker = flatpickr(stopInput.value, {
     ...baseOptions,
-    defaultDate: form.value.stop,
-    minDate: new Date(now.getTime() + 60 * 1000),
-    onChange: (_, dateStr) => {
+    defaultDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
+    minDate: getNextMinute(),
+
+    onReady(_, __, picker) {
+      updateStopLimits();
+    },
+
+    onOpen() {
+      updateStopLimits();
+    },
+
+    onChange(_, dateStr) {
       form.value.stop = dateStr;
     },
   });
+
+  function updateStopLimits() {
+    if (!stopPicker) return;
+
+    const now = getNextMinute();
+    const start = startPicker?.selectedDates[0];
+
+    const minEnd = start
+      ? new Date(Math.max(start.getTime() + 60 * 1000, now.getTime()))
+      : now;
+
+    stopPicker.set("minDate", minEnd);
+
+    const selected = stopPicker.selectedDates[0];
+
+    if (
+      selected &&
+      selected.toDateString() === minEnd.toDateString()
+    ) {
+      stopPicker.set("minTime", getTimeString(minEnd));
+    } else {
+      stopPicker.set("minTime", "00:00");
+    }
+  }
+
+  updateStopLimits();
 });
+
 
 onBeforeUnmount(() => {
   if (startPicker) startPicker.destroy();

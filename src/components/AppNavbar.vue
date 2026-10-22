@@ -16,7 +16,7 @@
           <small>Powered by KCC</small><br/>
           <small>
             <a href="https://khouanchay.com" target="_self" class="text-decoration-none text-light">
-              <i class="bi bi-box-arrow-up-right"></i> KC Consulting
+              <i class="bi bi-box-arrow-up-right"></i> Go To Website
             </a>
           </small>
 

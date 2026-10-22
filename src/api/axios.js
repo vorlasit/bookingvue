@@ -427,5 +427,42 @@ export const deleteRoomBooking = async (bookingId) => {
   return response.data
 }
 
+export const getRoomManagement = async () => {
+  const response = await odooapi.get("/api/room/management");
+  return response.data;
+};
+
+export const getRoomManagementDetail = async (id) => {
+  const response = await odooapi.get("/api/room/management/detail", {
+    params: { id },
+  });
+  return response.data;
+};
+
+export const createRoomManagement = async (payload) => {
+  const response = await odooapi.post(
+    "/api/room/management/create",
+    payload
+  );
+  return response.data;
+};
+
+export const updateRoomManagement = async (payload) => {
+  const response = await odooapi.put(
+    "/api/room/management/update",
+    payload
+  );
+  return response.data;
+};
+
+export const deleteRoomManagement = async (id) => {
+  const response = await odooapi.delete(
+    "/api/room/management/delete",
+    {
+      params: { id },
+    }
+  );
+  return response.data;
+};
  
 export default odooapi

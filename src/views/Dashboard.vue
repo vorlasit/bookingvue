@@ -146,7 +146,7 @@
             <i class="bi bi-file-earmark-text fs-5"></i>
           </div>
           <div class="text-secondary">
-    <div class="fw-semibold ">ລໍຖ້າຈັດສົ່ງລົດ</div>
+    <div class="fw-semibold ">ລໍຖ້າຈັດລົດ</div>
     <div class="fw-semibold ">Pending Assign</div>
 </div>
         </div>

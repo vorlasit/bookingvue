@@ -20,5 +20,10 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: ['web.khouanchay.com'],
 
+    hmr: {
+      protocol: 'wss',
+      host: 'web.khouanchay.com',
+      clientPort: 443,
+    },
   }
 })

@@ -1,6 +1,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount } from "vue";
+import GlobalImagePreview from "./components/GlobalImagePreview.vue";
 
 let dateCheckInterval = null;
 
@@ -82,7 +83,8 @@ onBeforeUnmount(() => {
 
 
 <template>    
-<router-view /> 
+<router-view />
+  <GlobalImagePreview /> 
 </template>
 <style scoped> 
 @font-face {

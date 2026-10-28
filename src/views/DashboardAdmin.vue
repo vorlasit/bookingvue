@@ -77,22 +77,27 @@
                         <h5 class="fw-bold m-0 section-title">
                             <i class="bi bi-exclamation-triangle text-danger me-2"></i>ລາຍການແຈ້ງປັນຫາ ແລະ ເຕືອນໄພ
                         </h5>
-                    </div> 
+                    </div>
 
                     <!-- Empty State for Alerts -->
-                    <div v-if="problem_results.length === 0 && alerts.length === 0" class="text-center text-muted py-3 small">
+                    <div v-if="problem_results.length === 0 && alerts.length === 0"
+                        class="text-center text-muted py-3 small">
                         ບໍ່ມີລາຍການແຈ້ງເຕືອນໃນຂະນະນີ້
                     </div>
 
                     <!-- Problem Results -->
-                    <div v-for="problem in problem_results" :key="problem.booking_id" class="alert-item alert-critical mb-3 border shadow-sm cursor-pointer" @click="openAlert(problem.booking_id)">
-                        <div class="fw-bold d-flex align-items-center gap-2 text-danger"> 
+                    <div v-for="problem in problem_results" :key="problem.booking_id"
+                        class="alert-item alert-critical mb-3 border shadow-sm cursor-pointer"
+                        @click="openAlert(problem.booking_id)">
+                        <div class="fw-bold d-flex align-items-center gap-2 text-danger">
                             <i class="bi bi-exclamation-octagon-fill"></i>
                             <span>{{ problem.booking_id }} - {{ problem.driver }}</span>
                         </div>
                         <small class="text-muted d-block mb-2">{{ problem.booking_number || "" }}</small>
-                        <div v-for="prob in problem.problems" :key="prob.problem_id" class="d-flex align-items-center gap-2 ps-3 mb-1">
-                            <img v-if="prob.image" :src="prob.image" class="rounded border" style="width: 30px; height: 30px; object-fit: cover;" />
+                        <div v-for="prob in problem.problems" :key="prob.problem_id"
+                            class="d-flex align-items-center gap-2 ps-3 mb-1">
+                            <img v-if="prob.image" :src="prob.image" class="rounded border"
+                                style="width: 30px; height: 30px; object-fit: cover;" />
                             <p class="mb-0 text-secondary small text-wrap">
                                 • {{ prob.name || "" }}
                             </p>
@@ -100,9 +105,14 @@
                     </div>
 
                     <!-- General System Alerts -->
-                    <div v-for="alertItem in alerts" :key="alertItem.id" class="alert-item mb-3 shadow-sm cursor-pointer" :class="alertItem.level === 'critical' ? 'alert-critical' : 'alert-warning'" @click="openAlert(alertItem.id)">
-                        <div class="fw-bold d-flex align-items-center gap-2 mb-1" :class="alertItem.level === 'critical' ? 'text-danger' : 'text-warning'">
-                            <i class="bi" :class="alertItem.level === 'critical' ? 'bi-exclamation-triangle-fill' : 'bi-exclamation-circle-fill'"></i>
+                    <div v-for="alertItem in alerts" :key="alertItem.id"
+                        class="alert-item mb-3 shadow-sm cursor-pointer"
+                        :class="alertItem.level === 'critical' ? 'alert-critical' : 'alert-warning'"
+                        @click="openAlert(alertItem.id)">
+                        <div class="fw-bold d-flex align-items-center gap-2 mb-1"
+                            :class="alertItem.level === 'critical' ? 'text-danger' : 'text-warning'">
+                            <i class="bi"
+                                :class="alertItem.level === 'critical' ? 'bi-exclamation-triangle-fill' : 'bi-exclamation-circle-fill'"></i>
                             <span>{{ alertItem.title }}</span>
                         </div>
                         <small class="text-muted d-block mb-1">{{ alertItem.time_ago || "" }}</small>
@@ -123,13 +133,16 @@
                     </div>
 
                     <div class="trip-timeline">
-                        <div v-for="trip in todayTrips" :key="trip.id" class="trip-item border-bottom pb-3 mb-3 cursor-pointer" @click="openAlert(trip.id)">
+                        <div v-for="trip in todayTrips" :key="trip.id"
+                            class="trip-item border-bottom pb-3 mb-3 cursor-pointer" @click="openAlert(trip.id)">
                             <h6 class="fw-bold text-danger mb-1">{{ trip.booking_number }}</h6>
                             <h6 class="fw-bold text-dark mb-1">{{ trip.name }}</h6>
                             <div class="text-muted small d-flex flex-wrap gap-3">
                                 <span><i class="bi bi-person me-1"></i>{{ trip.employee }}</span>
-                                <span><i class="bi bi-car-front me-1"></i>{{ trip.vehicle_name }} ({{ trip.vehicle_plate }})</span>
-                                <span><i class="bi bi-clock me-1"></i>{{ formatDateTime(trip.start) }} - {{ formatDateTime(trip.stop) }}</span>
+                                <span><i class="bi bi-car-front me-1"></i>{{ trip.vehicle_name }} ({{ trip.vehicle_plate
+                                    }})</span>
+                                <span><i class="bi bi-clock me-1"></i>{{ formatDateTime(trip.start) }} - {{
+                                    formatDateTime(trip.stop) }}</span>
                             </div>
                         </div>
                     </div>
@@ -138,20 +151,135 @@
 
             <!-- RIGHT HAND SIDE: PENDING APPROVALS / RETURNS -->
             <div class="col-12 col-lg-5">
+                <!-- Pending Approval Requests -->
+                <div class="mb-4 request-inner-card border rounded p-3">
+                    <div v-if="wait_data.length === 0" class="text-center text-muted py-3 small">
+                        ບໍ່ມີຄຳຂໍລໍຖ້າອະນຸມັດ
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-1">
+                            <h5 class="fw-bold m-0 section-title">
+                                <i class="bi bi-clipboard-check text-warning me-2"></i>
+                                ລໍຖ້າອະນຸມັດ
+                            </h5>
+
+                            <span class="badge bg-warning bg-opacity-10 text-dark px-2 py-1 small rounded">
+                                {{ wait_data.length }} ລາຍການ
+                            </span>
+                        </div>
+
+                    <div v-for="request in wait_data" :key="request.id" class=" p-1 mb-3 shadow-lg cursor-pointer rounded" @click="openAlert(request.id)"> 
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <div class="fw-bold text-dark">
+                                {{ request.booking_number || request.name || `#${request.id}` }}
+                            </div>
+
+                            <span class="badge bg-warning bg-opacity-10 text-dark rounded-pill px-2 py-1 small">
+                                ລໍຖ້າອະນຸມັດ
+                            </span>
+                        </div>
+
+                        <div class="text-secondary small row">
+                            <div class="mb-1 col-6">
+                                <i class="bi bi-person me-2"></i>
+                                {{ request.employee || 'ບໍ່ລະບຸຜູ້ຈອງ' }}
+                            </div>
+
+                            <div class="mb-1 col-6">
+                                <i class="bi bi-car-front me-2"></i>
+                                {{ request.vehicle_name || 'ບໍ່ລະບຸລົດ' }}
+                                <span v-if="request.vehicle_plate">
+                                    ({{ request.vehicle_plate }})
+                                </span>
+                            </div>
+
+                            <div v-if="request.start">
+                                <i class="bi bi-calendar3 me-2"></i>
+                                {{ formatDateTime(request.start) }}
+                                <span v-if="request.stop">
+                                    - {{ formatDateTime(request.stop) }}
+                                </span>
+                            </div>
+
+                            <div v-if="request.driver" class="mt-1">
+                                <i class="bi bi-person-badge me-2"></i>ຄົນຂັບລົດ
+                                {{ request.driver }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4 request-inner-card border rounded p-3">
+                    <div v-if="approvalRequests.length === 0" class="text-center text-muted py-3 small">
+                        ບໍ່ມີຄຳຂໍທີ່ອະນຸມັດແລ້ວ
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0 section-title">
+                            <i class="bi bi-clipboard-check text-warning me-2"></i>
+                            ຄຳຂໍອະນຸມັດແລ້ວ
+                        </h5>
+
+                        <span class="badge bg-warning bg-opacity-10 text-dark px-2 py-1 small rounded">
+                            {{ approvalRequests.length }} ລາຍການ
+                        </span>
+                    </div>
+
+
+                    <div v-for="request in approvalRequests" :key="request.id" class="rounded p-1 mb-3 shadow-lg cursor-pointer" @click="openAlert(request.id)"> 
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <div class="fw-bold text-dark">
+                                {{ request.booking_number || request.name || `#${request.id}` }}
+                            </div> 
+                            <span class="badge bg-warning bg-opacity-10 text-dark rounded-pill px-2 py-1 small">
+                                ອະນຸມັດແລ້ວ
+                            </span>
+                        </div> 
+                        <div class="text-secondary small row">
+                            <div class="mb-1 col-6">
+                                <i class="bi bi-person me-2"></i>
+                                {{ request.employee || 'ບໍ່ລະບຸຜູ້ຈອງ' }}
+                            </div> 
+                            <div class="mb-1 col-6">
+                                <i class="bi bi-car-front me-2"></i>
+                                {{ request.vehicle_name || 'ບໍ່ລະບຸລົດ' }}
+                                <span v-if="request.vehicle_plate">
+                                    ({{ request.vehicle_plate }})
+                                </span>
+                            </div> 
+                            <div v-if="request.start">
+                                <i class="bi bi-calendar3 me-2"></i>
+                                {{ formatDateTime(request.start) }}
+                                <span v-if="request.stop">
+                                    - {{ formatDateTime(request.stop) }}
+                                </span>
+                            </div>
+
+                            <div v-if="request.driver" class="mt-1">
+                                <i class="bi bi-person-badge me-2"></i>
+                                {{ request.driver }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25 mb-4" />
                 <div class="card border-0 shadow-sm p-4 dashboard-block">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold m-0 section-title">ຄຳຂໍຄືນລົດ</h5>
-                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 small rounded">{{ returnRequests.length }} ລາຍການ</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 small rounded">{{
+                            returnRequests.length }} ລາຍການ</span>
                     </div>
 
                     <div v-if="returnRequests.length === 0" class="text-center text-muted py-4 small">
-                        ບໍ່ມີລາຍການລໍຖ້າຮັບລົດຄືນ
+                        ບໍ່ມີລາຍການອະນຸມັດ
                     </div>
- 
-                    <div class="request-inner-card border rounded p-3 mb-3 shadow-sm" v-for="request in returnRequests" :key="request.id">
+
+                    <div class="request-inner-card border rounded p-3 mb-3 shadow-sm" v-for="request in returnRequests"
+                        :key="request.id">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div class="fw-bold text-dark">{{ request.employee }}</div> 
-                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1 small">ລໍຖ້າຮັບລົດຄືນ</span>
+                            <div class="fw-bold text-dark">{{ request.employee }}</div>
+                            <span
+                                class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1 small">ລໍຖ້າຮັບລົດຄືນ</span>
                         </div>
 
                         <div class="text-secondary small mb-3">
@@ -159,25 +287,22 @@
                                 <i class="bi bi-calendar3 me-2"></i> ວັນທີ່ເດີນທາງ: {{ formatDateTime(request.start) }}
                             </div>
                             <div class="mb-1">
-                                <i class="bi bi-car-front me-2"></i> ລົດທີ່ໃຊ້: {{ request.vehicle_name }} ({{ request.vehicle_plate }})
+                                <i class="bi bi-car-front me-2"></i> ລົດທີ່ໃຊ້: {{ request.vehicle_name }} ({{
+                                request.vehicle_plate }})
                             </div>
                             <div>
                                 <i class="bi bi-person-badge me-2"></i> ຄົນຂັບ: {{ request.driver || "ບໍ່ມີຄົນຂັບ" }}
                             </div>
                         </div>
- 
-                        <div class="col-12"> 
-                            <button
-                                type="button"
-                                class="btn btn-primary w-100 py-2 fw-medium shadow-sm"
-                                @click="receiveBookingCarAction(request.id)"
-                                :disabled="receivingCar"
-                            >
+
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary w-100 py-2 fw-medium shadow-sm"
+                                @click="receiveBookingCarAction(request.id)" :disabled="receivingCar">
                                 <span v-if="receivingCar" class="spinner-border spinner-border-sm me-1"></span>
                                 <i v-else class="bi bi-check-circle me-1"></i>
                                 {{ receivingCar ? "ກຳລັງຮັບລົດຄືນ..." : "ຮັບລົດຄືນ" }}
                             </button>
-                        </div>  
+                        </div>
                     </div>
                 </div>
             </div>
@@ -195,11 +320,12 @@ import { formatDateTime } from "../util/formatdate";
 const loading = ref(true);
 const receivingCar = ref(false);
 const errorMessage = ref("");
-
+const approvalRequests = ref([]);
+const wait_data = ref([]);
 const summary = ref({
     total_vehicles: 0,
     available_vehicles: 0,
-    on_trip: 0, 
+    on_trip: 0,
     maintenance: 0,
 });
 
@@ -250,7 +376,7 @@ const confirmDialog = async (text, confirmText = "ຢືນຢັນ") => {
     return result.isConfirmed;
 };
 
-const openAlert = (id) => { 
+const openAlert = (id) => {
     if (!id) return;
     router.push(`/booking/history/${id}`);
 };
@@ -295,6 +421,9 @@ const loadDashboard = async () => {
             todayTrips.value = result.today_trips || [];
             returnRequests.value = result.return_requests || [];
             problem_results.value = result.problem_results || [];
+            // New approval requests
+            approvalRequests.value = result.approval_requests || [];
+            wait_data.value = result.wait_data || [];
         }
     } catch (error) {
         console.error("Failed to load dashboard:", error);
@@ -349,10 +478,25 @@ onMounted(() => {
     font-size: 20px;
 }
 
-.icon-blue { background-color: #ebf3ff; color: #1e74fd; }
-.icon-green { background-color: #e6f9f0; color: #10b981; }
-.icon-orange { background-color: #fff4eb; color: #f59e0b; }
-.icon-red { background-color: #fdf2f2; color: #ef4444; }
+.icon-blue {
+    background-color: #ebf3ff;
+    color: #1e74fd;
+}
+
+.icon-green {
+    background-color: #e6f9f0;
+    color: #10b981;
+}
+
+.icon-orange {
+    background-color: #fff4eb;
+    color: #f59e0b;
+}
+
+.icon-red {
+    background-color: #fdf2f2;
+    color: #ef4444;
+}
 
 /* --- Dashboard Blocks Layout --- */
 .dashboard-block {
@@ -413,6 +557,7 @@ onMounted(() => {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

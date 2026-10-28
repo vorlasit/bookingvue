@@ -1044,7 +1044,7 @@ const initDatePickers = async () => {
   const stopElement = document.querySelector('#booking-stop')
 
   if (!startElement || !stopElement) return
-const now = new Date()
+  const now = new Date()
   now.setSeconds(0, 0)
 
   // Start picker

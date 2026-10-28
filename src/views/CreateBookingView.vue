@@ -78,7 +78,7 @@
               </div>
 
               <!-- Available Vehicles Display List -->
-              <!-- <h6 class="fw-bold text-dark mb-3">
+              <h6 class="fw-bold text-dark mb-3">
                 <i class="bi bi-car-front me-2"></i>ລົດທີ່ວ່າງໃຫ້ຈອງ
               </h6>
 
@@ -118,11 +118,11 @@
                       class="badge px-3 py-2 rounded-pill"
                       :class="selectedVehicleId === vehicle.id ? 'bg-primary text-white' : 'bg-success-subtle text-success border border-success'"
                     >
-                      {{ selectedVehicleId === vehicle.id ? 'ເລືອກແລ້ວ' : 'ວ່າງ' }}
+                      {{ selectedVehicleId === vehicle.id ? 'ເລືອກແລ້ວ' : 'ເລືອກ' }}
                     </span>
                   </div>
                 </button>
-              </div> -->
+              </div>
 
             </div>
           </div>
@@ -603,7 +603,7 @@ onMounted(() => {
     ...baseOptions,
     defaultDate: getNextMinute(),
 // Allow dates before today
-minDate: undefined,
+minDate: "today",
 
     onReady(_, __, picker) {
       updateStartLimits(picker);
@@ -648,18 +648,19 @@ minDate: undefined,
   const selected = picker.selectedDates[0];
 
   // Allow selecting any date, including dates before today.
-  picker.set("minDate", null);
+  // picker.set("minDate", null);
+  picker.set("minDate", now);
 
   // Only restrict the time when the selected date is today.
-  if (
-    selected &&
-    selected.toDateString() === now.toDateString()
-  ) {
-    picker.set("minTime", getTimeString(nextMinute));
-  } else {
-    // Past dates can be selected freely.
-    picker.set("minTime", "00:00");
-  }
+  // if (
+  //   selected &&
+  //   selected.toDateString() === now.toDateString()
+  // ) {
+  //   picker.set("minTime", getTimeString(nextMinute));
+  // } else {
+  //   // Past dates can be selected freely.
+  //   picker.set("minTime", "00:00");
+  // }
 }
 
   // STOP DATE/TIME

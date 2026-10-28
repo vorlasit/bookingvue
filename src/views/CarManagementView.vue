@@ -142,7 +142,7 @@
 
             <div class="row g-2">
 
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <div class="input-group">
 
                   <span class="input-group-text bg-white">
@@ -173,6 +173,13 @@
                 </select>
 
               </div>
+              <div class="col-md-3">
+  <select v-model="useTypeFilter" class="form-select">
+    <option value="">ຮູບແບບການໃຊ້ທັງໝົດ</option>
+    <option value="borrow">ລົດສ່ວນກາງ (Borrow)</option>
+    <option value="personal">ລົດສ່ວນຕົວ (Personal)</option>
+  </select>
+</div>
               <!-- Search by Type -->
               <div class="col-md-3">
                 <select
@@ -1109,6 +1116,7 @@ import {
 // ============================================================
 // STATE
 // ============================================================
+const useTypeFilter = ref('')
 
 const cars = ref([])
 const loading = ref(false)
@@ -1225,15 +1233,13 @@ const form = ref(emptyForm())
 // ============================================================
 
 const filteredCars = computed(() => {
-
   let result = [...cars.value]
 
+  // Search by name, brand, plate, color, or type
   const keyword = search.value.trim().toLowerCase()
 
   if (keyword) {
-
     result = result.filter(car => {
-
       const text = [
         car.name,
         car.display_name,
@@ -1241,6 +1247,7 @@ const filteredCars = computed(() => {
         car.sign,
         car.color,
         car.vehicle_type,
+        car.use_type,
       ]
         .filter(Boolean)
         .join(' ')
@@ -1250,16 +1257,28 @@ const filteredCars = computed(() => {
     })
   }
 
+  // Filter by vehicle state
   if (stateFilter.value) {
     result = result.filter(
       car => car.state === stateFilter.value
     )
   }
+
+  // Filter by vehicle type
   if (typeFilter.value) {
     result = result.filter(
       car =>
         String(car.vehicle_type || '').toLowerCase() ===
-        String(typeFilter.value).toLowerCase()
+        typeFilter.value.toLowerCase()
+    )
+  }
+
+  // Filter by use type
+  if (useTypeFilter.value) {
+    result = result.filter(
+      car =>
+        String(car.use_type || '').toLowerCase() ===
+        useTypeFilter.value.toLowerCase()
     )
   }
 

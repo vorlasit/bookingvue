@@ -49,6 +49,15 @@
           </span>
         </div>
         <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+          <button
+  v-if="booking.room_state === 'draft'"
+  class="btn btn-outline-primary"
+  :disabled="actionLoading"
+  @click="handleEdit"
+>
+  <i class="bi bi-pencil-square me-1"></i>
+  Edit Booking
+</button>
   <button
     v-if="booking.room_state === 'draft'"
     class="btn btn-success"
@@ -57,6 +66,15 @@
   >
     <i class="bi bi-check-circle me-1"></i>
     Confirm Booking
+  </button>
+  <button
+    v-if="booking.room_state === 'confirmed'"
+    class="btn btn-success"
+    :disabled="actionLoading"
+    @click="handleUsing"
+  >
+    <i class="bi bi-check-circle me-1"></i>
+    Use Booking
   </button>
 
   <button
@@ -70,7 +88,7 @@
   </button>
 
   <button
-    v-if="!['draft', 'confirmed'].includes(booking.room_state)"
+    v-if="!['draft', 'confirmed','cancelled'].includes(booking.room_state)"
     class="btn btn-outline-danger"
     :disabled="actionLoading"
     @click="handleCancel"
@@ -82,6 +100,7 @@
   <button
     class="btn btn-danger ms-md-auto"
     :disabled="actionLoading"
+    v-if="groups_ids.includes('booking.group_kc_book_user')"
     @click="handleDelete"
   >
     <i class="bi bi-trash me-1"></i>
@@ -91,14 +110,22 @@
 
         <span
           class="badge"
-          :class="statusClass(booking.confirmed_state)"
+          :class="statusClass(booking.room_state)"
         >
           {{ formatStatus(booking.room_state) }}
         </span>
       </div>
 
+
       <div class="card-body p-4">
         <h6 class="fw-bold mb-3">Booking Information</h6>
+
+        <div class="row g-4">
+          <div class="col-12 col-md-6 mb-3">
+            <div class="detail-label">Booking Number</div>
+            <div class="detail-value">{{ booking.booking_number || '-' }}</div>
+          </div> 
+        </div> 
 
         <div class="row g-4">
           <div class="col-12 col-md-6">
@@ -165,14 +192,66 @@ import { getRoomBookingManagement,
   confirmRoomBooking,
   cancelRoomBooking,
   doneRoomBooking,
-  deleteRoomBooking, } from '../api/axios'
-
+  deleteRoomBooking, } from '../api/axios' 
 const route = useRoute()
 const router = useRouter()
 
 const booking = ref(null)
 const loading = ref(false)
 const errorMessage = ref('')
+// ========================================
+// User Group Permissions
+// ========================================
+const groups_ids = ref([])
+
+const loadUserGroups = () => {
+  const rawGroups = localStorage.getItem('groups_id')
+
+  if (!rawGroups) {
+    groups_ids.value = []
+    console.warn('No groups_id found in localStorage')
+    return
+  }
+
+  try {
+    const parsed = JSON.parse(rawGroups)
+
+    if (Array.isArray(parsed)) {
+      groups_ids.value = parsed
+        .map(group => {
+          if (typeof group === 'string') {
+            return group
+          }
+
+          if (group && typeof group === 'object') {
+            return group.xml_id || group.external_id || group.name || ''
+          }
+
+          return ''
+        })
+        .filter(Boolean)
+    } else {
+      groups_ids.value = []
+    }
+  } catch (error) {
+    // Support comma-separated group IDs if the value isn't JSON.
+    groups_ids.value = rawGroups
+      .split(',')
+      .map(group => group.trim())
+      .filter(Boolean)
+  }
+
+  console.log('Current user groups:', groups_ids.value)
+}
+
+
+// Check whether the user belongs to a group.
+const hasGroup = (groupXmlId) => {
+  return groups_ids.value.includes(groupXmlId)
+}
+
+console.log('User groups loaded:', hasGroup)
+loadUserGroups()
 
 const goBack = () => {
   router.push('/room-booking-management')
@@ -314,33 +393,155 @@ const confirmAction = async (title, text, apiFunction, successMessage) => {
   await runBookingAction(apiFunction, successMessage)
 }
 
-const handleConfirm = () => {
-  confirmAction(
-    'Confirm this booking?',
-    'This booking will be approved.',
-    confirmRoomBooking,
-    'Booking confirmed successfully.'
-  )
+const handleConfirm = async () => {
+  const answer = await Swal.fire({
+    icon: 'question',
+    title: 'Confirm this booking?',
+    text: `This booking will be approved.${booking.value.id}`,
+    showCancelButton: true,
+    confirmButtonText: 'Yes, confirm',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#198754',
+    reverseButtons: true,
+  })
+
+  if (!answer.isConfirmed || !booking.value?.id) return
+
+  actionLoading.value = true
+
+  try {
+    const response = await confirmRoomBooking(booking.value.id) 
+
+    if (response.status == true) { 
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Confirmed',
+      text:'Booking confirmed successfully.',
+      confirmButtonText: 'OK',
+      timer: 2000,
+    }) 
+    await loadBookingDetail()
+  }
+
+  } catch (error) {
+    console.error('Confirm room booking error:', error)
+
+    await showActionResult(
+      false,
+      error.response?.data?.message ||
+        error.response?.data?.error?.data?.message ||
+        error.message ||
+        'Unable to confirm booking.'
+    )
+  } finally {
+    actionLoading.value = false
+  }
 }
 
-const handleCancel = () => {
-  confirmAction(
-    'Cancel this booking?',
-    'This booking will be cancelled.',
-    cancelRoomBooking,
-    'Booking cancelled successfully.'
-  )
+
+const handleCancel = async () => {
+  const answer = await Swal.fire({
+    icon: 'warning',
+    title: 'Cancel this booking?',
+    text: `This booking will be cancelled.${booking.value.id}`,
+    showCancelButton: true,
+    confirmButtonText: 'Yes, cancel booking',
+    cancelButtonText: 'Keep booking',
+    confirmButtonColor: '#dc3545',
+    reverseButtons: true,
+  })
+
+  if (!answer.isConfirmed || !booking.value?.id) return
+
+  actionLoading.value = true
+
+  try {
+    const response = await cancelRoomBooking(booking.value.id)
+    const result = response.data
+
+    if (result?.status !== true) {
+      await showActionResult(
+        false,
+        result?.message || 'Unable to cancel booking.'
+      )
+      return
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Cancelled',
+      text: result.message || 'Booking cancelled successfully.',
+      confirmButtonText: 'OK',
+    })
+
+    await loadBookingDetail()
+  } catch (error) {
+    console.error('Cancel room booking error:', error)
+
+    await showActionResult(
+      false,
+      error.response?.data?.message ||
+        error.response?.data?.error?.data?.message ||
+        error.message ||
+        'Unable to cancel booking.'
+    )
+  } finally {
+    actionLoading.value = false
+  }
 }
 
-const handleDone = () => {
-  confirmAction(
-    'Mark booking as done?',
-    'This booking will be marked as completed.',
-    doneRoomBooking,
-    'Booking marked as done.'
-  )
-}
 
+const handleDone = async () => {
+  const answer = await Swal.fire({
+    icon: 'question',
+    title: 'Mark booking as done?',
+    text: 'This booking will be marked as completed. ',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, mark as done',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#0d6efd',
+    reverseButtons: true,
+  })
+
+  if (!answer.isConfirmed || !booking.value?.id) return
+
+  actionLoading.value = true
+
+  try {
+    const response = await doneRoomBooking(booking.value.id)
+    const result = response.data
+
+    if (result?.status !== true) {
+      await showActionResult(
+        false,
+        result?.message || 'Unable to complete booking.'
+      )
+      return
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Completed',
+      text: result.message || 'Booking marked as done.',
+      confirmButtonText: 'OK',
+    })
+
+    await loadBookingDetail()
+  } catch (error) {
+    console.error('Complete room booking error:', error)
+
+    await showActionResult(
+      false,
+      error.response?.data?.message ||
+        error.response?.data?.error?.data?.message ||
+        error.message ||
+        'Unable to complete booking.'
+    )
+  } finally {
+    actionLoading.value = false
+  }
+}
 const handleDelete = async () => {
   const answer = await Swal.fire({
     icon: 'warning',
@@ -387,6 +588,229 @@ const handleDelete = async () => {
         error.message ||
         'Unable to delete booking.'
     )
+  } finally {
+    actionLoading.value = false
+  }
+}
+const escapeHtml = (value) => {
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  })[char])
+}
+
+const toDateTimeLocal = (value) => {
+  if (!value) return ''
+
+  // Odoo datetime: YYYY-MM-DD HH:mm:ss
+  // Display the same date/time in the edit form.
+  return String(value).replace(' ', 'T').slice(0, 16)
+}
+
+const handleEdit = async () => {
+  // Only draft bookings can be edited.
+  if (!booking.value || booking.value.room_state !== 'draft') {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Cannot edit booking',
+      text: 'Only draft room bookings can be updated.',
+    })
+    return
+  }
+
+  const current = booking.value
+
+  const { value: formValues, isConfirmed } = await Swal.fire({
+    title: 'Edit Room Booking',
+    width: 650,
+    html: `
+      <div class="text-start">
+        <label for="edit-booking-name" class="form-label d-none">Booking Name</label>
+        <input
+          id="edit-booking-name"
+          class="form-control mb-3 d-none"
+          value="${escapeHtml(current.name || '')}"
+          maxlength="200"
+          required
+        >
+
+        <label for="edit-room-id" class="form-label d-none">Room ID</label>
+        <input
+          id="edit-room-id"
+          type="number"
+          min="1"
+          class="form-control mb-3 d-none" readonly
+          value="${escapeHtml(
+            Array.isArray(current.booking_id)
+              ? current.booking_id[0]
+              : current.booking_id || ''
+          )}"
+          required
+        >
+
+        <label for="edit-booking-start" class="form-label">Start Date &amp; Time</label>
+        <input
+          id="edit-booking-start"
+          type="datetime-local"
+          class="form-control mb-3"
+          value="${escapeHtml(toDateTimeLocal(current.start))}"
+          required
+        >
+
+        <label for="edit-booking-stop" class="form-label">End Date &amp; Time</label>
+        <input
+          id="edit-booking-stop"
+          type="datetime-local"
+          class="form-control mb-3"
+          value="${escapeHtml(toDateTimeLocal(current.stop))}"
+          required
+        >
+
+        <label for="edit-booking-participants" class="form-label">Number of Participants</label>
+        <input
+          id="edit-booking-participants"
+          type="number"
+          min="1"
+          class="form-control mb-3"
+          value="${escapeHtml(
+            current.number_of_participant ??
+            current.number_of_participants ??
+            current.capacity ??
+            1
+          )}"
+          required
+        >
+        <label for="edit-booking-tel" class="form-label">Contact Number</label>
+        <input
+          id="edit-booking-tel"
+          type="tel"
+          class="form-control mb-3"
+          value="${escapeHtml(
+            current.tel 
+          )}"
+          required
+        >
+
+        <label for="edit-booking-description" class="form-label">Description</label>
+        <textarea
+          id="edit-booking-description"
+          class="form-control"
+          rows="3"
+        >${escapeHtml(current.description || '')}</textarea>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'Save Changes',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#0d6efd',
+    reverseButtons: true,
+    focusConfirm: false,
+
+    preConfirm: () => {  
+
+      const start = document
+        .getElementById('edit-booking-start').value
+
+      const stop = document
+        .getElementById('edit-booking-stop').value
+
+      const participants = Number(
+        document.getElementById('edit-booking-participants').value
+      )
+
+      const description = document
+        .getElementById('edit-booking-description').value.trim()
+
+      if (!start || !stop) {
+        Swal.showValidationMessage(
+          'Please complete the booking name, room, start and end times.'
+        )
+        return false
+      }
+ 
+      if (new Date(stop) <= new Date(start)) {
+        Swal.showValidationMessage(
+          'The end time must be later than the start time.'
+        )
+        return false
+      }
+
+      if (!Number.isInteger(participants) || participants < 1) {
+        Swal.showValidationMessage(
+          'Participants must be at least 1.'
+        )
+        return false
+      }
+
+      const toOdooDateTime = (value) => value.replace('T', ' ') + ':00'
+
+      return { 
+        booking_id: current.booking_id,
+        start: toOdooDateTime(start),
+        stop: toOdooDateTime(stop),
+        number_of_participant: document.getElementById('edit-booking-participants').value,
+        description,
+        tel: document.getElementById('edit-booking-tel').value.trim(),
+      }
+    },
+  })
+
+  if (!isConfirmed || !formValues) return
+
+  // Prevent duplicate submissions and recheck state.
+  if (
+    actionLoading.value ||
+    !booking.value ||
+    booking.value.room_state !== 'draft'
+  ) {
+    return
+  }
+
+  actionLoading.value = true
+  console.log('Submitting updated booking values:', booking.value.id, formValues)
+const payload = {
+  id: Number(booking.value.id),
+  booking_id: Number(current.booking_id), 
+  start: formValues.start,
+  stop: formValues.stop,
+  description: formValues.description,
+  number_of_participants: Number(formValues.number_of_participant),
+  tel: formValues.tel || '',
+}
+console.log('Payload for updateRoomBooking:', payload)
+  try {
+    const response = await updateRoomBooking(payload)  
+if (response.status === true) {
+  await Swal.fire({
+    icon: 'success',
+    title: 'Updated!',
+    text: response.message || 'Booking updated successfully.',
+    confirmButtonText: 'OK',
+    timer: 2000,
+  })
+
+  await loadBookingDetail()
+} else {
+  await Swal.fire({
+    icon: 'error',
+    title: 'Update failed',
+    text: response.message || 'Unable to update booking.',
+  })
+}
+  } catch (error) { 
+    await Swal.fire({
+      icon: 'error',
+      title: 'Update Failed',
+      text:
+        error?.response?.data?.message ||
+        error?.response?.data?.error?.data?.message ||
+        error.message ||
+        'Unable to update room booking.',
+      confirmButtonText: 'OK',
+    })
   } finally {
     actionLoading.value = false
   }

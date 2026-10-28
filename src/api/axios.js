@@ -378,12 +378,11 @@ export const getRoomBookings = async (bookingId) => {
     },
   })
   return response.data
-}
-
-export const CreateBookroom = async (payload) => {
-  const response = await odooapi.post('/api/room/bookings/create', payload);
-  return response.data
-}
+} 
+// export const CreateBookroom = async (payload) => {
+//   const response = await odooapi.post('/api/room/bookings/create', payload);
+//   return response.data
+// }
 
 
 export const getRoomBookingManagement = async () => {
@@ -391,13 +390,74 @@ export const getRoomBookingManagement = async () => {
   return response.data
 }
 
-export const updateRoomBooking = async (bookingData) => {
-  const response = await odooapi.put(
-    '/api/room/events/update',
-    bookingData,
+// // CREATE: POST /api/room/bookings/create
+// export const CreateBookroom = (payload) => {
+//   return api.post('/api/room/bookings/create', {
+//     booking_id: payload.booking_id,
+//     start: payload.start,
+//     stop: payload.stop,
+//     description: payload.description || '',
+//     capacity: Number(
+//       payload.capacity ?? payload.number_of_participants ?? 0
+//     ),
+//     tel: payload.tel || '',
+//   })
+// }
+
+// // EDIT: PUT /api/room/events/update
+// export const updateRoomBooking = (bookingId, payload) => {
+//   return api.put('/api/room/events/update', {
+//     id: Number(bookingId),
+//     booking_id: Number(payload.booking_id),
+//     start: payload.start,
+//     stop: payload.stop,
+//     name: payload.name || '',
+//     description: payload.description || '',
+//     number_of_participants: Number(
+//       payload.number_of_participants ?? payload.capacity ?? 0
+//     ),
+//     tel: payload.tel || '',
+//   })
+// }
+
+// CREATE: POST /api/room/bookings/create
+export const CreateBookroom = async (payload) => {
+  const response = await odooapi.post(
+    '/api/room/bookings/create',
+    {
+      booking_id: payload.booking_id,
+      start: payload.start,
+      stop: payload.stop,
+      description: payload.description || '',
+      capacity: Number(
+        payload.capacity ?? payload.number_of_participants ?? 0
+      ),
+      tel: payload.tel || '',
+    }
   )
+
   return response.data
 }
+
+// EDIT: PUT /api/room/events/update
+export const updateRoomBooking = async (payload) => {
+  const response = await odooapi.put('/api/room/events/update', 
+    
+    {
+      id: payload.id,
+      booking_id: payload.booking_id,
+      start: payload.start,
+      stop: payload.stop,
+      description: payload.description || '',
+      capacity: Number(
+        payload.capacity ?? payload.number_of_participants ?? 0
+      ),
+      tel: payload.tel || '',
+    }
+  )
+
+  return response.data
+} 
 
 export const confirmRoomBooking = async (bookingId) => {
   const response = await odooapi.post('/api/room/events/confirm', {
@@ -415,6 +475,12 @@ export const cancelRoomBooking = async (bookingId) => {
 
 export const doneRoomBooking = async (bookingId) => {
   const response = await odooapi.post('/api/room/events/done', {
+    id: bookingId,
+  })
+  return response.data
+}
+export const useRoomBooking = async (bookingId) => {
+  const response = await odooapi.post('/api/room/booking/using', {
     id: bookingId,
   })
   return response.data
@@ -465,4 +531,8 @@ export const deleteRoomManagement = async (id) => {
   return response.data;
 };
  
+export const getMyRoomBookings = async () => {
+  const response = await odooapi.get('/api/room/bookings/my')
+  return response.data
+}
 export default odooapi

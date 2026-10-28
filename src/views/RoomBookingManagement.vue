@@ -1,10 +1,7 @@
-
 <template>
   <div class="container-fluid py-4">
     <!-- Header -->
-    <div
-      class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
-    >
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
       <div>
         <h4 class="fw-bold mb-1">Room Booking Management</h4>
         <p class="text-muted mb-0">
@@ -12,11 +9,7 @@
         </p>
       </div>
 
-      <button
-        class="btn btn-primary"
-        :disabled="loading"
-        @click="loadBookings"
-      >
+      <button class="btn btn-primary" :disabled="loading" @click="loadBookings">
         <i class="bi bi-arrow-clockwise me-1"></i>
         {{ loading ? 'Loading...' : 'Refresh' }}
       </button>
@@ -84,22 +77,18 @@
         <!-- Search and filter -->
         <div class="row g-3 mb-3">
           <div class="col-12 col-md-7">
-            <input
-              v-model="searchText"
-              type="search"
-              class="form-control"
-              placeholder="Search booking, room, requester..."
-            />
+            <input v-model="searchText" type="search" class="form-control"
+              placeholder="Search booking, room, requester..." />
           </div>
 
           <div class="col-12 col-md-5">
             <select v-model="stateFilter" class="form-select">
               <option value="all">All statuses</option>
               <option value="draft">Draft</option>
-              <option value="waiting_for_approval">
-                Waiting for approval
+              <option value="confirmed">
+                Confirmed
               </option>
-              <option value="approved">Approved</option>
+              <option value="using">Using</option>
               <option value="done">Done</option>
               <option value="cancelled">Cancelled</option>
             </select>
@@ -132,14 +121,10 @@
               </tr>
             </thead>
 
-            <tbody >
-              <tr
-                v-for="booking in paginatedBookings"
-                :key="booking.id"
-                class="booking-row fw-lighter fst-italic text-nowrap" 
-                style="font-size: 12px;"
-                @click="viewBookingDetail(booking)"
-              >
+            <tbody>
+              <tr v-for="booking in paginatedBookings" :key="booking.id"
+                class="booking-row fw-lighter fst-italic text-nowrap" style="font-size: 12px;"
+                @click="viewBookingDetail(booking)">
                 <td class="fw-bolder">
                   {{ booking.booking_number || `#${booking.id}` }}
                 </td>
@@ -162,10 +147,7 @@
                 </td>
 
                 <td>
-                  <span
-                    class="badge"
-                    :class="statusClass(booking.room_state)"
-                  >
+                  <span class="badge" :class="statusClass(booking.room_state)">
                     {{ formatStatus(booking.room_state) }}
                   </span>
                 </td>
@@ -185,10 +167,8 @@
         </div>
 
         <!-- Pagination -->
-        <div
-          v-if="!loading && filteredBookings.length > 0"
-          class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 mt-3"
-        >
+        <div v-if="!loading && filteredBookings.length > 0"
+          class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 mt-3">
           <!-- Record information -->
           <div class="text-muted small text-center text-lg-start">
             Showing
@@ -206,12 +186,7 @@
               Rows per page:
             </label>
 
-            <select
-              id="pageSize"
-              v-model.number="pageSize"
-              class="form-select form-select-sm"
-              style="width: 85px"
-            >
+            <select id="pageSize" v-model.number="pageSize" class="form-select form-select-sm" style="width: 85px">
               <option :value="10">10</option>
               <option :value="25">25</option>
               <option :value="50">50</option>
@@ -223,84 +198,41 @@
           <nav aria-label="Room booking pagination">
             <ul class="pagination pagination-sm flex-wrap justify-content-center mb-0">
               <!-- First -->
-              <li
-                class="page-item"
-                :class="{ disabled: currentPage === 1 }"
-              >
-                <button
-                  type="button"
-                  class="page-link"
-                  :disabled="currentPage === 1"
-                  aria-label="First page"
-                  @click="goToPage(1)"
-                >
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button type="button" class="page-link" :disabled="currentPage === 1" aria-label="First page"
+                  @click="goToPage(1)">
                   <i class="bi bi-chevron-double-left"></i>
                 </button>
               </li>
 
               <!-- Previous -->
-              <li
-                class="page-item"
-                :class="{ disabled: currentPage === 1 }"
-              >
-                <button
-                  type="button"
-                  class="page-link"
-                  :disabled="currentPage === 1"
-                  aria-label="Previous page"
-                  @click="goToPage(currentPage - 1)"
-                >
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button type="button" class="page-link" :disabled="currentPage === 1" aria-label="Previous page"
+                  @click="goToPage(currentPage - 1)">
                   <i class="bi bi-chevron-left"></i>
                 </button>
               </li>
 
               <!-- Page numbers -->
-              <li
-                v-for="page in visiblePages"
-                :key="page"
-                class="page-item"
-                :class="{ active: currentPage === page }"
-              >
-                <button
-                  type="button"
-                  class="page-link"
-                  :aria-current="
-                    currentPage === page ? 'page' : undefined
-                  "
-                  @click="goToPage(page)"
-                >
+              <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                <button type="button" class="page-link" :aria-current="currentPage === page ? 'page' : undefined
+                  " @click="goToPage(page)">
                   {{ page }}
                 </button>
               </li>
 
               <!-- Next -->
-              <li
-                class="page-item"
-                :class="{ disabled: currentPage === totalPages }"
-              >
-                <button
-                  type="button"
-                  class="page-link"
-                  :disabled="currentPage === totalPages"
-                  aria-label="Next page"
-                  @click="goToPage(currentPage + 1)"
-                >
+              <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                <button type="button" class="page-link" :disabled="currentPage === totalPages" aria-label="Next page"
+                  @click="goToPage(currentPage + 1)">
                   <i class="bi bi-chevron-right"></i>
                 </button>
               </li>
 
               <!-- Last -->
-              <li
-                class="page-item"
-                :class="{ disabled: currentPage === totalPages }"
-              >
-                <button
-                  type="button"
-                  class="page-link"
-                  :disabled="currentPage === totalPages"
-                  aria-label="Last page"
-                  @click="goToPage(totalPages)"
-                >
+              <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                <button type="button" class="page-link" :disabled="currentPage === totalPages" aria-label="Last page"
+                  @click="goToPage(totalPages)">
                   <i class="bi bi-chevron-double-right"></i>
                 </button>
               </li>
@@ -309,10 +241,7 @@
         </div>
 
         <!-- Empty result count -->
-        <div
-          v-if="!loading && filteredBookings.length === 0"
-          class="text-muted small mt-2"
-        >
+        <div v-if="!loading && filteredBookings.length === 0" class="text-muted small mt-2">
           Showing 0 of {{ bookings.length }} bookings
         </div>
       </div>
@@ -334,7 +263,7 @@ const viewBookingDetail = (booking) => {
     },
   })
 }
- 
+
 const formatDate = (value) => {
   if (!value) return '-'
 
@@ -353,6 +282,31 @@ const formatDate = (value) => {
     hour12: false,
   }).format(date)
 }
+
+const statusLabel = (state) => {
+    const labels = {
+        draft: 'ລໍຖ້າອະນຸມັດ',
+        confirmed: 'ອະນຸມັດແລ້ວ',
+        using: 'ກຳລັງໃຊ້ງານ',
+        done: 'ສຳເລັດແລ້ວ',
+        cancelled: 'ຍົກເລີກແລ້ວ',
+    }
+
+    return labels[state] || state || 'ບໍ່ຮູ້ສະຖານະ'
+}
+
+// const statusClass = (state) => {
+//     const classes = {
+//         draft: 'bg-warning-subtle text-warning-emphasis',
+//         confirmed: 'bg-success-subtle text-success',
+//         using: 'bg-primary-subtle text-primary',
+//         done: 'bg-info-subtle text-info-emphasis',
+//         cancelled: 'bg-danger-subtle text-danger',
+//     }
+
+//     return classes[state] || 'bg-secondary-subtle text-secondary'
+// }
+
 const bookings = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
@@ -373,7 +327,7 @@ const waitingCount = computed(() =>
 
 const approvedCount = computed(() =>
   bookings.value.filter(
-    (booking) => booking.room_state === 'approved',
+    (booking) => booking.room_state === 'confirmed',
   ).length,
 )
 const usingCount = computed(() =>
@@ -407,7 +361,7 @@ const filteredBookings = computed(() => {
 
     const matchesState =
       stateFilter.value === 'all' ||
-      booking.confirmed_state === stateFilter.value
+      booking.room_state === stateFilter.value
 
     return matchesSearch && matchesState
   })
@@ -517,8 +471,8 @@ const loadBookings = async () => {
 const formatStatus = (status) => {
   const labels = {
     draft: 'ລໍຖ້າການອະນຸມັດ',
-    waiting_for_approval: 'ອະນຸມັດແລ້ວ',
-    approved: 'ໃຊ້ງານ',
+    using: 'ກຳລັງໃຊ້ງານ',
+    confirmed: 'ອະນຸມັດແລ້ວ',
     done: 'ສຳເລັດ',
     cancelled: 'ຍົກເລີກ',
   }
@@ -528,10 +482,10 @@ const formatStatus = (status) => {
 
 // Status badge colors
 const statusClass = (status) => {
-  const classes = {
-    draft: 'text-bg-secondary',
-    waiting_for_approval: 'text-bg-warning',
-    approved: 'text-bg-success',
+  const classes = { 
+    draft: 'text-bg-warning',
+    confirmed: 'text-bg-success',
+    using: 'text-bg-info',
     done: 'text-bg-primary',
     cancelled: 'text-bg-danger',
   }
@@ -544,11 +498,10 @@ onMounted(loadBookings)
 <style scoped>
 .booking-row {
   cursor: pointer;
-  transition: background-color 0.2s ease; 
+  transition: background-color 0.2s ease;
 }
 
 .booking-row:hover {
   background-color: #f0f5ff;
 }
-  
 </style>

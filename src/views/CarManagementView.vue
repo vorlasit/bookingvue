@@ -843,99 +843,123 @@
                 </div>
 
 
-                <!-- Responsible User -->
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">
-                        ຜູ້ຮັບຜິດຊອບ
-                    </label>
+                <!-- Responsible User --> 
+<div class="col-md-4">
+  <label class="form-label fw-semibold">
+    ຜູ້ຮັບຜິດຊອບ
+  </label>
 
-                    <div class="position-relative">
-                        <div
-                        class="form-control d-flex align-items-center"
-                        style="cursor: text;"
-                        @click="showResponsiveDropdown = true"
-                        >
-                        <i class="bi bi-person me-2 text-muted"></i>
+  <div class="position-relative">
+    <div
+      class="form-control d-flex align-items-center gap-2"
+      style="cursor: text; min-height: 38px;"
+      @click="showResponsiveDropdown = true"
+    >
+      <i class="bi bi-person text-muted"></i>
 
-                        <span v-if="responsiveFilter">
-                            {{ responsiveFilter.name }}
-                        </span>
+      <!-- Selected responsible user -->
+      <span v-if="responsiveFilter" class="flex-grow-1">
+        {{ responsiveFilter.name }}
+      </span>
 
-                        <input
-                            v-else
-                            v-model="responsiveSearch"
-                            type="text"
-                            class="border-0 outline-0 flex-grow-1"
-                            placeholder="ຄົ້ນຫາຜູ້ຮັບຜິດຊອບ..."
-                            @focus="showResponsiveDropdown = true"
-                            @input="showResponsiveDropdown = true"
-                            @keydown.esc="showResponsiveDropdown = false"
-                        />
+      <!-- Search input -->
+      <input
+        v-else
+        v-model="responsiveSearch"
+        type="text"
+        class="border-0 flex-grow-1"
+        style="outline: none; min-width: 0;"
+        placeholder="ຄົ້ນຫາຜູ້ຮັບຜິດຊອບ..."
+        @focus="showResponsiveDropdown = true"
+        @input="showResponsiveDropdown = true"
+        @keydown.esc="showResponsiveDropdown = false"
+      />
 
-                        <button
-                            v-if="responsiveFilter"
-                            type="button"
-                            class="btn btn-sm p-0 ms-auto"
-                            @click.stop="
-                                responsiveFilter = null;
-                                form.responsive_uid = null;
-                                responsiveSearch = '';
-                            "
-                        >
-                            <i class="bi bi-x-circle text-muted"></i>
-                        </button>
+      <!-- Clear selected user -->
+      <button
+        v-if="responsiveFilter"
+        type="button"
+        class="btn btn-sm p-0 ms-auto"
+        @click.stop="
+          responsiveFilter = null;
+          form.responsive_uid = null;
+          responsiveSearch = '';
+          showResponsiveDropdown = true;
+        "
+      >
+        <i class="bi bi-x-circle text-muted"></i>
+      </button>
 
-                        <i
-                            v-else
-                            class="bi bi-chevron-down ms-2 text-muted"
-                        ></i>
-                        </div>
+      <i
+        v-else
+        class="bi bi-chevron-down ms-auto text-muted"
+      ></i>
+    </div>
 
-                        <!-- Dropdown -->
-                        <div
-                        v-if="showResponsiveDropdown"
-                        class="dropdown-menu show w-100 shadow"
-                        style="
-                            max-height: 250px;
-                            overflow-y: auto;
-                            position: absolute;
-                            top: 100%;
-                            left: 0;
-                            z-index: 1050;
-                        "
-                        >
-                        <button
-                            v-for="user in filteredResponsiveUsers"
-                            :key="user.id"
-                            type="button"
-                            class="dropdown-item"
-                            @click="
-                                responsiveFilter = user;
-                                form.responsive_uid = user.id;
-                                responsiveSearch = '';
-                                showResponsiveDropdown = false;
-                            "
-                        >
-                            <i class="bi bi-person me-2"></i>
-                            {{ user.name }}
+    <!-- User dropdown -->
+    <div
+      v-if="showResponsiveDropdown"
+      class="dropdown-menu show w-100 shadow"
+      style="
+        max-height: 250px;
+        overflow-y: auto;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1050;
+      "
+    >
+      <!-- Current selection shown first -->
+      <button
+        v-if="responsiveFilter"
+        type="button"
+        class="dropdown-item active"
+        @click="
+          form.responsive_uid = responsiveFilter.id;
+          showResponsiveDropdown = false;
+        "
+      >
+        <i class="bi bi-check-circle me-2"></i>
+        {{ responsiveFilter.name }}
+        <small class="ms-1">(Selected)</small>
+      </button>
 
-                            <small
-                            v-if="user.login"
-                            class="text-muted ms-1"
-                            >
-                            ({{ user.login }})
-                            </small>
-                        </button>
+      <!-- Other searchable users -->
+      <button
+        v-for="user in filteredResponsiveUsers.filter(
+          user => Number(user.id) !== Number(responsiveFilter?.id)
+        )"
+        :key="user.id"
+        type="button"
+        class="dropdown-item"
+        @click="
+          responsiveFilter = user;
+          form.responsive_uid = user.id;
+          responsiveSearch = '';
+          showResponsiveDropdown = false;
+        "
+      >
+        <i class="bi bi-person me-2"></i>
+        {{ user.name }}
 
-                        <div
-                            v-if="filteredResponsiveUsers.length === 0"
-                            class="text-muted text-center py-3"
-                        >
-                            ບໍ່ພົບຜູ້ໃຊ້
-                        </div>
-                        </div>
-                    </div>
-                    </div>
+        <small v-if="user.login" class="text-muted ms-1">
+          ({{ user.login }})
+        </small>
+      </button>
+
+      <div
+        v-if="
+          filteredResponsiveUsers.filter(
+            user => Number(user.id) !== Number(responsiveFilter?.id)
+          ).length === 0 && !responsiveFilter
+        "
+        class="text-muted text-center py-3"
+      >
+        ບໍ່ພົບຜູ້ໃຊ້
+      </div>
+    </div>
+  </div>
+</div> 
               </div>
 
 
@@ -1328,9 +1352,8 @@ const openCreateModal = () => {
 // ============================================================
 // EDIT
 // ============================================================
-
+ 
 const openEditModal = (car) => {
-
   editingCar.value = car
 
   form.value = {
@@ -1345,22 +1368,42 @@ const openEditModal = (car) => {
     sign: car.sign || '',
     state: car.state || 'available',
     use_type: car.use_type || 'borrow',
-    responsive_uid: car.responsive_uid || null,
 
-    responsive_uids:
-      Array.isArray(car.responsive_uids)
-        ? car.responsive_uids.map(item => item.id)
-        : [],
+    responsive_uid: car.responsive_uid
+      ? Number(car.responsive_uid)
+      : null,
 
-    problem_ids:
-      Array.isArray(car.problem_ids)
-        ? car.problem_ids.map(item => item.id)
-        : [],
+    responsive_uids: Array.isArray(car.responsive_uids)
+      ? car.responsive_uids.map(item =>
+          typeof item === 'object' ? Number(item.id) : Number(item)
+        )
+      : [],
+
+    problem_ids: Array.isArray(car.problem_ids)
+      ? car.problem_ids.map(item =>
+          typeof item === 'object' ? item.id : item
+        )
+      : [],
   }
+
+  // Automatically select the current responsible user.
+  const responsibleId = Number(
+    Array.isArray(car.responsive_uid)
+      ? car.responsive_uid[0]
+      : car.responsive_uid?.id ?? car.responsive_uid
+  )
+
+  const selectedUser = users.value.find(
+    user => Number(user.id) === responsibleId
+  )
+
+  responsiveFilter.value = selectedUser || null
+  responsiveSearch.value = ''
+  showResponsiveDropdown.value = false
 
   formError.value = ''
   showModal.value = true
-}
+} 
 const selectedUser = users.value.find(
   user => Number(user.id) === Number(car.responsive_uid)
 )

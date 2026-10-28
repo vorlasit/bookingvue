@@ -45,6 +45,7 @@ const login = async () => {
     }).format(new Date())
     );
     localStorage.setItem('username', result.name) 
+    localStorage.setItem('uid', result.uid) 
     localStorage.setItem('image', result.image) 
     localStorage.setItem('company_name', result.company_name || '')
     localStorage.setItem('groups_id', JSON.stringify(result.groups_id ?? []))

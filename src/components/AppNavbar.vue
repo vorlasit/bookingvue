@@ -13,7 +13,7 @@
 
         <div>
           <div class="brand-name">{{ bookingType === 'room' ? 'Room Booking' : 'Car Booking' }}</div>
-          <small>Powered by KCC</small><br/>
+          <small>Powered by KCC</small><br />
           <small>
             <a href="https://khouanchay.com" target="_self" class="text-decoration-none text-light">
               <i class="bi bi-box-arrow-up-right"></i> Go To Website
@@ -133,11 +133,39 @@
             <span>Meeting </span>
           </span>
         </router-link>
-        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')" to="/room-booking-management" class="menu-item">
+        <router-link v-if="bookingType === 'room'" to="/my-room-bookings" class="menu-item">
+          <i class="bi bi-calendar-check me-2"></i>
+          <span class="menu-text">
+            <span>ການຈອງຫ້ອງຂອງຂ້ອຍ</span>
+            <span>My Room Bookings</span>
+          </span>
+        </router-link>
+        <router-link  v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')" to="/room-booking-approval" class="menu-item d-flex align-items-center">
+          <i class="bi bi-check-circle me-2"></i>
+
+          <span class="menu-text">
+            <span>ລໍຖ້າອະນຸມັດ</span>
+            <span>Approval</span>
+          </span>
+
+          <span v-if="draftRoomCount > 0" class="badge rounded-pill bg-danger ms-2">
+            {{ draftRoomCount }}
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+          to="/room-booking-management" class="menu-item">
           <i class="bi bi-door-open-fill"></i>
           <span class="menu-text">
             <span>ຈັດການການຈອງຫ້ອງປະຊຸມ</span>
-            <span>Meeting </span>
+            <span>Booking Management</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+          to="/room-management" class="menu-item">
+          <i class="bi bi-door-open"></i>
+          <span class="menu-text">
+            <span>ຈັດການຫ້ອງປະຊຸມ</span>
+            <span>Room Management</span>
           </span>
         </router-link>
         <!-- <router-link to="/profile" class="menu-item">
@@ -261,29 +289,47 @@
     ========================== -->
     <nav class="mobile-bottom-nav">
       <!-- ເມນູຫຼັກ 1: Home -->
-        <router-link to="/choose-booking" class="bottom-item">
-          <i class="bi bi-grid-3x3-gap-fill"></i>
-          <span class="menu-text">
-            <span>ເລືອກບໍລິການ</span> 
-             
+      <router-link to="/choose-booking" class="bottom-item">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <span class="menu-text">
+          <span>ເລືອກບໍລິການ</span>
+
+        </span>
+      </router-link>
+      <router-link :to="{ path: '/app/dashboard', query: { type: bookingType } }" v-if="bookingType === 'car'"
+        class="bottom-item">
+        <i class="bi bi-house-door"></i>
+        <span class="menu-text">
+          <span>Home</span>
+
+        </span>
+
+      </router-link>
+
+      <router-link v-if="bookingType === 'room'" to="/app/roomtype" class="bottom-item">
+        <i class="bi bi-door-open-fill"></i>
+        <span class="menu-text">
+          <span>ຫ້ອງປະຊຸມ</span>
+        </span>
+      </router-link>
+     
+        <router-link
+          v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+          to="/room-booking-approval"
+          class="bottom-item d-flex align-items-center"
+        >
+          <i class="bi bi-check-circle me-2"></i>
+        
+          <span
+            v-if="draftRoomCount > 0"
+            class="badge rounded-pill bg-danger"
+          >
+            
+            ຖ້າອະນຸມັດ {{ draftRoomCount }}
           </span>
         </router-link>
-      <router-link :to="{ path: '/app/dashboard', query: { type: bookingType } }" v-if="bookingType === 'car'" class="bottom-item">
-        <i class="bi bi-house-door"></i>
-         <span class="menu-text">
-            <span>Home</span>
-          
-        </span>
-      
-      </router-link>
-      
-        <router-link v-if="bookingType === 'room'" to="/app/roomtype" class="bottom-item">
-          <i class="bi bi-door-open-fill"></i>
-           <span class="menu-text">
-        <span>ຫ້ອງປະຊຸມ</span> 
-      </span>
-        </router-link> 
       <!-- ເມນູຫຼັກ 2: Trip -->
+       
       <router-link v-if="bookingType === 'car'" to="/trip/" class="bottom-item">
         <i class="bi bi-car-front"></i>
         <span>Current Trip</span>
@@ -315,27 +361,45 @@
             <router-link to="/app/DashboardAdmin" class="candybox-item"
               v-if="bookingType === 'car' && groups_ids.includes('booking.group_kc_vehicle_manager')"
               @click="toggleCandybox">
-               <i class="bi bi-speedometer2"></i>
-               <span class="menu-text">
+              <i class="bi bi-speedometer2"></i>
+              <span class="menu-text">
                 <span>ສະແດງຜົນທັງໝົດ </span>
                 <span>Operation Dashboard</span>
               </span>
             </router-link>
-            
-        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')" to="/room-booking-management" class="candybox-item">
-          <i class="bi bi-door-open-fill"></i>
+
+            <router-link v-if="bookingType === 'room'" to="/my-room-bookings" class="candybox-item">
+              <i class="bi bi-calendar-check me-2"></i>
+              <span class="menu-text">
+                <span>ການຈອງຫ້ອງຂອງຂ້ອຍ</span>
+                <span>My Room Bookings</span>
+              </span>
+            </router-link>
+
+            <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+              to="/room-booking-management" class="candybox-item">
+              <i class="bi bi-door-open-fill"></i>
+              <span class="menu-text">
+                <span>ຈັດການການຈອງຫ້ອງປະຊຸມ</span>
+                <span>Meeting </span>
+              </span>
+            </router-link>
+
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+          to="/room-management" class="candybox-item">
+          <i class="bi bi-door-open"></i>
           <span class="menu-text">
-            <span>ຈັດການການຈອງຫ້ອງປະຊຸມ</span>
-            <span>Meeting </span>
+            <span>ຈັດການຫ້ອງປະຊຸມ</span> 
+            <span>Management</span> 
           </span>
         </router-link>
-        
+
 
             <!-- MY HIS -->
             <router-link v-if="bookingType === 'car'" to="/booking/historys" class="candybox-item mb-2"
               @click="toggleCandybox">
               <i class="bi bi-clock-history text-success"></i>
-               <span class="menu-text">
+              <span class="menu-text">
                 <span>ປະຫວັດຈອງລົດ</span>
                 <span>Booking History</span>
               </span>
@@ -347,12 +411,12 @@
               v-if="bookingType === 'car' && groups_ids.includes('booking.group_kc_vehicle_manager')"
               @click="toggleCandybox">
               <i class="bi bi-journal-text text-warning"></i>
-             <span class="menu-text">
+              <span class="menu-text">
                 <span>ຄຳຮ້ອງຂໍ</span>
                 <span>All Booking Queue</span>
               </span>
             </router-link>
-              <router-link to="/booking/draft" class="candybox-item"
+            <router-link to="/booking/draft" class="candybox-item"
               v-if="bookingType === 'car' && groups_ids.includes('booking.group_kc_vehicle_manager')"
               @click="toggleCandybox">
               <i class="bi bi-bell"></i>
@@ -375,18 +439,18 @@
                 <span>Report Issue</span>
               </span>
             </router-link>
-                <!-- Requests -->
+            <!-- Requests -->
             <router-link to="/cars/" class="candybox-item"
               v-if="bookingType === 'car' && groups_ids.includes('booking.group_kc_vehicle_manager')"
               @click="toggleCandybox">
               <i class="bi bi-car-front-fill text-warning"></i>
-             <span class="menu-text">
+              <span class="menu-text">
                 <span>ລາຍການລົດ</span>
                 <span>Cars</span>
               </span>
             </router-link>
-            
-            
+
+
             <!-- <router-link to="/profile" class="candybox-item">
               <i class="bi bi-person-circle"></i>
               <span>Profile</span>
@@ -401,9 +465,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch,onBeforeUnmount  } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { getGroups, getUserProfile, getNotiDraftCount } from "../api/axios";
+import { getGroups, getUserProfile, getNotiDraftCount,getRoomBookingManagement  } from "../api/axios";
 
 
 const router = useRouter();
@@ -458,6 +522,34 @@ const fetchDraftCount = async () => {
     console.error("Failed to fetch draft count:", error);
   }
 };
+const draftRoomCount = ref(0)
+
+const loadDraftRoomCount = async () => {
+  try {
+    const response = await getRoomBookingManagement()
+    const result = response?.data ?? response
+
+    let records = []
+
+    if (Array.isArray(result)) {
+      records = result
+    } else if (Array.isArray(result?.data)) {
+      records = result.data
+    } else if (Array.isArray(result?.bookings)) {
+      records = result.bookings
+    } else if (Array.isArray(result?.events)) {
+      records = result.events
+    }
+
+    draftRoomCount.value = records.filter(
+      booking => String(booking.room_state || '').toLowerCase() === 'draft'
+    ).length
+  } catch (error) {
+    console.error('Unable to load draft room count:', error)
+  }
+}
+
+let countInterval
 
 const toggleProfileMenu = () => {
   profileMenuOpen.value = !profileMenuOpen.value;
@@ -548,7 +640,7 @@ const loadCachedGroups = () => {
 };
 
 // =========================
-// Get LIVE groups from Odoo
+// Get LIVE groups from Odoo 
 // =========================
 const syncUserGroups = async () => {
   try {
@@ -682,7 +774,12 @@ onMounted(async () => {
   // Refresh the count every 30 seconds
   draftCountTimer = setInterval(() => {
     fetchDraftCount();
-  }, 30000);
+  }, 3000);
+
+  loadDraftRoomCount()
+
+  // Refresh the count every 60 seconds
+  countInterval = setInterval(loadDraftRoomCount, 2000)
 });
 onUnmounted(() => {
   if (draftCountTimer) {
@@ -690,6 +787,10 @@ onUnmounted(() => {
     draftCountTimer = null;
   }
 });
+
+onBeforeUnmount(() => {
+  clearInterval(countInterval)
+})
 </script>
 
 

@@ -30,6 +30,10 @@
                 <label class="form-label fw-semibold text-secondary small">ຈຸດປະສົງການເດີນທາງ <span class="text-danger">*</span></label>
                 <input type="text" v-model="form.description" class="form-control custom-input" placeholder="ເຊັ່ນ: ໄປຮັບແຂກຜູ້ສະໜອງ" required />
               </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-secondary small">ລາຍລະອຽດເພີ່ມເຕີມ </label>
+                <textarea v-model="form.detail" class="form-control custom-input" placeholder="ເຊັ່ນ: ໄປຮັບແຂກຜູ້ສະໜອງ" required></textarea>
+              </div>
 
               <div class="row mb-3 g-3">
                 <div class="col-md-6 col-12">
@@ -74,7 +78,7 @@
               </div>
 
               <!-- Available Vehicles Display List -->
-              <h6 class="fw-bold text-dark mb-3">
+              <!-- <h6 class="fw-bold text-dark mb-3">
                 <i class="bi bi-car-front me-2"></i>ລົດທີ່ວ່າງໃຫ້ຈອງ
               </h6>
 
@@ -118,7 +122,7 @@
                     </span>
                   </div>
                 </button>
-              </div>
+              </div> -->
 
             </div>
           </div>
@@ -218,6 +222,7 @@ const form = ref({
   start: formatToDateTimeLocal(new Date()),
   stop: formatToDateTimeLocal(new Date(Date.now() + 2 * 60 * 60 * 1000)),
   description: "",
+  detail: "",
   note: "",
   number_of_participant: null,
   tel: "",
@@ -347,10 +352,10 @@ const submitBooking = async () => {
     return;
   }
 
-  if (startDate < getNowToMinute()) {
-    await warn("ວັນເວລາເລີ່ມຕົ້ນຕ້ອງບໍ່ຍ້ອນຫຼັງ");
-    return;
-  }
+  // if (startDate < getNowToMinute()) {
+  //   await warn("ວັນເວລາເລີ່ມຕົ້ນຕ້ອງບໍ່ຍ້ອນຫຼັງ");
+  //   return;
+  // }
 
   if (stopDate <= startDate) {
     await warn("ວັນເວລາສິ້ນສຸດຕ້ອງຫຼາຍກວ່າວັນເວລາເລີ່ມຕົ້ນ");
@@ -373,6 +378,7 @@ const submitBooking = async () => {
       start: form.value.start.replace("T", " ") + ":00",
       stop: form.value.stop.replace("T", " ") + ":00",
       description: form.value.description.trim(),
+      detail: form.value.detail.trim(),
       // confirmed_state: "waiting_for_approval",
       number_of_participant: Number(form.value.number_of_participant),
       tel: form.value.tel.trim(),
@@ -424,18 +430,150 @@ const submitBooking = async () => {
 
 
 
+// onMounted(() => {
+//   currentCompany.value =
+//     localStorage.getItem("company_name") ||
+//     "ບສກ. ທາຍໂຊລູຊັ່ນສ໌ ລໍຈິສຕິກສ໌";
+
+//   loadAvailableVehicles();
+
+//   const getCurrentMinute = () => {
+//     const now = new Date();
+//     now.setSeconds(0, 0);
+//     return now;
+//   };
+
+//   const getNextMinute = () => {
+//     const now = new Date();
+//     now.setSeconds(0, 0);
+//     now.setMinutes(now.getMinutes() + 1);
+//     return now;
+//   };
+
+//   const getTimeString = (date) =>
+//     `${String(date.getHours()).padStart(2, "0")}:${String(
+//       date.getMinutes()
+//     ).padStart(2, "0")}`;
+
+//   const baseOptions = {
+//     enableTime: true,
+//     time_24hr: true,
+//     dateFormat: "Y-m-d\\TH:i",
+//     altInput: true,
+//     altFormat: "d/m/Y H:i",
+//     minuteIncrement: 1,
+//     allowInput: false,
+//   // Important: use Flatpickr on mobile instead of native picker
+//   disableMobile: true,
+//   };
+
+//   // START DATE/TIME
+//   startPicker = flatpickr(startInput.value, {
+//     ...baseOptions,
+//     defaultDate: getNextMinute(),
+//     minDate: getCurrentMinute(),
+//     minTime: getTimeString(getNextMinute()),
+
+//     onReady(_, __, picker) {
+//       updateStartLimits(picker);
+//     },
+
+//     onOpen(_, __, picker) {
+//       updateStartLimits(picker);
+//     },
+
+//     onChange(selectedDates, dateStr) {
+//       form.value.start = dateStr;
+
+//       if (!selectedDates.length || !stopPicker) return;
+
+//       const start = selectedDates[0];
+//       const minEnd = new Date(start.getTime() + 60 * 1000);
+//       const now = getNextMinute();
+
+//       stopPicker.set("minDate", minEnd > now ? minEnd : now);
+
+//       const currentStop = stopPicker.selectedDates[0];
+
+//       if (!currentStop || currentStop < minEnd || currentStop < now) {
+//         stopPicker.setDate(
+//           new Date(start.getTime() + 2 * 60 * 60 * 1000),
+//           true
+//         );
+//       }
+
+//       updateStopLimits();
+//     },
+//   });
+
+//   function updateStartLimits(picker) {
+//     const now = getNextMinute();
+//     const selected = picker.selectedDates[0];
+
+//     picker.set("minDate", getCurrentMinute());
+
+//     if (
+//       selected &&
+//       selected.toDateString() === now.toDateString()
+//     ) {
+//       picker.set("minTime", getTimeString(now));
+//     } else {
+//       picker.set("minTime", "00:00");
+//     }
+//   }
+
+//   // END DATE/TIME
+//   stopPicker = flatpickr(stopInput.value, {
+//     ...baseOptions,
+//     defaultDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
+//     minDate: getNextMinute(),
+
+//     onReady(_, __, picker) {
+//       updateStopLimits();
+//     },
+
+//     onOpen() {
+//       updateStopLimits();
+//     },
+
+//     onChange(_, dateStr) {
+//       form.value.stop = dateStr;
+//     },
+//   });
+
+//   function updateStopLimits() {
+//     if (!stopPicker) return;
+
+//     const now = getNextMinute();
+//     const start = startPicker?.selectedDates[0];
+
+//     const minEnd = start
+//       ? new Date(Math.max(start.getTime() + 60 * 1000, now.getTime()))
+//       : now;
+
+//     stopPicker.set("minDate", minEnd);
+
+//     const selected = stopPicker.selectedDates[0];
+
+//     if (
+//       selected &&
+//       selected.toDateString() === minEnd.toDateString()
+//     ) {
+//       stopPicker.set("minTime", getTimeString(minEnd));
+//     } else {
+//       stopPicker.set("minTime", "00:00");
+//     }
+//   }
+
+//   updateStopLimits();
+// });
+
 onMounted(() => {
   currentCompany.value =
     localStorage.getItem("company_name") ||
     "ບສກ. ທາຍໂຊລູຊັ່ນສ໌ ລໍຈິສຕິກສ໌";
 
   loadAvailableVehicles();
-
-  const getCurrentMinute = () => {
-    const now = new Date();
-    now.setSeconds(0, 0);
-    return now;
-  };
 
   const getNextMinute = () => {
     const now = new Date();
@@ -457,16 +595,15 @@ onMounted(() => {
     altFormat: "d/m/Y H:i",
     minuteIncrement: 1,
     allowInput: false,
-  // Important: use Flatpickr on mobile instead of native picker
-  disableMobile: true,
+    disableMobile: true,
   };
 
   // START DATE/TIME
   startPicker = flatpickr(startInput.value, {
     ...baseOptions,
     defaultDate: getNextMinute(),
-    minDate: getCurrentMinute(),
-    minTime: getTimeString(getNextMinute()),
+// Allow dates before today
+minDate: undefined,
 
     onReady(_, __, picker) {
       updateStartLimits(picker);
@@ -482,16 +619,21 @@ onMounted(() => {
       if (!selectedDates.length || !stopPicker) return;
 
       const start = selectedDates[0];
-      const minEnd = new Date(start.getTime() + 60 * 1000);
       const now = getNextMinute();
+      const minEnd = new Date(start.getTime() + 60 * 1000);
+      const earliestEnd = minEnd > now ? minEnd : now;
 
-      stopPicker.set("minDate", minEnd > now ? minEnd : now);
+      stopPicker.set("minDate", earliestEnd);
 
       const currentStop = stopPicker.selectedDates[0];
 
-      if (!currentStop || currentStop < minEnd || currentStop < now) {
+      if (!currentStop || currentStop < earliestEnd) {
+        const defaultEnd = new Date(
+          start.getTime() + 2 * 60 * 60 * 1000
+        );
+
         stopPicker.setDate(
-          new Date(start.getTime() + 2 * 60 * 60 * 1000),
+          defaultEnd > earliestEnd ? defaultEnd : earliestEnd,
           true
         );
       }
@@ -501,28 +643,32 @@ onMounted(() => {
   });
 
   function updateStartLimits(picker) {
-    const now = getNextMinute();
-    const selected = picker.selectedDates[0];
+  const now = new Date();
+  const nextMinute = getNextMinute();
+  const selected = picker.selectedDates[0];
 
-    picker.set("minDate", getCurrentMinute());
+  // Allow selecting any date, including dates before today.
+  picker.set("minDate", null);
 
-    if (
-      selected &&
-      selected.toDateString() === now.toDateString()
-    ) {
-      picker.set("minTime", getTimeString(now));
-    } else {
-      picker.set("minTime", "00:00");
-    }
+  // Only restrict the time when the selected date is today.
+  if (
+    selected &&
+    selected.toDateString() === now.toDateString()
+  ) {
+    picker.set("minTime", getTimeString(nextMinute));
+  } else {
+    // Past dates can be selected freely.
+    picker.set("minTime", "00:00");
   }
+}
 
-  // END DATE/TIME
+  // STOP DATE/TIME
   stopPicker = flatpickr(stopInput.value, {
     ...baseOptions,
     defaultDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
     minDate: getNextMinute(),
 
-    onReady(_, __, picker) {
+    onReady() {
       updateStopLimits();
     },
 
@@ -542,31 +688,37 @@ onMounted(() => {
     const start = startPicker?.selectedDates[0];
 
     const minEnd = start
-      ? new Date(Math.max(start.getTime() + 60 * 1000, now.getTime()))
+      ? new Date(
+          Math.max(
+            start.getTime() + 60 * 1000,
+            now.getTime()
+          )
+        )
       : now;
 
     stopPicker.set("minDate", minEnd);
 
     const selected = stopPicker.selectedDates[0];
 
-    if (
-      selected &&
-      selected.toDateString() === minEnd.toDateString()
-    ) {
+    if (selected && selected.toDateString() === minEnd.toDateString()) {
       stopPicker.set("minTime", getTimeString(minEnd));
     } else {
       stopPicker.set("minTime", "00:00");
+    }
+
+    // Reset an invalid stop time.
+    if (selected && selected < minEnd) {
+      stopPicker.setDate(minEnd, true);
     }
   }
 
   updateStopLimits();
 });
 
-
-onBeforeUnmount(() => {
-  if (startPicker) startPicker.destroy();
-  if (stopPicker) stopPicker.destroy();
-});
+// onBeforeUnmount(() => {
+//   if (startPicker) startPicker.destroy();
+//   if (stopPicker) stopPicker.destroy();
+// });
 </script>
 
 <style scoped>

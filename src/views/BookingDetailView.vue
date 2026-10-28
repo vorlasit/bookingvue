@@ -33,7 +33,7 @@
           <div class="col-lg-7 col-12">
             <div class="card border-0 shadow-sm p-4 bg-white rounded-3 mb-4">
               <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
-                ຂໍ້ມູນການເດີນທາງ ({{ booking.raw_state }}) <span class="text-danger">ໂດຍ - {{ booking.create_for_uid }} </span>
+                ຂໍ້ມູນການເດີນທາງ ({{ booking.raw_state }}) <span class="text-danger"> ສາ້ງໂດຍ - {{ booking.create_for_uid }} </span>
               </h5>
 
               <!-- Core Technical Fields Grid -->
@@ -43,6 +43,14 @@
                 </div>
                 <div class="col-md-9 text-dark fw-bold">
                   {{ booking.description }}
+                </div>
+              </div>
+              <div class="row mb-3 align-items-baseline">
+                <div class="col-md-3 text-muted fw-semibold small">
+                  ລາຍລະອຽດເພີ່ມເຕີມ
+                </div>
+                <div class="col-md-9 text-dark fw-bold">
+                  {{ booking.detail }}
                 </div>
               </div>
 
@@ -58,7 +66,7 @@
               </div>
 
 
-              <div class="row mb-4 align-items-center">
+              <!-- <div class="row mb-4 align-items-center">
                 <div class="col-md-3 text-muted fw-semibold small">
                   ລົດທີ່ຂໍ ຫຼື ລົດທີ່ໃຊ້ໄດ້
                 </div>
@@ -74,7 +82,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
 
               <!-- Internal Status Callout Banner -->
               <div class="p-3 rounded-3 mb-4" style="
@@ -194,8 +202,7 @@
               </button>
               <button type="button" class="btn btn-sm btn-primary" @click="openCarModal" v-if="
                 (booking.row_state === 'draft' ||
-                  booking.row_state === 'waiting_for_approval') &&
-                !booking?.vehicle_sign &&
+                  booking.row_state === 'waiting_for_approval') && 
                 groups_ids.includes('booking.group_kc_vehicle_manager')
               ">
                 <i class="bi bi-car-front-fill me-1"></i>
@@ -219,8 +226,7 @@
                 ບໍ່ອະນຸມັດ
               </button>
               <button v-if="
-                booking.row_state === 'start' &&
-                booking.state !== 'problem' &&
+                booking.row_state === 'start' && 
                 booking.state !== 'returned'
               " type="button" class="btn btn-outline-danger w-100 mb-2" @click="openProblemModal">
                 <i class="bi bi-exclamation-triangle me-1"></i>
@@ -368,7 +374,7 @@
             </div>
             <div class="card border-0 shadow-sm p-4 bg-white rounded-3 mt-4" v-if="
               booking.row_state === 'start' && booking.state !== 'returned'
-            ">
+              ">
               <div class="list-group list-group-flush">
                 <button type="button" class="btn btn-success w-100" @click="openReturnModal">
                   <i class="bi bi-car-front me-1"></i>

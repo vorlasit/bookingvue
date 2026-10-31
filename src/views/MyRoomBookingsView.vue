@@ -69,7 +69,7 @@
                     </div>
 
                     <div>
-                        <div class="summary-label">ລາຍການຍົກເລີກ</div>
+                        <div class="summary-label">ຍົກເລີກ</div>
                         <div class="summary-number">{{ cancelledCount }}</div>
                     </div>
                 </div>

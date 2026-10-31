@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center gap-2">
           <h4 class="fw-bold mb-0 text-dark">ລາຍລະອຽດການຈອງລົດ</h4>
         </div>
-        <button @click="router.push('/app/dashboard')" class="btn btn-sm btn-outline-secondary px-3">
+        <button @click="router.back()" class="btn btn-sm btn-outline-secondary px-3">
           <i class="bi bi-arrow-left me-1"></i> ກັບໜ້າຫຼັກ
         </button>
       </div>
@@ -66,7 +66,7 @@
               </div>
 
 
-              <!-- <div class="row mb-4 align-items-center">
+              <div class="row mb-4 align-items-center">
                 <div class="col-md-3 text-muted fw-semibold small">
                   ລົດທີ່ຂໍ ຫຼື ລົດທີ່ໃຊ້ໄດ້
                 </div>
@@ -74,15 +74,11 @@
                 <div class="col-md-9">
                   <div class="d-flex align-items-center justify-content-between gap-2">
                     <div class="text-dark fw-bold">
-                      {{ booking.vehicle_name || "ຍັງບໍ່ໄດ້ເລືອກລົດ" }}
-
-                      <span v-if="booking.vehicle_sign" class="text-muted ms-2">
-                        ທະບຽນ: {{ booking.vehicle_sign }}
-                      </span>
+                      {{ booking.car_request_id || "ຍັງບໍ່ໄດ້ເລືອກລົດ" }} 
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
 
               <!-- Internal Status Callout Banner -->
               <div class="p-3 rounded-3 mb-4" style="
@@ -107,12 +103,22 @@
                 <div class="col-md-3 text-muted fw-semibold small">
                   ລົດທີ່ໄດ້ຮັບ
                 </div>
-                <div class="col-md-9 text-dark fw-bold">
+                <div class="col-md-6 text-dark fw-bold">
                   {{ booking.assigned_vehicle_name || booking.vehicle_name }}
                   <span class="text-muted ms-2">ທະບຽນ:
                     {{
                       booking.assigned_vehicle_sign || booking.vehicle_sign
                     }}</span>
+                </div>
+                <div class="col-md-3 text-dark fw-bold"> 
+                  <button type="button" class="btn btn-sm btn-primary" @click="openCarModal" v-if="
+                    (booking.row_state === 'draft' ||
+                    booking.row_state === 'waiting_for_approval') && 
+                    groups_ids.includes('booking.group_kc_vehicle_manager')
+                    ">
+                    <i class="bi bi-car-front-fill me-1"></i>
+                    ເລືອກລົດ
+                  </button>
                 </div>
               </div>
 
@@ -199,14 +205,6 @@
               <button @click="startTripAction" v-if="booking.row_state === 'approved'"
                 class="btn btn-primary btn-lg w-100 py-2 fs-6 fw-bold">
                 ເລີ່ມຕົ້ນເດີນທາງ
-              </button>
-              <button type="button" class="btn btn-sm btn-primary" @click="openCarModal" v-if="
-                (booking.row_state === 'draft' ||
-                  booking.row_state === 'waiting_for_approval') && 
-                groups_ids.includes('booking.group_kc_vehicle_manager')
-              ">
-                <i class="bi bi-car-front-fill me-1"></i>
-                ເລືອກລົດ
               </button>
               <button v-if="
                 booking.row_state === 'waiting_for_approval' || booking.row_state === 'draft' &&

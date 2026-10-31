@@ -3,6 +3,7 @@
   <div v-if="showBookingDetailPage" class="container-fluid py-4">
     <div class="card border-0 shadow-sm">
       <div class="card-body p-3 p-md-4">
+
         <div class="d-flex align-items-center gap-3 mb-4">
           <button
             type="button"
@@ -10,11 +11,11 @@
             @click="backToRoomList"
           >
             <i class="bi bi-arrow-left me-1"></i>
-            Back
+            ກັບ
           </button>
 
           <div>
-            <h5 class="fw-bold mb-1">Booking Details</h5>
+            <h5 class="fw-bold mb-1">ລາຍລະອຽດການຈອງ</h5>
             <div class="text-muted small">
               {{ selectedRoom?.name || 'Room Booking' }}
             </div>
@@ -24,14 +25,15 @@
         <div v-if="selectedBooking" class="row g-3">
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Booking ID</div>
+              <div class="text-muted small">ລະຫັດການຈອງ</div>
               <div class="fw-semibold">{{ selectedBooking.id }}</div>
             </div>
           </div>
 
+
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Booking Number</div>
+              <div class="text-muted small">ລຳດັບການຈອງ</div>
               <div class="fw-semibold">
                 {{ selectedBooking.booking_number || '-' }}
               </div>
@@ -40,14 +42,14 @@
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Title</div>
+              <div class="text-muted small">ຫົວຂໍ້</div>
               <div>{{ selectedBooking.name || '-' }}</div>
             </div>
           </div>
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Room</div>
+              <div class="text-muted small">ຫ້ອງທີ່ຈອງ</div>
               <div>
                 {{ selectedRoom?.name || selectedBooking.booking_name || '-' }}
               </div>
@@ -56,28 +58,28 @@
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Start Date &amp; Time</div>
+              <div class="text-muted small">ວັນເວລາເລີ່ມ</div>
               <div>{{ formatDisplayDate(selectedBooking.start) }}</div>
             </div>
           </div>
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Stop Date &amp; Time</div>
+              <div class="text-muted small">ວັນເວລາສີ້ນສຸດ</div>
               <div>{{ formatDisplayDate(selectedBooking.stop) }}</div>
             </div>
           </div>
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Booked For</div>
+              <div class="text-muted small">ສ້າງເພື່ອ</div>
               <div>{{ displayRelation(selectedBooking.create_for_uid) }}</div>
             </div>
           </div>
  
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Participants</div>
+              <div class="text-muted small">ຈຳນວນຜູ້ເຂົ້າຮ່ວມ</div>
               <div>
                 {{
                   selectedBooking.number_of_participant
@@ -91,7 +93,7 @@
 
           <div class="col-12 col-md-6">
             <div class="detail-item">
-              <div class="text-muted small">Telephone</div>
+              <div class="text-muted small">ເບີໂທ</div>
               <div>{{ selectedBooking.tel || '-' }}</div>
             </div>
           </div>
@@ -112,7 +114,7 @@
 
           <div class="col-12">
             <div class="detail-item">
-              <div class="text-muted small mb-2">Description</div>
+              <div class="text-muted small mb-2">ລາຍລະອຽດການຈອງ</div>
               <div class="text-break description-content">
                 {{ selectedBooking.description || '-' }}
               </div>
@@ -136,7 +138,7 @@
             @click="confirmBooking"
           >
             <i class="bi bi-check-circle me-1"></i>
-            Confirm Booking
+            ຢືນຢັນການຈອງ
           </button>
           <button
             type="button"
@@ -145,7 +147,7 @@
             @click="editBooking"
           >
             <i class="bi bi-pencil-square me-1"></i>
-            Edit
+            ແກ້ໄຂ
           </button>
 
           <button
@@ -168,7 +170,7 @@
             @click="cancelBooking"
           >
             <i class="bi bi-x-circle me-1"></i>
-            Cancel Booking
+            ຍົກເລີກການຈອງ
           </button>
         </div>
 
@@ -179,21 +181,23 @@
             @click="backToRoomList"
           >
             <i class="bi bi-arrow-left me-1"></i>
-            Back to Rooms
+            ກັບຄືນ
           </button>
         </div>
       </div>
     </div>
   </div>
 
+
   <!-- Room List Page -->
   <div v-else class="container-fluid py-4">
     <div class="card border-0 shadow-sm">
       <div class="card-body p-3 p-md-4">
+
         <!-- Loading -->
         <div v-if="loading" class="text-center py-5">
           <div class="spinner-border text-primary" role="status"></div>
-          <p class="text-muted mt-3">Loading room types...</p>
+          <p class="text-muted mt-3">ໂຫຼດຢູ່...</p>
         </div>
 
         <!-- Error -->
@@ -204,7 +208,7 @@
             class="btn btn-outline-primary"
             @click="fetchRoomTypes"
           >
-            Try Again
+            ລອງອີກຄັ້ງ
           </button>
         </div>
 
@@ -233,7 +237,7 @@
                     <div>
                       <div class="text-muted small mb-1">
                         <i class="bi bi-people me-1"></i>
-                        Room Capacity
+                        ຈຳນວນຄົນເຂົ້າຮ່ວມໄດ້
                       </div>
                       <div class="capacity-value">
                         {{ room.capacity ?? 0 }}
@@ -245,6 +249,16 @@
                 </div>
 
                 <div class="d-flex gap-1 mt-3 mb-2">
+                  
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    title="Generate room QR code"
+                    @click="showRoomQR(room)"
+                  >
+                    <i class="bi bi-qr-code me-1"></i>
+                    QR
+                  </button>
                   <button
                     class="btn btn-sm btn-outline-secondary"
                     title="Refresh bookings"
@@ -259,7 +273,7 @@
                     @click="openCreatePopup(room)"
                   >
                     <i class="bi bi-plus-lg me-1"></i>
-                    Create
+                    ຈອງ
                   </button>
 
                   <button
@@ -267,7 +281,7 @@
                     @click="openListPopup(room)"
                   >
                     <i class="bi bi-list me-1"></i>
-                    List
+                    ລາຍການ
                   </button>
                 </div>
 
@@ -331,7 +345,7 @@
                   </template>
 
                   <div v-else class="text-muted small text-center py-3">
-                    No bookings for this room.
+                    ບໍ່ມີການຈອງຂອງຫ້ອງນີ້.
                   </div>
                 </div>
               </div>
@@ -343,7 +357,7 @@
         <div v-else class="text-center py-5">
           <i class="bi bi-inbox fs-1"></i>
           <h6 class="fw-bold mt-3">
-            {{ searchText ? 'No rooms found' : 'No room types yet' }}
+            {{ searchText ? 'No rooms found' : 'ຍັງບໍ່' }}
           </h6>
           <p class="text-muted small">
             {{
@@ -372,7 +386,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- Create Booking Modal -->
   <div
     v-if="showCreatePopup"
@@ -381,9 +395,9 @@
     <div class="booking-modal">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h5 class="fw-bold mb-1">Create Booking</h5>
+          <h5 class="fw-bold mb-1">ສ້າງການຈອງ</h5>
           <p class="text-muted small mb-0">
-            Room: {{ selectedRoom?.name }}
+            ຫ້ອງທີ່ຈະຈອງ: {{ selectedRoom?.name }}
           </p>
         </div>
 
@@ -399,7 +413,7 @@
         <div class="row">
           <div class="mb-3 col-12 col-md-6">
             <label for="booking-start" class="form-label">
-              Start Date &amp; Time
+              ວັນ ແລະ ເວລາເລີ່ມ
             </label>
             <input
               id="booking-start"
@@ -413,7 +427,7 @@
 
           <div class="mb-3 col-12 col-md-6">
             <label for="booking-stop" class="form-label">
-              Stop Date &amp; Time
+               ວັນ ແລະ ເວລາສີ້ນສຸດ
             </label>
             <input
               id="booking-stop"
@@ -427,7 +441,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Telephone</label>
+          <label class="form-label">ເບີໂທ</label>
           <input
             v-model="createForm.tel"
             type="tel"
@@ -444,7 +458,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Capacity</label>
+          <label class="form-label">ຈຳນວນຄົນເຂົ້າຮ່ວມ</label>
           <input
             v-model.number="createForm.capacity"
             type="number"
@@ -467,7 +481,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Description</label>
+          <label class="form-label">ລາຍລະອຽດ</label>
           <textarea
             v-model="createForm.description"
             class="form-control"
@@ -487,7 +501,7 @@
             :disabled="creating"
             @click="closeCreatePopup"
           >
-            Cancel
+            ປິດ
           </button>
 
           <button
@@ -499,7 +513,7 @@
               v-if="creating"
               class="spinner-border spinner-border-sm me-1"
             ></span>
-            {{ creating ? 'Creating...' : 'Create Booking' }}
+            {{ creating ? 'Creating...' : 'ຈອງ' }}
           </button>
         </div>
       </form>
@@ -514,12 +528,12 @@
     <div class="booking-modal booking-list-modal">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h5 class="fw-bold mb-1">Booking List</h5>
+          <h5 class="fw-bold mb-1">ລາຍການຈອງ</h5>
           <p class="text-muted small mb-0">
             Room: {{ selectedListRoom?.name || 'Unnamed Room' }}
           </p>
           <span class="badge bg-primary mt-2">
-            {{ selectedRoomBookings.length }} bookings
+            {{ selectedRoomBookings.length }} ລາຍການ
           </span>
         </div>
 
@@ -584,42 +598,42 @@
           <div class="card-body">
             <div class="row g-3">
               <div class="col-sm-6">
-                <div class="text-muted small">No.</div>
+                <div class="text-muted small">ລຳດັບ.</div>
                 {{ index + 1 }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Booking ID</div>
+                <div class="text-muted small">ລະຫັດ</div>
                 {{ booking.id }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Title</div>
+                <div class="text-muted small">ຫົວຂໍ້</div>
                 {{ booking.name || '-' }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Booking Number</div>
+                <div class="text-muted small">ລຳດັບການຈອງ</div>
                 {{ booking.booking_number || '-' }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Start</div>
+                <div class="text-muted small">ເລີ່ມ</div>
                 {{ formatDisplayDate(booking.start) }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Stop</div>
+                <div class="text-muted small">ສີ້ນສຸດ</div>
                 {{ formatDisplayDate(booking.stop) }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Booked For</div>
+                <div class="text-muted small">ຈອງໃຫ້</div>
                 {{ displayRelation(booking.create_for_uid) }}
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Participants</div>
+                <div class="text-muted small">ຈຳນວນຄົນເຂົ້າຮ່ວມ</div>
                 {{
                   booking.number_of_participant
                   ?? booking.number_of_participants
@@ -629,12 +643,12 @@
               </div>
 
               <div class="col-sm-6">
-                <div class="text-muted small">Telephone</div>
+                <div class="text-muted small">ເບີໂທ</div>
                 {{ booking.tel || '-' }}
               </div>
 
               <div class="col-12">
-                <div class="text-muted small">Description</div>
+                <div class="text-muted small">ລາຍລະອຽດ</div>
                 <div class="text-break">
                   {{ booking.description || '-' }}
                 </div>
@@ -646,7 +660,7 @@
                   class="btn btn-sm btn-outline-primary"
                   @click="openBookingDetail(selectedListRoom, booking)"
                 >
-                  View Details
+                  ເບີ່ງລະອຽດ
                 </button>
               </div>
             </div>
@@ -656,7 +670,7 @@
 
       <div v-else class="text-center text-muted py-5">
         <i class="bi bi-calendar-x fs-1"></i>
-        <p class="mt-2">No bookings for this room.</p>
+        <p class="mt-2">ບໍ່ມີການຈອງຂອງຫ້ອງນີ້.</p>
       </div>
 
       <div class="d-flex justify-content-end gap-2 mt-3">
@@ -667,11 +681,11 @@
           @click="fetchRoomBookings(selectedListRoom.id)"
         >
           <i class="bi bi-arrow-clockwise me-1"></i>
-          Refresh
+          ຣີໂຫລດ
         </button>
 
         <button class="btn btn-primary" @click="closeListPopup">
-          Close
+          ປິດ
         </button>
       </div>
     </div>
@@ -697,11 +711,379 @@ import {
   confirmRoomBooking,
   useRoomBooking
 } from '../api/axios'
-
+import QRCode from 'qrcode'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.css'
 import Swal from 'sweetalert2'
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+// ==========================================
+// QR Scanner: Find room and open Create Booking
+// ==========================================
+const openQRBookingForm = async () => {
+  const roomId = Number(route.query.create_room_id)
 
+  if (!Number.isInteger(roomId) || roomId <= 0) return
+
+  const room = roomTypes.value.find(
+    item => Number(item.id) === roomId
+  )
+
+  if (!room) {
+    await showError(
+      'Room Not Found',
+      `Room ID ${roomId} was not found.`
+    )
+    return
+  }
+
+  // Open your existing Create Booking popup.
+  await openCreatePopup(room)
+
+  // Clear the query so refreshing does not reopen the form.
+  await router.replace({
+    path: route.path,
+    query: {}
+  })
+}
+
+const showRoomQR = async (room) => {
+  if (!room?.id) {
+    await showError('Invalid Room', 'Room ID is missing.')
+    return
+  }
+
+  const qrData =
+  `${window.location.origin}/qr-scan?booking_id=${Number(room.id)}`
+  try {
+    const qrImage = await QRCode.toDataURL(qrData, {
+      width: 300,
+      margin: 2,
+      errorCorrectionLevel: 'H',
+    })
+
+    await Swal.fire({
+      title: 'Room QR Code',
+      html: `
+        <div class="text-center">
+          <p class="mb-2">${escapeHtml(room.name || 'Room')}</p>
+          <img
+            src="${qrImage}"
+            alt="Room QR Code"
+            style="width:250px;max-width:100%;height:auto;"
+          />
+          <p class="text-muted small mt-2 mb-0">
+            Booking ID: ${Number(room.id)}
+          </p>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Download QR Code',
+      cancelButtonText: 'Close',
+      confirmButtonColor: '#714b67',
+      heightAuto: false,
+      customClass: {
+        container: 'booking-swal-container',
+      },
+      preConfirm: () => {
+        const link = document.createElement('a')
+        link.href = qrImage
+        link.download = `room-${Number(room.id)}-qr.png`
+        link.click()
+      },
+    })
+  } catch (error) {
+    console.error('Generate room QR error:', error)
+    await showError('QR Generation Failed', error.message)
+  }
+}
+
+// Accept QR contents in these formats:
+// 12
+// {"booking_id":12}
+// https://example.com/?booking_id=12
+
+const extractRoomBookingId = (qrText) => {
+  const text = String(qrText || '').trim()
+
+  // QR contains only the numeric room ID.
+  if (/^\d+$/.test(text)) {
+    return Number(text)
+  }
+
+  // QR contains JSON.
+  try {
+    const data = JSON.parse(text)
+    const id = data.booking_id ?? data.room_id
+
+    if (/^\d+$/.test(String(id ?? ''))) {
+      return Number(id)
+    }
+  } catch {
+    // Continue and try URL format.
+  }
+
+  // QR contains a URL with booking_id or room_id.
+  try {
+    const url = new URL(text)
+    const id =
+      url.searchParams.get('booking_id') ||
+      url.searchParams.get('room_id')
+
+    if (id && /^\d+$/.test(id)) {
+      return Number(id)
+    }
+  } catch {
+    // Invalid URL.
+  }
+
+  return null
+}
+
+// const handleScannedRoomQR = async (decodedText) => {
+//   const roomId = extractRoomBookingId(decodedText)
+
+//   if (!roomId || roomId <= 0) {
+//     await Swal.fire({
+//       icon: 'error',
+//       title: 'Invalid QR Code',
+//       text: 'The QR code must contain a valid room booking_id.',
+//       confirmButtonText: 'Scan Again',
+//       heightAuto: false,
+//       customClass: {
+//         container: 'booking-swal-container',
+//       },
+//     })
+
+//     qrScanHandled = false
+//     qrError.value = ''
+//     await restartRoomQRScanner()
+//     return
+//   }
+
+//   // Find the matching room already loaded from the API.
+//   const room = roomTypes.value.find(
+//     item => Number(item.id) === Number(roomId)
+//   )
+
+//   if (!room) {
+//     await Swal.fire({
+//       icon: 'error',
+//       title: 'Room Not Found',
+//       text: `No room was found for booking_id ${roomId}.`,
+//       confirmButtonText: 'Scan Again',
+//       heightAuto: false,
+//       customClass: {
+//         container: 'booking-swal-container',
+//       },
+//     })
+
+//     qrScanHandled = false
+//     qrError.value = ''
+//     await restartRoomQRScanner()
+//     return
+//   }
+
+//   // Hide the scanner before showing the alert.
+//   showQRScanner.value = false
+
+//   const result = await Swal.fire({
+//     icon: 'success',
+//     title: 'Room Found',
+//     text: `Room: ${room.name}. Continue to Create Booking?`,
+//     showCancelButton: true,
+//     confirmButtonText: 'Create Booking',
+//     cancelButtonText: 'Cancel',
+//     confirmButtonColor: '#714b67',
+//     heightAuto: false,
+//     customClass: {
+//       container: 'booking-swal-container',
+//     },
+//   })
+
+//   if (result.isConfirmed) {
+//     // Opens your existing Create Booking popup
+//     // and fills createForm.booking_id with this room's ID.
+//     await openCreatePopup(room)
+//   }
+// }
+let roomQRScanner = null
+const openQRScanner = async () => {
+  try {
+    const { Html5Qrcode } = await import('html5-qrcode')
+
+    const result = await Swal.fire({
+      title: 'Scan Room QR Code',
+      html: `
+        <div id="room-qr-reader" style="width:100%;"></div>
+        <p class="text-muted small mt-2">
+          Scan the QR code to book a room.
+        </p>
+      `,
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: 'Close',
+      allowOutsideClick: false,
+      didOpen: async () => {
+        try {
+          roomQRScanner = new Html5Qrcode('room-qr-reader')
+
+          await roomQRScanner.start(
+            { facingMode: 'environment' },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            async (decodedText) => {
+              try {
+                await roomQRScanner.stop()
+                await roomQRScanner.clear()
+                roomQRScanner = null
+
+                Swal.close()
+                await handleScannedRoomQR(decodedText)
+              } catch (error) {
+                console.error('QR scan handling error:', error)
+              }
+            },
+            () => {}
+          )
+        } catch (error) {
+          console.error('Camera start error:', error)
+          await Swal.fire(
+            'Camera Error',
+            'Cannot open the camera. Please allow camera permission and try again.',
+            'error'
+          )
+        }
+      },
+      willClose: async () => {
+        if (roomQRScanner) {
+          try {
+            if (roomQRScanner.isScanning) {
+              await roomQRScanner.stop()
+            }
+            await roomQRScanner.clear()
+          } catch (error) {
+            console.error('Scanner cleanup error:', error)
+          }
+          roomQRScanner = null
+        }
+      }
+    })
+  } catch (error) {
+    console.error('QR scanner error:', error)
+    await showError('Scanner Error', error.message)
+  }
+}
+const handleScannedRoomQR = async (decodedText) => {
+  try {
+    let roomId
+
+    // Support QR data like {"booking_id": 12}
+    try {
+      const parsed = JSON.parse(decodedText)
+      roomId = parsed.booking_id ?? parsed.room_id ?? parsed.id
+    } catch {
+      // Support a URL containing ?booking_id=12
+      try {
+        const url = new URL(decodedText)
+        roomId =
+          url.searchParams.get('booking_id') ??
+          url.searchParams.get('room_id')
+      } catch {
+        // Support a QR code containing only a numeric ID
+        roomId = decodedText.trim()
+      }
+    }
+
+    roomId = Number(roomId)
+
+    if (!Number.isInteger(roomId) || roomId <= 0) {
+      await showError('Invalid QR Code', 'The QR code does not contain a valid room ID.')
+      return
+    }
+
+    const room = roomTypes.value.find(
+      item => Number(item.id) === roomId
+    )
+
+    if (!room) {
+      await showError(
+        'Room Not Found',
+        `Room ID ${roomId} was not found in the room list.`
+      )
+      return
+    }
+
+    const result = await Swal.fire({
+      title: 'Room Found',
+      text: `Room: ${room.name}. Do you want to book this room?`,
+      icon: 'success',
+      showCancelButton: true,
+      confirmButtonText: 'Create Booking',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#714b67'
+    })
+
+    if (result.isConfirmed) {
+      openCreatePopup(room)
+    }
+  } catch (error) {
+    console.error('Handle scanned room QR error:', error)
+    await showError('Scan Failed', error.message)
+  }
+}
+const restartRoomQRScanner = async () => {
+  if (!showQRScanner.value) return
+
+  await nextTick()
+
+  try {
+    if (!roomQRScanner) {
+      roomQRScanner = new Html5Qrcode('room-qr-reader')
+    }
+
+    await roomQRScanner.start(
+      { facingMode: 'environment' },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+      },
+      async (decodedText) => {
+        if (qrScanHandled) return
+
+        qrScanHandled = true
+
+        try {
+          if (roomQRScanner?.isScanning) {
+            await roomQRScanner.stop()
+          }
+        } catch (error) {
+          console.warn(error)
+        }
+
+        await handleScannedRoomQR(decodedText)
+      },
+      () => {}
+    )
+  } catch (error) {
+    console.error('Unable to restart QR scanner:', error)
+    qrError.value = 'Unable to restart the camera. Please try again.'
+  }
+}
+
+const closeQRScanner = async () => {
+  showQRScanner.value = false
+  qrScanHandled = true
+  qrError.value = ''
+
+  try {
+    if (roomQRScanner?.isScanning) {
+      await roomQRScanner.stop()
+    }
+  } catch (error) {
+    console.warn('Error stopping QR scanner:', error)
+  }
+}
 const roomStateLabel = (state) => {
   const labels = {
     draft: 'ລໍຖ້າອະນຸມັດ', 
@@ -1852,7 +2234,7 @@ const editBooking = async () => {
 
     await Swal.fire({
       icon: 'success',
-      title: 'Booking updated',
+      title: 'ອັບເດດການຈອງສຳເລັດ',
       text: response?.message || 'Your booking changes have been saved.',
       timer: 1800,
       showConfirmButton: false,
@@ -1885,11 +2267,11 @@ const cancelBooking = async () => {
 
   const confirmation = await Swal.fire({
     icon: 'warning',
-    title: 'Cancel this booking?',
-    text: `Are you sure you want to cancel ${booking.booking_number || booking.name || `booking #${booking.id}`}?`,
+    title: 'ຍົກເລີກ ການຈອງນີ້ບໍ່?',
+    text: `ເຈົ້າແນ່ໃຈທີ່ຈະຍົກເລີກ ${booking.booking_number || booking.name || `ຈອງ #${booking.id}`}?`,
     showCancelButton: true,
-    confirmButtonText: 'Yes, cancel booking',
-    cancelButtonText: 'Keep booking',
+    confirmButtonText: 'ຕົກລົງ, ຍົກເລີກ',
+    cancelButtonText: 'ເກັບການຈອງໄວ້',
     confirmButtonColor: '#dc3545',
     heightAuto: false,
     customClass: { container: 'booking-swal-container' },
@@ -1899,7 +2281,7 @@ const cancelBooking = async () => {
 
   try {
     Swal.fire({
-      title: 'Cancelling booking...',
+      title: 'ກຳລັງຍົກເລີກການຈອງ...',
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
@@ -1920,8 +2302,8 @@ const cancelBooking = async () => {
 
     await Swal.fire({
       icon: 'success',
-      title: 'Booking cancelled',
-      text: response?.message || 'The booking has been cancelled.',
+      title: 'ຍົກເລີກສຳເລັດ',
+      text: 'ທຳການຍົກເລີກສຳເລັດແລ້ວ.',
       timer: 1800,
       showConfirmButton: false,
       heightAuto: false,
@@ -1945,11 +2327,11 @@ const useBooking = async () => {
 
   const confirmation = await Swal.fire({
     icon: 'warning',
-    title: 'Use this booking?',
-    text: `Are you sure you want to use ${booking.booking_number || booking.name || `booking #${booking.id}`}?`,
+    title: 'ຕ້ອງການໃຊ້ເລີຍບໍ?',
+    text: `ເຈົ້າຕ້ອງການໃຊ້ການຈອງເລກທີ ${booking.booking_number || booking.name || `ລະຫັດ #${booking.id}`} ບໍ?`,
     showCancelButton: true,
-    confirmButtonText: 'Yes, use booking',
-    cancelButtonText: 'Keep booking',
+    confirmButtonText: 'ຕົກລົງ, ໃຊ້ການຈອງ',
+    cancelButtonText: 'ເກັບການຈອງໄວ້',
     confirmButtonColor: '#dc3545',
     heightAuto: false,
     customClass: { container: 'booking-swal-container' },
@@ -1959,7 +2341,7 @@ const useBooking = async () => {
 
   try {
     Swal.fire({
-      title: 'Using booking...',
+      title: 'ກຳລັງໃຊ້...',
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
@@ -1980,8 +2362,8 @@ const useBooking = async () => {
 
     await Swal.fire({
       icon: 'success',
-      title: 'Booking cancelled',
-      text: response?.message || 'The booking has been cancelled.',
+      title: 'ນຳໃຊ້ສຳເລັດ',
+      text: 'ນຳໃຊ້ການຈອງສຳເລັດ',
       timer: 1800,
       showConfirmButton: false,
       heightAuto: false,
@@ -2022,15 +2404,11 @@ const confirmBooking = async () => {
 
   const confirmation = await Swal.fire({
     icon: 'question',
-    title: 'Confirm this booking?',
-    text: `Are you sure you want to confirm ${
-      booking.booking_number ||
-      booking.name ||
-      `booking #${booking.id}`
-    }?`,
+    title: 'ຢືນຢັນການຈອງນີ້ບໍ່?',
+    text: `ເຈົ້າຕ້ອງການຢືນຢັນການຈອງນີ້ແທ້ບໍ່ ?`,
     showCancelButton: true,
-    confirmButtonText: 'Yes, confirm booking',
-    cancelButtonText: 'Cancel',
+    confirmButtonText: 'ຕົກລົງ, ຢືນຢັນການຈອງ',
+    cancelButtonText: 'ບໍ່ເຫັນດີ',
     confirmButtonColor: '#198754',
     heightAuto: false,
     customClass: {
@@ -2042,8 +2420,8 @@ const confirmBooking = async () => {
 
   try {
     Swal.fire({
-      title: 'Confirming booking...',
-      text: 'Please wait.',
+      title: 'ກຳລັງຢືນຢັນ...',
+      text: 'ລໍຖ້າ.',
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
@@ -2085,9 +2463,8 @@ const confirmBooking = async () => {
 
     await Swal.fire({
       icon: 'success',
-      title: 'Booking confirmed',
-      text: response?.message ||
-        'The room booking has been confirmed successfully.',
+      title: 'ຢືນຢັນແລ້ວ',
+      text: 'ການຈອງນີ້ຢືນຢັນໃຫ້ນຳໃຊ້ແລ້ວ.',
       confirmButtonText: 'OK',
       confirmButtonColor: '#198754',
       heightAuto: false,
@@ -2109,15 +2486,70 @@ const confirmBooking = async () => {
 onMounted(async () => {
   loadBookingPermissions()
   await fetchRoomTypes() 
+  // Run only after the room list has loaded.
+  await openQRBookingForm()
 })
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
+  // Clean up date pickers
   startPicker?.destroy()
   stopPicker?.destroy()
+
+  // Clean up QR scanner
+  try {
+    if (roomQRScanner) {
+      if (roomQRScanner.isScanning) {
+        await roomQRScanner.stop()
+      }
+
+      await roomQRScanner.clear()
+      roomQRScanner = null
+    }
+  } catch (error) {
+    console.error('QR scanner cleanup error:', error)
+    roomQRScanner = null
+  }
 })
 </script>
 
 <style scoped>
+.qr-scanner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 25000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 65%);
+}
+
+.qr-scanner-card {
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 15px 50px rgb(0 0 0 / 25%);
+}
+
+#room-qr-reader {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+#room-qr-reader video {
+  border-radius: 10px;
+}
+
+@media (max-width: 576px) {
+  .qr-scanner-card {
+    padding: 16px;
+  }
+}
 .room-icon {
   width: 42px;
   height: 42px;

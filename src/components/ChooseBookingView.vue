@@ -79,33 +79,148 @@
             </div>
           </div>
         </div>
+        <div class="col-12 col-md-6 col-lg-5">
+  <div
+    class="service-card problem-card h-100 text-center"
+    @click="chooseService('problem')"
+  >
+    <div
+      class="card-body p-4 p-md-5 d-flex flex-column justify-content-between"
+    >
+      <div>
+        <div class="d-flex justify-content-center mb-4">
+          <div class="service-icon problem-icon shadow-sm">
+            <i class="bi bi-tools"></i>
+          </div>
+        </div>
+
+    <h4 class="fw-bold mb-2 text-dark">ແຈ້ງແກ້ບັນຫາ</h4>
+
+    <p class="text-muted mb-4">
+      ແຈ້ງບັນຫາລົດ, ຫ້ອງປະຊຸມ ແລະ ອຸປະກອນ
+      ເພື່ອໃຫ້ຜູ້ຮັບຜິດຊອບກວດສອບ ແລະ ແກ້ໄຂ.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-problem w-100 py-2 rounded-3 fw-semibold shadow-sm text-white border-0"
+  >
+    <span>ແຈ້ງບັນຫາ</span>
+    <i class="bi bi-arrow-right ms-2"></i>
+  </button>
+</div>
+
+  </div>
+</div>
+
+<!-- Asset Request -->
+
+<div class="col-12 col-md-6 col-lg-5">
+  <div
+    class="service-card asset-card h-100 text-center"
+    @click="chooseService('asset')"
+  >
+    <div
+      class="card-body p-4 p-md-5 d-flex flex-column justify-content-between"
+    >
+      <div>
+        <div class="d-flex justify-content-center mb-4">
+          <div class="service-icon asset-icon shadow-sm">
+            <i class="bi bi-box-seam-fill"></i>
+          </div>
+        </div>
+
+    <h4 class="fw-bold mb-2 text-dark">ຄຳຂໍເບີກຊັບສິນ</h4>
+
+    <p class="text-muted mb-4">
+      ສົ່ງຄຳຂໍເບີກອຸປະກອນ ແລະ ຊັບສິນຂອງບໍລິສັດ
+      ພ້ອມຕິດຕາມສະຖານະຄຳຂໍ.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-asset w-100 py-2 rounded-3 fw-semibold shadow-sm text-dark border-0"
+  >
+    <span>ຂໍເບີກຊັບສິນ</span>
+    <i class="bi bi-arrow-right ms-2"></i>
+  </button>
+</div>
+
+  </div>
+</div>
       </div>
     </div>
   </div>
 </template>
-
+ 
 <script setup>
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const chooseService = (type) => {
-  localStorage.setItem("booking_type", type);
-  if (type === "car") {
-    router.push({
-      path: "/app/dashboard",
-      query: { type },
-    });
-  } else {
-    router.push({
-      path: "/app/roomtype",
-      query: { type },
-    });
-  }
+localStorage.setItem("booking_type", type);
+
+const routes = {
+car: "/app/dashboard",
+room: "/app/roomtype",
+problem: "/app/ticket-dashboard",
+asset: "/app/asset-request",
+};
+
+const path = routes[type];
+
+if (!path) return;
+
+router.push({
+path,
+query: { type },
+});
 };
 </script>
 
 <style scoped>
+/* Problem Report - Orange Theme */
+.problem-icon {
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+.problem-card:hover::before {
+  background: #ea580c;
+}
+
+.btn-problem {
+  background-color: #ea580c;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.problem-card:hover .btn-problem {
+  background-color: #c2410c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3) !important;
+}
+
+/* Asset Request - Green Theme */
+.asset-icon {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.asset-card:hover::before {
+  background: #16a34a;
+}
+
+.btn-asset {
+  background-color: #86efac;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.asset-card:hover .btn-asset {
+  background-color: #4ade80;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3) !important;
+}
 .choose-page {
   min-height: 100vh;
   display: flex;

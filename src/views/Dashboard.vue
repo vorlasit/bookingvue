@@ -78,10 +78,7 @@
 
         <span v-if="event.driver_name" class="bg-primary text-white px-2 py-1 rounded">
           ຄົນຂັບລົດ: ({{ event.driver_name }})
-        </span>
-        <span v-if="event.create_for_uid" class="bg-primary text-white px-2 py-1 rounded">
-          ສ້າງໂດຍ: ({{ event.create_for_uid }})
-        </span>
+        </span> 
       </h6>
 
       <h2 v-if="event.description" class="card-text" style="font-size: 18px; font-weight: bold">

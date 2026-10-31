@@ -1,4 +1,3 @@
-
 <template>
   <div class="container-fluid py-4">
     <!-- Header -->
@@ -9,22 +8,19 @@
           View booking information
         </p>
       </div>
-      
 
-      <button
-        class="btn btn-outline-secondary"
-        @click="goBack"
-      >
+
+      <button class="btn btn-outline-secondary" @click="goBack">
         <i class="bi bi-arrow-left me-1"></i>
         Back to bookings
       </button>
     </div>
-    
 
-<div v-if="actionLoading" class="text-muted small mt-3">
-  <span class="spinner-border spinner-border-sm me-2"></span>
-  Processing booking...
-</div>
+
+    <div v-if="actionLoading" class="text-muted small mt-3">
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Processing booking...
+    </div>
 
     <!-- Loading -->
     <div v-if="loading" class="text-center py-5">
@@ -49,69 +45,42 @@
           </span>
         </div>
         <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-          <button
-  v-if="booking.room_state === 'draft'"
-  class="btn btn-outline-primary"
-  :disabled="actionLoading"
-  @click="handleEdit"
->
-  <i class="bi bi-pencil-square me-1"></i>
-  Edit Booking
-</button>
-  <button
-    v-if="booking.room_state === 'draft'"
-    class="btn btn-success"
-    :disabled="actionLoading"
-    @click="handleConfirm"
-  >
-    <i class="bi bi-check-circle me-1"></i>
-    Confirm Booking
-  </button>
-  <button
-    v-if="booking.room_state === 'confirmed'"
-    class="btn btn-success"
-    :disabled="actionLoading"
-    @click="handleUsing"
-  >
-    <i class="bi bi-check-circle me-1"></i>
-    Use Booking
-  </button>
+          <button v-if="booking.room_state === 'draft'" class="btn btn-outline-primary" :disabled="actionLoading"
+            @click="handleEdit">
+            <i class="bi bi-pencil-square me-1"></i>
+            Edit Booking
+          </button>
+          <button v-if="booking.room_state === 'draft' && groups_ids.includes('booking.group_kc_vehicle_manager')" class="btn btn-success" :disabled="actionLoading"
+            @click="handleConfirm">
+            <i class="bi bi-check-circle me-1"></i>
+            Confirm Booking
+          </button>
+          <button v-if="booking.room_state === 'confirmed'" class="btn btn-success" :disabled="actionLoading"
+            @click="handleUsing">
+            <i class="bi bi-check-circle me-1"></i>
+            Use Booking
+          </button>
 
-  <button
-    v-if="booking.room_state === 'using'"
-    class="btn btn-primary"
-    :disabled="actionLoading"
-    @click="handleDone"
-  >
-    <i class="bi bi-check2-all me-1"></i>
-    Mark as Done
-  </button>
+          <button v-if="booking.room_state === 'using'" class="btn btn-primary" :disabled="actionLoading"
+            @click="handleDone">
+            <i class="bi bi-check2-all me-1"></i>
+            Mark as Done
+          </button>
 
-  <button
-    v-if="!['draft', 'confirmed','cancelled'].includes(booking.room_state)"
-    class="btn btn-outline-danger"
-    :disabled="actionLoading"
-    @click="handleCancel"
-  >
-    <i class="bi bi-x-circle me-1"></i>
-    Cancel Booking
-  </button>
+          <button v-if="!['draft', 'confirmed', 'cancelled'].includes(booking.room_state) ||  groups_ids.includes('booking.group_kc_vehicle_manager')" class="btn btn-outline-danger"
+            :disabled="actionLoading" @click="handleCancel">
+            <i class="bi bi-x-circle me-1"></i>
+            Cancel Booking
+          </button>
 
-  <button
-    class="btn btn-danger ms-md-auto"
-    :disabled="actionLoading"
-    v-if="groups_ids.includes('booking.group_kc_book_user')"
-    @click="handleDelete"
-  >
-    <i class="bi bi-trash me-1"></i>
-    Delete Booking
-  </button>
-</div>
+          <button class="btn btn-danger ms-md-auto" :disabled="actionLoading"
+             v-if="!['draft', 'confirmed', 'cancelled'].includes(booking.room_state) ||  groups_ids.includes('booking.group_kc_vehicle_manager')" @click="handleDelete">
+            <i class="bi bi-trash me-1"></i>
+            Delete Booking
+          </button>
+        </div>
 
-        <span
-          class="badge"
-          :class="statusClass(booking.room_state)"
-        >
+        <span class="badge" :class="statusClass(booking.room_state)">
           {{ formatStatus(booking.room_state) }}
         </span>
       </div>
@@ -124,8 +93,8 @@
           <div class="col-12 col-md-6 mb-3">
             <div class="detail-label">Booking Number</div>
             <div class="detail-value">{{ booking.booking_number || '-' }}</div>
-          </div> 
-        </div> 
+          </div>
+        </div>
 
         <div class="row g-4">
           <div class="col-12 col-md-6">
@@ -187,12 +156,16 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
-import { getRoomBookingManagement,
+import {
+  getRoomBookingManagement,
   updateRoomBooking,
   confirmRoomBooking,
   cancelRoomBooking,
   doneRoomBooking,
-  deleteRoomBooking, } from '../api/axios' 
+  useRoomBooking,
+  getGroups,
+  deleteRoomBooking,
+} from '../api/axios'
 const route = useRoute()
 const router = useRouter()
 
@@ -254,7 +227,7 @@ console.log('User groups loaded:', hasGroup)
 loadUserGroups()
 
 const goBack = () => {
-  router.push('/room-booking-management')
+  router.back()
 }
 
 const loadBookingDetail = async () => {
@@ -332,7 +305,11 @@ const showActionResult = async (success, message) => {
   await Swal.fire({
     icon: success ? 'success' : 'error',
     title: success ? 'Success' : 'Error',
-    text: message,
+    text: message || (
+      success
+        ? 'Operation completed successfully.'
+        : 'Something went wrong.'
+    ),
     confirmButtonText: 'OK',
   })
 }
@@ -344,7 +321,7 @@ const runBookingAction = async (apiFunction, successMessage) => {
 
   try {
     const response = await apiFunction(booking.value.id)
- 
+
     if (response?.status !== true) {
       await showActionResult(
         false,
@@ -366,9 +343,9 @@ const runBookingAction = async (apiFunction, successMessage) => {
     await showActionResult(
       false,
       error.response?.data?.message ||
-        error.response?.data?.error?.data?.message ||
-        error.message ||
-        'Unable to connect to the server.'
+      error.response?.data?.error?.data?.message ||
+      error.message ||
+      'Unable to connect to the server.'
     )
 
     return false
@@ -410,29 +387,28 @@ const handleConfirm = async () => {
   actionLoading.value = true
 
   try {
-    const response = await confirmRoomBooking(booking.value.id) 
+    const response = await confirmRoomBooking(booking.value.id)
 
-    if (response.status == true) { 
+    if (response.status == true) {
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Confirmed',
-      text:'Booking confirmed successfully.',
-      confirmButtonText: 'OK',
-      timer: 2000,
-    }) 
-    await loadBookingDetail()
-  }
+      await Swal.fire({
+        icon: 'success',
+        title: 'Confirmed',
+        text: 'Booking confirmed successfully.',
+        confirmButtonText: 'OK',
+        timer: 2000,
+      })
+      await loadBookingDetail()
+    }
 
   } catch (error) {
-    console.error('Confirm room booking error:', error)
-
+ 
     await showActionResult(
       false,
       error.response?.data?.message ||
-        error.response?.data?.error?.data?.message ||
-        error.message ||
-        'Unable to confirm booking.'
+      error.response?.data?.error?.data?.message ||
+      error.message ||
+      'Unable to confirm booking.'
     )
   } finally {
     actionLoading.value = false
@@ -482,66 +458,132 @@ const handleCancel = async () => {
     await showActionResult(
       false,
       error.response?.data?.message ||
-        error.response?.data?.error?.data?.message ||
-        error.message ||
-        'Unable to cancel booking.'
+      error.response?.data?.error?.data?.message ||
+      error.message ||
+      'Unable to cancel booking.'
     )
   } finally {
     actionLoading.value = false
   }
 }
-
-
-const handleDone = async () => {
+ 
+const handleUsing = async () => {
   const answer = await Swal.fire({
     icon: 'question',
-    title: 'Mark booking as done?',
-    text: 'This booking will be marked as completed. ',
+    title: 'Mark booking as Using?',
+    text: 'This booking will be marked as in use.',
     showCancelButton: true,
-    confirmButtonText: 'Yes, mark as done',
+    confirmButtonText: 'Yes, mark as Using',
     cancelButtonText: 'Cancel',
     confirmButtonColor: '#0d6efd',
     reverseButtons: true,
   })
 
-  if (!answer.isConfirmed || !booking.value?.id) return
+  if (!answer.isConfirmed || !booking.value?.id) {
+    return
+  }
+
+  if (actionLoading.value) return
 
   actionLoading.value = true
 
   try {
-    const response = await doneRoomBooking(booking.value.id)
-    const result = response.data
+    const response = await useRoomBooking(booking.value.id) 
+    const result = response?.data ?? response
 
-    if (result?.status !== true) {
-      await showActionResult(
-        false,
-        result?.message || 'Unable to complete booking.'
-      )
+    console.log('Use booking response:', response)
+    console.log('Use booking result:', result)
+
+    if (result?.status === true) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Booking in Use',
+        text: result?.message || 'Booking marked as in use.',
+        confirmButtonText: 'OK',
+      })
+
+      await loadBookingDetail()
       return
     }
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Completed',
-      text: result.message || 'Booking marked as done.',
-      confirmButtonText: 'OK',
-    })
-
-    await loadBookingDetail()
-  } catch (error) {
-    console.error('Complete room booking error:', error)
-
+    // API returned an unsuccessful result.
     await showActionResult(
       false,
-      error.response?.data?.message ||
-        error.response?.data?.error?.data?.message ||
-        error.message ||
-        'Unable to complete booking.'
+      result?.message || 'Unable to mark booking as in use.'
     )
+
+  } catch (error) {
+    console.error('Error using room booking:', error)
+
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error?.data?.message ||
+      error?.data?.message ||
+      error?.message ||
+      'Unable to mark booking as in use.'
+
+    await showActionResult(false, message)
+
   } finally {
     actionLoading.value = false
   }
-}
+}  
+const handleDone = async () => {
+  const answer = await Swal.fire({
+    icon: 'question',
+    title: 'Mark booking as done?',
+    text: 'This booking will be marked as completed.',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, mark as done',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#0d6efd',
+    reverseButtons: true,
+  }) 
+  if (!answer.isConfirmed || !booking.value?.id) {
+    return
+  } 
+  if (actionLoading.value) return 
+  actionLoading.value = true 
+  try {
+    const response = await doneRoomBooking(booking.value.id) 
+    // Support Axios response or direct API data.
+    const result = response?.data ?? response
+
+    console.log('Done booking response:', response)
+    console.log('Done booking result:', result)
+
+    if (result?.status === true) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Completed',
+        text: result?.message || 'Booking marked as done.',
+        confirmButtonText: 'OK',
+      })
+
+      await loadBookingDetail()
+      return
+    }
+
+    // Do not silently ignore unsuccessful responses.
+    await showActionResult(
+      false,
+      result?.message || 'Unable to complete booking.'
+    )
+
+  } catch (error) { 
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error?.data?.message ||
+      error?.data?.message ||
+      error?.message ||
+      'Unable to complete booking.'
+
+    await showActionResult(false, message)
+
+  } finally {
+    actionLoading.value = false
+  }
+} 
 const handleDelete = async () => {
   const answer = await Swal.fire({
     icon: 'warning',
@@ -584,9 +626,9 @@ const handleDelete = async () => {
     await showActionResult(
       false,
       error.response?.data?.message ||
-        error.response?.data?.error?.data?.message ||
-        error.message ||
-        'Unable to delete booking.'
+      error.response?.data?.error?.data?.message ||
+      error.message ||
+      'Unable to delete booking.'
     )
   } finally {
     actionLoading.value = false
@@ -644,10 +686,10 @@ const handleEdit = async () => {
           min="1"
           class="form-control mb-3 d-none" readonly
           value="${escapeHtml(
-            Array.isArray(current.booking_id)
-              ? current.booking_id[0]
-              : current.booking_id || ''
-          )}"
+      Array.isArray(current.booking_id)
+        ? current.booking_id[0]
+        : current.booking_id || ''
+    )}"
           required
         >
 
@@ -676,11 +718,11 @@ const handleEdit = async () => {
           min="1"
           class="form-control mb-3"
           value="${escapeHtml(
-            current.number_of_participant ??
-            current.number_of_participants ??
-            current.capacity ??
-            1
-          )}"
+      current.number_of_participant ??
+      current.number_of_participants ??
+      current.capacity ??
+      1
+    )}"
           required
         >
         <label for="edit-booking-tel" class="form-label">Contact Number</label>
@@ -689,8 +731,8 @@ const handleEdit = async () => {
           type="tel"
           class="form-control mb-3"
           value="${escapeHtml(
-            current.tel 
-          )}"
+      current.tel
+    )}"
           required
         >
 
@@ -709,7 +751,7 @@ const handleEdit = async () => {
     reverseButtons: true,
     focusConfirm: false,
 
-    preConfirm: () => {  
+    preConfirm: () => {
 
       const start = document
         .getElementById('edit-booking-start').value
@@ -730,7 +772,7 @@ const handleEdit = async () => {
         )
         return false
       }
- 
+
       if (new Date(stop) <= new Date(start)) {
         Swal.showValidationMessage(
           'The end time must be later than the start time.'
@@ -747,7 +789,7 @@ const handleEdit = async () => {
 
       const toOdooDateTime = (value) => value.replace('T', ' ') + ':00'
 
-      return { 
+      return {
         booking_id: current.booking_id,
         start: toOdooDateTime(start),
         stop: toOdooDateTime(stop),
@@ -771,36 +813,36 @@ const handleEdit = async () => {
 
   actionLoading.value = true
   console.log('Submitting updated booking values:', booking.value.id, formValues)
-const payload = {
-  id: Number(booking.value.id),
-  booking_id: Number(current.booking_id), 
-  start: formValues.start,
-  stop: formValues.stop,
-  description: formValues.description,
-  number_of_participants: Number(formValues.number_of_participant),
-  tel: formValues.tel || '',
-}
-console.log('Payload for updateRoomBooking:', payload)
+  const payload = {
+    id: Number(booking.value.id),
+    booking_id: Number(current.booking_id),
+    start: formValues.start,
+    stop: formValues.stop,
+    description: formValues.description,
+    number_of_participants: Number(formValues.number_of_participant),
+    tel: formValues.tel || '',
+  }
+  console.log('Payload for updateRoomBooking:', payload)
   try {
-    const response = await updateRoomBooking(payload)  
-if (response.status === true) {
-  await Swal.fire({
-    icon: 'success',
-    title: 'Updated!',
-    text: response.message || 'Booking updated successfully.',
-    confirmButtonText: 'OK',
-    timer: 2000,
-  })
+    const response = await updateRoomBooking(payload)
+    if (response.status === true) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: response.message || 'Booking updated successfully.',
+        confirmButtonText: 'OK',
+        timer: 2000,
+      })
 
-  await loadBookingDetail()
-} else {
-  await Swal.fire({
-    icon: 'error',
-    title: 'Update failed',
-    text: response.message || 'Unable to update booking.',
-  })
-}
-  } catch (error) { 
+      await loadBookingDetail()
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Update failed',
+        text: response.message || 'Unable to update booking.',
+      })
+    }
+  } catch (error) {
     await Swal.fire({
       icon: 'error',
       title: 'Update Failed',
@@ -815,7 +857,71 @@ if (response.status === true) {
     actionLoading.value = false
   }
 }
-onMounted(loadBookingDetail)
+// Get LIVE groups from Odoo 
+// =========================
+const syncUserGroups = async () => {
+  try {
+    const result = await getGroups();
+    console.log("LIVE USER GROUPS:", result);
+
+    // Odoo API failed
+    if (!result || result.status !== true) {
+      console.warn(
+        "Unable to validate user:",
+        result?.message
+      );
+
+      // Only logout when API explicitly says invalid/expired
+      if (
+        result?.status === false &&
+        (
+          result.message?.toLowerCase().includes("expired") ||
+          result.message?.toLowerCase().includes("invalid") ||
+          result.message?.toLowerCase().includes("unauthorized")
+        )
+      ) {
+        logout();
+      }
+
+      return;
+    }
+
+    // =========================
+    // Update groups
+    // =========================
+    const liveGroups = Array.isArray(result.groups_id)
+      ? result.groups_id
+      : [];
+
+    groups_ids.value = liveGroups;
+
+    localStorage.setItem(
+      "groups_id",
+      JSON.stringify(liveGroups)
+    );
+
+    console.log(
+      "Updated groups:",
+      groups_ids.value
+    );
+
+  } catch (error) {
+    console.error(
+      "Failed to synchronize user groups:",
+      error
+    );
+
+    // Keep cached groups if network/Odoo is temporarily unavailable.
+  }
+};
+console.log("groups_ids", groups_ids.value)
+
+
+
+onMounted(async () => {
+  loadBookingDetail();
+  await syncUserGroups();
+})
 </script>
 
 <style scoped>
@@ -833,4 +939,4 @@ onMounted(loadBookingDetail)
 .description {
   white-space: pre-wrap;
 }
-</style> 
+</style>

@@ -22,6 +22,12 @@ import RoomBookingDetail from "../views/RoomBookingDetail.vue";
 import RoomManagementView from "../views/RoomManagementView.vue";
 import MyRoomBookingsView from "../views/MyRoomBookingsView.vue";
 import RoomBookingApprovalView from "../views/RoomBookingApprovalView.vue";
+import QRScanView from '../views/QRScanView.vue'
+import TicketRequirementView from "../views/TicketRequirementView.vue";
+import TicketDashboardView from "../views/TicketDashboardView.vue";
+import AdminTicketView from "../views/TicketAdminView.vue";
+import TicketITView from "../views/TicketITView.vue";
+import TicketworkView from "../views/TicketworkView.vue";
 
 const routes = [
   {
@@ -33,6 +39,15 @@ const routes = [
       title: "Choose Booking - Smart Booking",
     },
   },
+ 
+{
+  path: "/qr-scan",
+  name: "QRScan",
+  component: QRScanView,
+  meta: {  
+    title: "Choose Booking - Smart Booking", 
+  }
+},
   {
     path: "/",
     name: "Login",
@@ -45,6 +60,43 @@ const routes = [
     path: "/",
     component: MainLayout,
     children: [
+      {
+        path: "/app/ticket-dashboard",
+        name: "TicketDashboard",
+        component: TicketDashboardView,
+        meta: { requiresAuth: true,
+          title: "ໜ້າຫຼັກ - Smart report", },
+      },
+      {
+        path: "/app/ticket-admin",
+        name: "AdminTicketView",
+        component: AdminTicketView,
+        meta: { requiresAuth: true,
+          title: "ກວດກາບັນຫາ - Smart report", },
+      },
+      {
+        path: "/app/ticket-it",
+        name: "TicketITView",
+        component: TicketITView,
+        meta: { requiresAuth: true,
+          title: "ກວດກາບັນຫາ - Smart report", },
+      },
+      {
+        path: "/app/my-ticket",
+        name: "TicketworkView",
+        component: TicketworkView,
+        meta: { requiresAuth: true ,
+          title: "ແຈ້ງບັນຫາ - Smart report",
+        },
+      },
+      {
+        path: "/app/problem",
+        name: "ProblemReport",
+        component: TicketRequirementView,
+        meta: { requiresAuth: true ,
+          title: "ແຈ້ງບັນຫາ - Smart report",
+        },
+      },
       {
         path: "app/roomtype",
         name: "RoomTypeView",
@@ -222,18 +274,60 @@ const router = createRouter({
 });
 
 // Protect pages after login
+// router.beforeEach((to) => {
+//   const token = localStorage.getItem("user-token");
+
+//   if (to.path !== "/" && !token) {
+//     return "/";
+//   }
+
+//   if (to.path === "/" && token) {
+//     return "/choose-booking";
+//     // return 'app/dashboard'
+//   }
+// });
+ 
 router.beforeEach((to) => {
   const token = localStorage.getItem("user-token");
 
-  if (to.path !== "/" && !token) {
-    return "/";
+  // QR scan is a special route that can be opened without login.
+  if (to.path === "/qr-scan") {
+    return true;
   }
 
-  if (to.path === "/" && token) {
-    return "/choose-booking";
-    // return 'app/dashboard'
+  // Login page
+  if (to.path === "/") {
+    if (token) {
+      // After login, return to the original destination if provided.
+      const redirect = to.query.redirect;
+
+      if (
+        typeof redirect === "string" &&
+        redirect.startsWith("/") &&
+        !redirect.startsWith("//")
+      ) {
+        return redirect;
+      }
+
+      // Normal website login goes to the booking selection page.
+      return "/choose-booking";
+    }
+
+    return true;
   }
-});
+
+  // All other pages require authentication.
+  if (!token) {
+    return {
+      path: "/",
+      query: {
+        redirect: to.fullPath,
+      },
+    };
+  }
+
+  return true;
+}); 
 
 // Set browser tab title
 router.afterEach((to) => {

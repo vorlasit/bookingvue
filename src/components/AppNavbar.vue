@@ -34,6 +34,34 @@
             <span>Change Service</span>
           </span>
         </router-link>
+        <router-link v-if="bookingType === 'problem'" to="/app/ticket-dashboard" class="menu-item">
+          <i class="bi bi-ticket-detailed-fill"></i>
+          <span class="menu-text">
+            <span>ແຈ້ງບັນຫາ</span>
+            <span>Problem Report</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_it_manager') ||  groups_ids.includes('ticket.group_kc_ticket_admin_manager')" to="/app/my-ticket" class="menu-item" >
+          <i class="bi bi-clock-history"></i>
+          <span class="menu-text">
+            <span>ລາຍການບັນຫາ ຫາຂ້ອຍ</span>
+            <span>Problem List</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_it_manager')" to="/app/ticket-it" class="menu-item" >
+          <i class="bi bi-clock-history"></i>
+          <span class="menu-text">
+            <span>ລາຍການບັນຫາ IT</span>
+            <span>Problem List</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_admin_manager')" to="/app/ticket-admin" class="menu-item" >
+          <i class="bi bi-clock-history"></i>
+          <span class="menu-text">
+            <span>ລາຍການບັນຫາ ADMIN</span>
+            <span>Problem List</span>
+          </span>
+        </router-link>
         <router-link :to="{ path: '/app/dashboard', query: { type: bookingType } }" class="menu-item"
           v-if="bookingType === 'car'">
           <i class="bi bi-house-door"></i>
@@ -130,7 +158,7 @@
           <i class="bi bi-door-open-fill"></i>
           <span class="menu-text">
             <span>ຫ້ອງປະຊຸມ</span>
-            <span>Meeting </span>
+            <span>Meeting </span> 
           </span>
         </router-link>
         <router-link v-if="bookingType === 'room'" to="/my-room-bookings" class="menu-item">
@@ -252,6 +280,19 @@
           <i class="bi bi-book-fill"></i>
           <strong>SmartBooking</strong>
         </div>
+  <div class="mobile-header-actions">
+    <!-- Scan Room QR Code -->
+    <button
+      v-if="bookingType === 'room'"
+      type="button"
+      class="mobile-scan-button"
+      @click="openRoomScanner"
+      aria-label="Scan another room"
+      title="Scan another room" 
+    >
+      <i class="bi bi-qr-code-scan"></i>
+    </button>
+
 
 
         <div class="profile-dropdown">
@@ -276,6 +317,7 @@
             </button>
           </div>
         </div>
+  </div>
       </header>
       <div class="page-content">
         <router-view />
@@ -479,7 +521,15 @@ const bookingType = ref(
     ? route.query.type
     : (localStorage.getItem("booking_type") || "car")
 );
+const openRoomScanner = async () => {
+  profileMenuOpen.value = false;
+  isCandyboxOpen.value = false;
 
+  await router.push({
+    path: "/qr-scan",
+    query: { from: "navbar" }
+  });
+};
 watch(
   () => route.query.type,
   (type) => {
@@ -795,6 +845,35 @@ onBeforeUnmount(() => {
 
 
 <style scoped>
+.mobile-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-scan-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.mobile-scan-button:active {
+  background: #dbeafe;
+}
+
+@media (min-width: 769px) {
+  .mobile-scan-button {
+    display: none;
+  }
+}
 * {
   font-family: "Noto Sans Lao", "Noto Sans", sans-serif;
 }

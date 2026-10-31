@@ -1,115 +1,180 @@
+
 <script setup>
-import { reactive, ref,onMounted } from 'vue'
-import { useRouter } from 'vue-router' 
-import { loginUser,getCompanyLogo } from '../api/axios'
+import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { loginUser, getCompanyLogo } from '../api/axios'
 import Swal from 'sweetalert2'
 
 const router = useRouter()
+const route = useRoute()
+
 const loading = ref(false)
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const errorMessage = ref('')
 const logo = ref('')
+
 const form = reactive({
-    username: '',
-    password: '',
-    remember: false,
-}) 
+  username: '',
+  password: '',
+  remember: false,
+})
+
+let logoObjectUrl = null
+
+/**
+ * Decide where to go after successful login.
+ *
+ * QR flow:
+ *   /?redirect=%2Fqr-scan%3Froom_id%3D3
+ *   -> /qr-scan?room_id=3
+ *
+ * Normal website login:
+ *   /
+ *   -> /choose-booking
+ */
+const redirectAfterLogin = async () => {
+  const redirect = route.query.redirect
+
+  if (
+    typeof redirect === 'string' &&
+    redirect.startsWith('/') &&
+    !redirect.startsWith('//')
+  ) {
+    await router.replace(redirect)
+  } else {
+    await router.replace('/choose-booking')
+  }
+}
+
+/**
+ * Login
+ */
 const login = async () => {
-    errorMessage.value = ''
+  errorMessage.value = ''
 
-    if (!username.value || !password.value) {
-        errorMessage.value = 'Please enter username and password.'
-        return
-    }
+  if (!username.value || !password.value) {
+    errorMessage.value = 'Please enter username and password.'
+    return
+  }
 
-    loading.value = true
+  loading.value = true
 
-    try {
-       const result = await loginUser(
-            username.value,
-            password.value
-        )
-        if (result && result.status === true) {
-      // Save login information 
-    console.log('image',result.image)
-    localStorage.setItem('user-token', result.access_token)
-    localStorage.setItem(
-    "login-date",
-    new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Vientiane",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(new Date())
-    );
-    localStorage.setItem('username', result.name) 
-    localStorage.setItem('uid', result.uid) 
-    localStorage.setItem('image', result.image) 
-    localStorage.setItem('company_name', result.company_name || '')
-    localStorage.setItem('groups_id', JSON.stringify(result.groups_id ?? []))
-    localStorage.setItem('odoo_uid', result.uid) // Success message 
+  try {
+    const result = await loginUser(
+      username.value,
+      password.value
+    )
+
+    if (result?.status !== true || !result?.access_token) {
+      errorMessage.value =
+        result?.message || 'Username or password is incorrect.'
+
       await Swal.fire({
-        icon: 'success',
-        title: 'Login Successful!',
-        text: 'ຍີນດີຕ້ອນຮັບ ທ່ານເຂົ້າໃຊ້ລະບົບ',
-        confirmButtonColor: '#0d6efd',
-        timer: 1500,
-        timerProgressBar: true,
-      }) // Go to dashboard 
-      router.push('/choose-booking')
-    //   router.push('/app/dashboard')
-
-    }
-    else {
-      errorMessage.value = result?.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'
-      Swal.fire({
         icon: 'error',
         title: 'Login Failed',
         text: errorMessage.value,
         confirmButtonColor: '#dc3545',
       })
+
+      return
     }
 
-    } catch (error) {
-        console.error('Login error:', error)
+    // Save authentication information.
+    localStorage.setItem('user-token', result.access_token)
 
-        if (error.response) {
+    localStorage.setItem(
+      'login-date',
+      new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Vientiane',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date())
+    )
 
-            errorMessage.value =
-                error.response.data?.message ||
-                'Login failed.'
+    localStorage.setItem('username', result.name || '')
+    localStorage.setItem('uid', String(result.uid ?? ''))
+    localStorage.setItem('odoo_uid', String(result.uid ?? ''))
+    localStorage.setItem('image', result.image || '')
+    localStorage.setItem('company_name', result.company_name || '')
+    localStorage.setItem(
+      'groups_id',
+      JSON.stringify(result.groups_id ?? [])
+    )
 
-        } else {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Login Successful!',
+      text: 'ຍິນດີຕ້ອນຮັບ ທ່ານເຂົ້າໃຊ້ລະບົບ',
+      confirmButtonColor: '#0d6efd',
+      timer: 1500,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    })
 
-            errorMessage.value =
-                'Cannot connect to server.'
+    // QR redirect if present; otherwise normal website landing page.
+    await redirectAfterLogin()
 
-        }
+  } catch (error) {
+    console.error('Login error:', error)
 
-    } finally {
-
-        loading.value = false
-
+    if (error.response) {
+      errorMessage.value =
+        error.response.data?.message || 'Login failed.'
+    } else {
+      errorMessage.value = 'Cannot connect to server.'
     }
+
+    await Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: errorMessage.value,
+      confirmButtonColor: '#dc3545',
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
+/**
+ * Load company logo.
+ */
 const loadCompanyLogo = async () => {
-    try {
+  try {
     const blob = await getCompanyLogo()
-    logo.value = URL.createObjectURL(blob)
-  }
-  catch (error) {
+
+    if (!(blob instanceof Blob)) {
+      logo.value = ''
+      return
+    }
+
+    // Release the previous URL if the logo is reloaded.
+    if (logoObjectUrl) {
+      URL.revokeObjectURL(logoObjectUrl)
+    }
+
+    logoObjectUrl = URL.createObjectURL(blob)
+    logo.value = logoObjectUrl
+
+  } catch (error) {
     console.error('Error loading company logo:', error)
-    logo.value = false
+    logo.value = ''
   }
 }
 
 onMounted(() => {
-    loadCompanyLogo()
+  loadCompanyLogo()
 })
-</script>
+
+onBeforeUnmount(() => {
+  if (logoObjectUrl) {
+    URL.revokeObjectURL(logoObjectUrl)
+    logoObjectUrl = null
+  }
+})
+</script> 
 
 <template>
     <div class="login-page">

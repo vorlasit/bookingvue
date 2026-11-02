@@ -12,6 +12,13 @@
         <i class="bi bi-arrow-clockwise me-1"></i>
         Refresh
       </button>
+      <router-link
+  to="/app/create-employee-ticket"
+  class="btn btn-primary"
+>
+  <i class="bi bi-person-plus me-1"></i>
+  Create Employee Ticket
+</router-link>
     </div>
 
     <!-- Statistics -->

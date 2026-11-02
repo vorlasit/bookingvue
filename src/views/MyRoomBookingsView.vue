@@ -305,7 +305,7 @@ const bookings = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
 const searchText = ref('')
-const activeFilter = ref('all')
+const activeFilter = ref('confirmed')
 
 /* =========================================
    Navigation

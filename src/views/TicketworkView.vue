@@ -13,14 +13,13 @@
         Refresh
       </button>
     </div>
-
-    <!-- Statistics -->
+ 
     <!-- Statistics -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-xl-3">
-        <div class="stat-card" :class="{ 'stat-card-active': activeFilter === 'all' }" @click="setFilter('all')">
-          <div class="stat-label">Total Tickets</div>
-          <div class="stat-number">{{ tickets.length }}</div>
+        <div class="stat-card" :class=" { 'stat-card-active': activeFilter === 'draft' }" @click="setFilter('draft')">
+          <div class="stat-label">Draft Tickets</div>
+          <div class="stat-number">{{ countState('draft') }}</div>
         </div>
       </div>
 
@@ -63,15 +62,16 @@
               placeholder="Search ticket, employee or description..." />
           </div>
 
-          <!-- <div class="col-md-4">
-            <select v-model="activeFilter" class="form-select">
+          <div class="col-md-4">
+            <span class="rounded bg-secondary btn">Total {{ tickets.length }}</span>
+            <!-- <select v-model="activeFilter" class="form-select">
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
               <option value="in_progress">In Progress</option>
               <option value="done">Done</option>
               <option value="rejected">Rejected</option>
-            </select>
-          </div> -->
+            </select> -->
+          </div>
         </div>
 
         <div v-if="loading" class="text-center py-5">
@@ -91,41 +91,49 @@
           <p class="text-muted mt-3 mb-0">No tickets found.</p>
         </div>
         <div v-else class="ticket-list">
+  <div
+    v-for="ticket in filteredTickets"
+    :key="ticket.id"
+    class="ticket-item"
+    @click="openTicket(ticket)"
+  >
+    <!-- Type and date -->
+    <div class="ticket-item-top">
+      <span class="ticket-pill ticket-type-pill">
+        {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
+      </span>
 
-            <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)">
+      <span class="ticket-time">
+        {{ formatDate(ticket.date) }}
+      </span>
+    </div>
 
-              <!-- Top: Priority, Type, Time -->
-              <div class="ticket-item-top">
+    <!-- Description -->
+    <div class="ticket-description">
+      {{ ticket.description || '-' }}
+    </div>
 
-                <div class="d-flex flex-wrap gap-2"> 
+    <!-- Employee and status on the same line -->
+    <div class="ticket-reference d-flex justify-content-between align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
 
-                  <span class="ticket-pill ticket-type-pill">
-                    {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
-                  </span>
+        <span
+          v-if="ticket.employee_name || ticket.req_employee_name"
+          class="badge bg-info text-dark"
+        >
+          <i class="bi bi-person me-1"></i>
+          {{ ticket.employee_name || ticket.req_employee_name }}
+        </span>
+      </div>
 
-                </div>
-
-                <span class="ticket-time">
-                  {{ formatDate(ticket.date) }}
-                </span>
-
-              </div>
-
-              <!-- Description -->
-              <div class="ticket-description">
-                {{ ticket.description || '-' }}
-              </div>
-
-              <!-- Ticket Reference -->
-              <div class="ticket-reference">
-                <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }} </span> &nbsp; 
-                <span class="badge bg-info text-dark" v-if="ticket.employee_name || ticket.req_employee_name">
-                   {{ ticket.employee_name || ticket.req_employee_name || '-' }}
-                </span>
-              </div>
-
-            </div> 
-        </div>
+      <span class="status-badge" :class="statusClass(ticket.state)">
+        {{ formatStatus(ticket.state) }}
+      </span>
+    </div>
+  </div>
+ 
+</div>
 
         <div class="text-muted small mt-2">
           Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets
@@ -161,12 +169,7 @@
             </div>
           </div>
 
-          <div class="row g-3 mb-3">
-            <div class="col-6">
-              <label class="detail-label">Priority</label>
-              <div>{{ selectedTicket.priority || '-' }}</div>
-            </div>
-
+          <div class="row g-3 mb-3"> 
             <div class="col-6">
               <label class="detail-label">Request Date</label>
               <div>{{ formatDate(selectedTicket.date) }}</div>
@@ -241,7 +244,7 @@ const selectedTicket = ref(null);
 const adminNote = ref("");
 
 const searchText = ref("");
-const activeFilter = ref("all");
+const activeFilter = ref("draft");
 function setFilter(state) {
   activeFilter.value = state;
 }

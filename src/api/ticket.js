@@ -51,3 +51,10 @@ export const getTicketDepartments = async () => {
   const response = await odooapi.get("/api/ticket/departments");
   return response.data;
 };
+
+ 
+export const getTicketEmployees = async (departmentId = null) => {
+  const response = await odooapi.get("/api/ticket/employees");
+
+  return response.data;
+};

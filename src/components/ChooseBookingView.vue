@@ -1,48 +1,38 @@
 <template>
   <div class="choose-page">
-    <div class="container py-5">
+    <div class="container">
       <!-- Header Section -->
-      <div class="text-center mb-5 animate-fade-in">
-        <div
-          class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3 fw-semibold shadow-sm"
-        >
-          <i class="bi bi-grid-fill me-1"></i> SmartBooking System
+      <div class="text-center animate-fade-in">
+        <div class="badge bg-primary-subtle text-primary rounded-pill mb-3 fw-semibold shadow-sm">
+          <i class="bi bi-grid-fill me-1"></i> Smart Service System
         </div>
-        <h1 class="fw-bold display-6 mb-2 text-dark">
+        <!-- <h1 class="fw-bold display-6 mb-2 text-dark">
           ຍິນດີຕ້ອນຮັບສູ່ລະບົບຈອງ
         </h1>
         <p class="text-muted fs-6">
           ກະລຸນາເລືອກປະເພດການບໍລິການທີ່ທ່ານຕ້ອງການໃຊ້ງານ
-        </p>
+        </p> -->
       </div>
 
       <!-- Cards Grid -->
       <div class="row justify-content-center g-4">
         <!-- Room Booking -->
         <div class="col-12 col-md-6 col-lg-5">
-          <div
-            class="service-card room-card h-100 text-center"
-            @click="chooseService('room')"
-          >
-            <div
-              class="card-body p-4 p-md-5 d-flex flex-column justify-content-between"
-            >
+          <div class="service-card room-card text-center" @click="chooseService('room')">
+            <div class="card-body p-1 p-md-4 d-flex flex-column justify-content-between">
               <div>
-                <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex justify-content-center mb-1">
                   <div class="service-icon room-icon shadow-sm">
                     <i class="bi bi-building"></i>
                   </div>
                 </div>
                 <h4 class="fw-bold mb-2 text-dark">ຈອງຫ້ອງປະຊຸມ</h4>
-                <p class="text-muted mb-4">
+                <p class="text-muted ">
                   ຈອງຫ້ອງປະຊຸມ, ຈັດການຕາຕະລາງ ແລະ ບໍລິຫານການໃຊ້ງານພື້ນທີ່ພາຍໃນ.
                 </p>
               </div>
 
-              <button
-                type="button"
-                class="btn btn-room w-100 py-2 rounded-3 fw-semibold shadow-sm text-white border-0"
-              >
+              <button type="button" class="btn btn-room w-100 py-2 rounded-3 fw-semibold shadow-sm text-white border-0">
                 <span>ເຂົ້າສູ່ລະບົບຈອງຫ້ອງ</span>
                 <i class="bi bi-arrow-right ms-2"></i>
               </button>
@@ -52,27 +42,21 @@
 
         <!-- Car Booking -->
         <div class="col-12 col-md-6 col-lg-5">
-          <div 
-            class="service-card car-card h-100 text-center" 
-            @click="chooseService('car')"
-          >
-            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-between">
+          <div class="service-card car-card h-100 text-center" @click="chooseService('car')">
+            <div class="card-body p-1 p-md-4 d-flex flex-column justify-content-between">
               <div>
-                <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex justify-content-center mb-1">
                   <div class="service-icon car-icon shadow-sm">
                     <i class="bi bi-car-front-fill"></i>
                   </div>
                 </div>
                 <h4 class="fw-bold mb-2 text-dark">ຈອງລົດ</h4>
-                <p class="text-muted mb-4">
+                <p class="text-muted">
                   ຈອງລົດ, ຈັດການເສັ້ນທາງເດີນທາງ ແລະ ຕິດຕາມສະຖານະການໃຊ້ງານລົດ.
                 </p>
               </div>
-              
-              <button 
-                type="button" 
-                class="btn btn-car w-100 py-2 rounded-3 fw-semibold shadow-sm text-dark border-0"
-              >
+
+              <button type="button" class="btn btn-car w-100 py-2 rounded-3 fw-semibold shadow-sm text-dark border-0">
                 <span>ເຂົ້າສູ່ລະບົບຈອງລົດ</span>
                 <i class="bi bi-arrow-right ms-2"></i>
               </button>
@@ -80,104 +64,91 @@
           </div>
         </div>
         <div class="col-12 col-md-6 col-lg-5">
-  <div
-    class="service-card problem-card h-100 text-center"
-    @click="chooseService('problem')"
-  >
-    <div
-      class="card-body p-4 p-md-5 d-flex flex-column justify-content-between"
-    >
-      <div>
-        <div class="d-flex justify-content-center mb-4">
-          <div class="service-icon problem-icon shadow-sm">
-            <i class="bi bi-tools"></i>
+          <div class="service-card problem-card text-center" @click="chooseService('problem')">
+
+            <div class="card-body p-1 p-md-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-center mb-1">
+                  <div class="service-icon problem-icon shadow-sm">
+                    <i class="bi bi-tools"></i>
+                  </div>
+                </div>
+
+                <h4 class="fw-bold mb-2 text-dark">ແຈ້ງແກ້ບັນຫາ</h4>
+
+                <p class="text-muted">
+                  ແຈ້ງບັນຫາລົດ, ອາຄານ ແລະ ອຸປະກອນ
+                  ເພື່ອໃຫ້ຜູ້ຮັບຜິດຊອບກວດສອບ ແລະ ແກ້ໄຂ.
+                </p>
+              </div>
+
+              <button type="button"
+                class="btn btn-problem w-100 py-2 rounded-3 fw-semibold shadow-sm text-white border-0">
+                <span>ແຈ້ງບັນຫາ</span>
+                <i class="bi bi-arrow-right ms-2"></i>
+              </button>
+            </div>
+
           </div>
         </div>
 
-    <h4 class="fw-bold mb-2 text-dark">ແຈ້ງແກ້ບັນຫາ</h4>
+        <!-- Asset Request -->
 
-    <p class="text-muted mb-4">
-      ແຈ້ງບັນຫາລົດ, ຫ້ອງປະຊຸມ ແລະ ອຸປະກອນ
-      ເພື່ອໃຫ້ຜູ້ຮັບຜິດຊອບກວດສອບ ແລະ ແກ້ໄຂ.
-    </p>
-  </div>
+        <div class="col-12 col-md-6 col-lg-5">
+          <div class="service-card asset-card text-center" @click="chooseService('asset')">
 
-  <button
-    type="button"
-    class="btn btn-problem w-100 py-2 rounded-3 fw-semibold shadow-sm text-white border-0"
-  >
-    <span>ແຈ້ງບັນຫາ</span>
-    <i class="bi bi-arrow-right ms-2"></i>
-  </button>
-</div>
+            <div class="card-body p-1 p-md-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-center mb-4">
+                  <div class="service-icon asset-icon shadow-sm">
+                    <i class="bi bi-box-seam-fill"></i>
+                  </div>
+                </div>
 
-  </div>
-</div>
+                <h4 class="fw-bold mb-2 text-dark">ຄຳຂໍເບີກຊັບສິນ</h4>
 
-<!-- Asset Request -->
+                <p class="text-muted">
+                  ສົ່ງຄຳຂໍເບີກອຸປະກອນ ແລະ ຊັບສິນຂອງບໍລິສັດ
+                  ພ້ອມຕິດຕາມສະຖານະຄຳຂໍ.
+                </p>
+              </div>
 
-<div class="col-12 col-md-6 col-lg-5">
-  <div
-    class="service-card asset-card h-100 text-center"
-    @click="chooseService('asset')"
-  >
-    <div
-      class="card-body p-4 p-md-5 d-flex flex-column justify-content-between"
-    >
-      <div>
-        <div class="d-flex justify-content-center mb-4">
-          <div class="service-icon asset-icon shadow-sm">
-            <i class="bi bi-box-seam-fill"></i>
+              <button type="button" class="btn btn-asset w-100 py-2 rounded-3 fw-semibold shadow-sm text-dark border-0">
+                <span>ຂໍເບີກຊັບສິນ</span>
+                <i class="bi bi-arrow-right ms-2"></i>
+              </button>
+            </div>
+
           </div>
         </div>
-
-    <h4 class="fw-bold mb-2 text-dark">ຄຳຂໍເບີກຊັບສິນ</h4>
-
-    <p class="text-muted mb-4">
-      ສົ່ງຄຳຂໍເບີກອຸປະກອນ ແລະ ຊັບສິນຂອງບໍລິສັດ
-      ພ້ອມຕິດຕາມສະຖານະຄຳຂໍ.
-    </p>
-  </div>
-
-  <button
-    type="button"
-    class="btn btn-asset w-100 py-2 rounded-3 fw-semibold shadow-sm text-dark border-0"
-  >
-    <span>ຂໍເບີກຊັບສິນ</span>
-    <i class="bi bi-arrow-right ms-2"></i>
-  </button>
-</div>
-
-  </div>
-</div>
       </div>
     </div>
   </div>
 </template>
- 
+
 <script setup>
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const chooseService = (type) => {
-localStorage.setItem("booking_type", type);
+  localStorage.setItem("booking_type", type);
 
-const routes = {
-car: "/app/dashboard",
-room: "/app/roomtype",
-problem: "/app/ticket-dashboard",
-asset: "/app/asset-request",
-};
+  const routes = {
+    car: "/app/dashboard",
+    room: "/app/roomtype",
+    problem: "/app/ticket-dashboard",
+    asset: "/app/asset-request",
+  };
 
-const path = routes[type];
+  const path = routes[type];
 
-if (!path) return;
+  if (!path) return;
 
-router.push({
-path,
-query: { type },
-});
+  router.push({
+    path,
+    query: { type },
+  });
 };
 </script>
 
@@ -221,6 +192,7 @@ query: { type },
   background-color: #4ade80;
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3) !important;
 }
+
 .choose-page {
   min-height: 100vh;
   display: flex;

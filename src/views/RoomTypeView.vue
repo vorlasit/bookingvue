@@ -191,9 +191,30 @@
 
   <!-- Room List Page -->
   <div v-else class="container-fluid py-4">
+    <div class="d-flex flex-wrap gap-2">
+  <!-- Normal Room Booking -->
+  <button
+    class="btn btn-primary"
+    type="button"
+    @click="router.push('/room-booking-wizard')"
+  >
+    <i class="bi bi-plus-lg me-1"></i>
+    ຈອງ
+  </button>
+
+  <!-- Generate QR Code -->
+  <button
+    class="btn btn-outline-primary"
+    type="button"
+    @click="openRoomBookingQr"
+  >
+    <i class="bi bi-qr-code me-1"></i>
+    QR Code
+  </button>
+</div>
     <div class="card border-0 shadow-sm">
       <div class="card-body p-3 p-md-4">
-
+ 
         <!-- Loading -->
         <div v-if="loading" class="text-center py-5">
           <div class="spinner-border text-primary" role="status"></div>
@@ -318,7 +339,9 @@
                         class="booking-event-inline text-start w-100"
                         :style="{ color: booking.text_color || '#714b67' }"
                         :title="booking.description || booking.name"
-                        @click="openBookingDetail(room, booking)"
+                        @click="
+                        
+                        (room, booking)"
                       >
                         <span
                           class="booking-color-dot"
@@ -387,6 +410,85 @@
     </div>
   </div>
  
+<!-- Room Booking QR Modal -->
+<div
+  class="modal fade"
+  ref="qrModal"
+  tabindex="-1"
+  aria-labelledby="roomQrTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="roomQrTitle">
+          <i class="bi bi-qr-code me-2"></i>
+          Room Booking QR Code
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body text-center p-4">
+        <p class="text-muted mb-3">
+          Scan this QR code with your mobile phone to book a room.
+        </p>
+
+        <div v-if="qrLoading" class="py-4">
+          <div class="spinner-border text-primary"></div>
+          <p class="small text-muted mt-2">Generating QR code...</p>
+        </div>
+
+        <div v-else-if="qrImage" class="room-qr-container">
+          <img
+            :src="qrImage"
+            alt="Room Booking QR Code"
+            class="room-qr-image"
+          />
+
+          <p class="small text-muted mt-3 mb-2">
+            Scan to open Room Booking
+          </p>
+
+          <div class="small text-break qr-url">
+            {{ qrUrl }}
+          </div>
+        </div>
+
+        <div v-if="qrError" class="alert alert-danger mt-3">
+          {{ qrError }}
+        </div>
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+
+        <button
+          v-if="qrImage"
+          class="btn btn-primary"
+          type="button"
+          @click="downloadRoomQr"
+        >
+          <i class="bi bi-download me-1"></i>
+          Download QR
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
   <!-- Create Booking Modal -->
   <div
     v-if="showCreatePopup"
@@ -716,6 +818,67 @@ import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.css'
 import Swal from 'sweetalert2'
 import { useRoute, useRouter } from 'vue-router'
+import { Modal } from 'bootstrap'
+
+// =====================================================
+// Room Booking QR Code
+// =====================================================
+
+const qrModal = ref(null)
+const qrImage = ref('')
+const qrUrl = ref('')
+const qrLoading = ref(false)
+const qrError = ref('')
+
+let qrModalInstance = null
+
+const openRoomBookingQr = async () => {
+  qrError.value = ''
+  qrImage.value = ''
+  qrLoading.value = true
+
+  try {
+    // Use the current website origin so the QR works
+    // on mobile devices and other browsers.
+    qrUrl.value =
+      `${window.location.origin}/room-booking-wizard`
+
+    qrImage.value = await QRCode.toDataURL(qrUrl.value, {
+      width: 320,
+      margin: 2,
+      errorCorrectionLevel: 'H',
+      color: {
+        dark: '#222222',
+        light: '#FFFFFF'
+      }
+    })
+
+    qrModalInstance?.show()
+
+  } catch (error) {
+    console.error('Generate room booking QR:', error)
+    qrError.value = 'Unable to generate QR code. Please try again.'
+
+    qrModalInstance?.show()
+
+  } finally {
+    qrLoading.value = false
+  }
+}
+
+const downloadRoomQr = () => {
+  if (!qrImage.value) return
+
+  const link = document.createElement('a')
+  link.href = qrImage.value
+  link.download = 'room-booking-qr.png'
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
+
+
 const route = useRoute()
 const router = useRouter()
 // ==========================================
@@ -2488,6 +2651,9 @@ onMounted(async () => {
   await fetchRoomTypes() 
   // Run only after the room list has loaded.
   await openQRBookingForm()
+  if (qrModal.value) {
+    qrModalInstance = new Modal(qrModal.value)
+  }
 })
 
 onBeforeUnmount(async () => {
@@ -2495,6 +2661,8 @@ onBeforeUnmount(async () => {
   startPicker?.destroy()
   stopPicker?.destroy()
 
+  qrModalInstance?.dispose()
+  qrModalInstance = null
   // Clean up QR scanner
   try {
     if (roomQRScanner) {

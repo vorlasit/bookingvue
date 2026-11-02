@@ -165,15 +165,15 @@
 
                   <div class="row g-3">
                     <!-- Request Date -->
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6  d-none">
                       <label class="form-label">
                         Request Date
                       </label>
 
                       <div class="date-input-wrapper">
-                        <i class="bi bi-calendar-check"></i>
                         <input ref="requestDateInput" type="text" class="form-control date-input"
                           placeholder="Select request date" readonly />
+                        <i class="bi bi-calendar-check"></i>
                       </div>
                     </div>
 
@@ -184,9 +184,9 @@
                       </label>
 
                       <div class="date-input-wrapper">
-                        <i class="bi bi-calendar-event"></i>
                         <input ref="deadlineInput" type="text" class="form-control date-input"
                           placeholder="Choose deadline" readonly />
+                        <i class="bi bi-calendar-event"></i>
                       </div>
                     </div>
                   </div>
@@ -472,21 +472,17 @@ watch(
 // REQUEST TYPES
 // =========================================================
 
-const adminRequestTypes = [
-  { value: "cars_problem", label: "Cars Problem" },
-  { value: "bike_problem", label: "Bike Problem" },
-  { value: "building_problem", label: "Building Problem" },
-  { value: "other", label: "Other" },
+const adminRequestTypes = [ 
+  { value: "building_problem", label: "ສ້ອງແປງອາຄານ" },
+  { value: "other", label: "ປັນຫາອື່ນໆ" },
 ];
 
-const itRequestTypes = [
-  { value: "return", label: "Return" },
-  { value: "internet", label: "Internet" },
-  { value: "item_problem", label: "Item Problem" },
-  { value: "technical", label: "Technical" },
-  { value: "open_bill", label: "Open Bill" },
-  { value: "system_support", label: "System Support" },
-  { value: "other", label: "Other" },
+const itRequestTypes = [ 
+  { value: "internet", label: "ອີນເຕີເນັດມີບັນຫາ" },
+  { value: "item_problem", label: "ອຸປະກອນມີບັນຫາ" },
+  { value: "technical", label: "ການໃຊ້ງານອຸປະກອນມີບັນຫາ" }, 
+  { value: "system_support", label: "ລະບົບມີປັນຫາ" },
+  { value: "other", label: "ປັນຫາອື່ນໆ" },
 ];
 
 const requestTypes = computed(() => {
@@ -882,7 +878,21 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+ 
+.flatpickr-calendar {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
 
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: #714b67 !important;
+  border-color: #714b67 !important;
+}
+
+.flatpickr-day.today {
+  border-color: #714b67;
+} 
 .date-input-wrapper {
   position: relative;
   display: flex;
@@ -891,7 +901,9 @@ onBeforeUnmount(() => {
 
 .date-input-wrapper > i {
   position: absolute;
-  left: 14px;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 3;
   color: #714b67;
   font-size: 18px;
@@ -902,7 +914,8 @@ onBeforeUnmount(() => {
 .date-input-wrapper input.form-control {
   width: 100%;
   height: 48px;
-  padding-left: 44px;
+  padding-left: 14px;
+  padding-right: 44px;
   border: 1px solid #dee2e6;
   border-radius: 10px;
   background-color: #fff;
@@ -917,28 +930,13 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 0 3px rgba(113, 75, 103, 0.12);
 }
 
-.flatpickr-calendar {
-  border-radius: 12px !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-}
-
-.flatpickr-day.selected,
-.flatpickr-day.selected:hover {
-  background: #714b67 !important;
-  border-color: #714b67 !important;
-}
-
-.flatpickr-day.today {
-  border-color: #714b67;
-}
-
 @media (max-width: 576px) {
   .date-input-wrapper .date-input,
   .date-input-wrapper input.form-control {
     height: 50px;
     font-size: 15px;
   }
-}
+} 
 
 .card {
   border-radius: 12px;

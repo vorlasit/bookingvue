@@ -4,10 +4,7 @@
     <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
       <div>
-        <h4 class="mb-1">Ticket Dashboard</h4>
-        <p class="text-muted mb-0">
-          View and track your problem reports and asset requests.
-        </p>
+        <h4 class="mb-1">Ticket Dashboard</h4> 
       </div>
 
       <div class="d-flex flex-wrap gap-2">
@@ -97,7 +94,7 @@
       </div>
 
       <!-- Ticket Type Summary -->
-      <div class="row g-3 mb-4">
+      <!-- <div class="row g-3 mb-4">
 
         <div class="col-md-12">
           <div class="card border-0 shadow-sm h-100">
@@ -119,24 +116,19 @@
           </div>
         </div>
 
-      </div>
+      </div> -->
 
       <!-- My Tickets -->
       <div class="card border-0 shadow-sm">
         <div class="card-body">
 
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
-            <div>
-              <h5 class="mb-1">My Requests</h5>
+            <div> 
               <p class="text-muted small mb-0">
                 Track the progress of your submitted tickets.
               </p>
             </div>
-
-            <button class="btn btn-sm btn-outline-secondary" @click="loadDashboard">
-              <i class="bi bi-arrow-clockwise me-1"></i>
-              Refresh
-            </button>
+ 
           </div>
 
           <!-- Filters -->

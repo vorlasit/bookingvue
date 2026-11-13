@@ -1,36 +1,78 @@
 <template>
-  
+
   <!-- Dashboard -->
+  <!-- Dashboard QR Modal -->
+  <div v-if="showQrModal" class="qr-modal-backdrop" @click.self="showQrModal = false">
+    <div class="qr-modal-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">SmartBooking Dashboard QR</h5>
 
-  <div class="row">
-   <div
-  class="col-12 rounded-4 p-3 shadow-sm "
-  style="background: linear-gradient(135deg, #eef5ff, #ffffff); border: 1px solid #dbeafe;"
->
-  <div class="d-flex justify-content-between align-items-center gap-2">
-    <div>
-      <h5 class="fw-bold text-primary mb-2">
-        <i class="bi bi-sun-fill me-1"></i>
-        Hello {{ currentUsername }}
-      </h5>
+        <button type="button" class="btn-close" @click="showQrModal = false"></button>
+      </div>
 
-      <p class="text-secondary mb-0 small">
-        <i class="bi bi-calendar-check me-1"></i>
-        ມີ
-        <span class="fw-bold text-primary">{{ bookingCounts.approved }}</span>
-        ການເດີນທາງທີ່ຕ້ອງໄປ
-      </p>
+      <div class="text-center">
+        <img v-if="qrImage" :src="qrImage" alt="Dashboard QR Code" class="img-fluid qr-image mb-3" />
+
+        <p class="text-muted small mb-2">
+          Scan this QR code to open the SmartBooking Dashboard.
+        </p>
+
+        <div class="small text-break text-secondary mb-3">
+          {{ qrUrl }}
+        </div>
+
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-primary" @click="downloadDashboardQR">
+            <i class="bi bi-download me-1"></i>
+            Download QR
+          </button>
+
+          <button class="btn btn-outline-secondary" @click="showQrModal = false">
+            Close
+          </button>
+        </div>
+      </div>
     </div>
-
-    <button
-      class="btn btn-primary rounded-3 px-3 py-2 shadow-sm text-nowrap"
-      @click="goToNewBooking"
-    >
-      <i class="bi bi-plus-circle me-1"></i>
-      ຄຳຮ້ອງໃໝ່
-    </button>
   </div>
-</div>
+  <div class="row">
+    <div class="col-12 rounded-4 p-3 shadow-sm "
+      style="background: linear-gradient(135deg, #eef5ff, #ffffff); border: 1px solid #dbeafe;">
+      <div class="d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <h5 class="fw-bold text-primary mb-2">
+            <i class="bi bi-sun-fill me-1"></i>
+            Hello {{ currentUsername }}
+          </h5>
+
+          <p class="text-secondary mb-0 small">
+            <i class="bi bi-calendar-check me-1"></i>
+            ມີ
+            <span class="fw-bold text-primary">{{ bookingCounts.approved }}</span>
+            ການເດີນທາງທີ່ຕ້ອງໄປ
+          </p>
+        </div>
+        <div class="row">
+
+          <div class="col-12 col-lg-6">
+            <!-- Generate QR -->
+            <button class="btn btn-outline-primary rounded-3 px-3 py-2 shadow-sm text-nowrap"
+              @click="generateDashboardQR">
+              <i class="bi bi-qr-code me-1"></i>
+              QR Code
+            </button>
+          </div>
+          <div class="col-12 col-lg-6">
+
+            <!-- New Booking -->
+            <button class="btn btn-primary rounded-3 px-3 py-2 shadow-sm text-nowrap" @click="goToNewBooking">
+              <i class="bi bi-plus-circle me-1"></i>
+              ຄຳຮ້ອງໃໝ່
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <div class="col-sm-12 col-lg-9 mt-1">
       <h4>ແຜນການເດີນທາງ</h4>
@@ -53,230 +95,263 @@
       </div>
 
       <!-- Events -->
-<!-- Events -->
-<div v-for="event in events" :key="event.id" class="col-12 mb-4">
-  <div 
-    class="card h-100 shadow-sm" 
-    @click="goToDetail(event.id)" 
-    style="cursor: pointer;"
-  >
-    <div class="card-body">
-      <!-- <p class="text-muted small mb-0">ID: {{ event.id }}</p> -->
+      <!-- Events -->
+      <div v-for="event in events" :key="event.id" class="col-12 mb-4">
+        <div class="card h-100 shadow-sm" @click="goToDetail(event.id)" style="cursor: pointer;">
+          <div class="card-body">
+            <!-- <p class="text-muted small mb-0">ID: {{ event.id }}</p> -->
 
-      <h6 class="card-title d-flex justify-content-between align-items-center">
-        <div>
-          <span v-if="event.booking_id" class="text-black px-2 py-1 rounded">
-            ຈັດລົດແລ້ວ
-          </span>
-          <span v-else class="text-black px-2 py-1 rounded">
-            ຍັງບໍ່ໄດ້ຈັດລົດ
-          </span>
-          <span v-if="event.booking_number" class="text-muted ms-2">
-            {{ event.booking_number }}
-          </span>
-        </div>
+            <h6 class="card-title d-flex justify-content-between align-items-center">
+              <div>
+                <span v-if="event.booking_id" class="text-black px-2 py-1 rounded">
+                  ຈັດລົດແລ້ວ
+                </span>
+                <span v-else class="text-black px-2 py-1 rounded">
+                  ຍັງບໍ່ໄດ້ຈັດລົດ
+                </span>
+                <span v-if="event.booking_number" class="text-muted ms-2">
+                  {{ event.booking_number }}
+                </span>
+              </div>
 
-        <span v-if="event.driver_name" class="bg-primary text-white px-2 py-1 rounded">
-          ຄົນຂັບລົດ: ({{ event.driver_name }})
-        </span> 
-      </h6>
+              <span v-if="event.driver_name" class="bg-primary text-white px-2 py-1 rounded">
+                ຄົນຂັບລົດ: ({{ event.driver_name }})
+              </span>
+            </h6>
 
-      <h2 v-if="event.description" class="card-text" style="font-size: 18px; font-weight: bold">
-        <strong>{{ event.description }}</strong> 
-      </h2>
-      <p class="card-text mb-1 d-flex align-items-left">
-        <i class="bi bi-calendar-check me-2 text-warning"></i>
-        <span v-if="isSameDate(event.start, event.stop)">
-          {{ formatDate(event.start) }}
-          {{ formatTime(event.start) }}
-          -
-          {{ formatTime(event.stop) }} 
-        </span>
+            <h2 v-if="event.description" class="card-text" style="font-size: 18px; font-weight: bold">
+              <strong>{{ event.description }}</strong>
+            </h2>
+            <p class="card-text mb-1 d-flex align-items-left">
+              <i class="bi bi-calendar-check me-2 text-warning"></i>
+              <span v-if="isSameDate(event.start, event.stop)">
+                {{ formatDate(event.start) }}
+                {{ formatTime(event.start) }}
+                -
+                {{ formatTime(event.stop) }}
+              </span>
 
-        <span v-else>
-          {{ formatDate(event.start) }}
-          {{ formatTime(event.start) }} -
-          {{ formatDate(event.stop) }}
-          {{ formatTime(event.stop) }} 
-        </span>
-      </p>
-      <hr class="my-2" />
+              <span v-else>
+                {{ formatDate(event.start) }}
+                {{ formatTime(event.start) }} -
+                {{ formatDate(event.stop) }}
+                {{ formatTime(event.stop) }}
+              </span>
+            </p>
+            <hr class="my-2" />
 
-      <div class="row">
-        <div class="col-3">
-          <p
-            class="mb-1 fw-bold text-center rounded text-white"
-            :class="stateBackgroundClass(event.confirmed_state)"
-            :style="stateBackgroundStyle(event.confirmed_state )"
-          >
-            {{ event.row_state || "-" }}
-          </p>
-          <img
-            v-if="event.image"
-            :src="event.image"
-            alt="Booking"
-            class="img-fluid"
-            style="
+            <div class="row">
+              <div class="col-3">
+                <p class="mb-1 fw-bold text-center rounded text-white"
+                  :class="stateBackgroundClass(event.confirmed_state)"
+                  :style="stateBackgroundStyle(event.confirmed_state)">
+                  {{ event.row_state || "-" }}
+                </p>
+                <img v-if="event.image" :src="event.image" alt="Booking" class="img-fluid" style="
               max-width: 200px;
               max-height: 120px;
               object-fit: contain;
-            "
-          />
-        </div>
-        <div class="col-9">
-          <p class="card-text mb-1 fw-bold">
-            {{ event.booking_name || "ຍັງບໍ່ວ່າງ" }}
-          </p>
-          {{ event.sign_brand || "-" }}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-    </div>
-   <div class="col-sm-12 col-lg-3 mt-2">
-  <h4 class="mb-3 fw-bold text-dark"><i class="bi bi-map me-2 text-primary"></i>ແຜນການເດີນທາງ</h4>  
-  <div class="row card shadow-sm p-3 border-0 rounded-4" style="font-size: 14px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-    
-    <!-- Draft -->
-    <div class="col-12 mb-2">
-      <div class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-secondary d-flex justify-content-between align-items-center transition-all" @click="loadEventsByState('draft')">
-        <div class="d-flex align-items-center">
-          <div class="icon-box bg-secondary-subtle text-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-            <i class="bi bi-file-earmark-text fs-5"></i>
+            " />
+              </div>
+              <div class="col-9">
+                <p class="card-text mb-1 fw-bold">
+                  {{ event.booking_name || "ຍັງບໍ່ວ່າງ" }}
+                </p>
+                {{ event.sign_brand || "-" }}
+              </div>
+            </div>
           </div>
-          <div class="text-secondary">
-    <div class="fw-semibold ">ລໍຖ້າຈັດລົດ</div>
-    <div class="fw-semibold ">Pending Assign</div>
-</div>
         </div>
-        <h3 class="fw-bold text-secondary m-0">{{ bookingCounts.draft }}</h3>
-      </div>  
+      </div>
     </div>
-    <!-- Waiting for Approval -->
-    <div class="col-12 mb-2">  
-      <div class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-warning d-flex justify-content-between align-items-center transition-all" @click="loadEventsByState('waiting_for_approval')">
-        <div class="d-flex align-items-center">
-          <div class="icon-box bg-warning-subtle text-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-            <i class="bi bi-hourglass-split fs-5"></i>
+    <div class="col-sm-12 col-lg-3 mt-2">
+      <h4 class="mb-3 fw-bold text-dark"><i class="bi bi-map me-2 text-primary"></i>ແຜນການເດີນທາງ</h4>
+      <div class="row card shadow-sm p-3 border-0 rounded-4"
+        style="font-size: 14px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+
+        <!-- Draft -->
+        <div class="col-12 mb-2">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-secondary d-flex justify-content-between align-items-center transition-all"
+            @click="loadEventsByState('draft')">
+            <div class="d-flex align-items-center">
+              <div
+                class="icon-box bg-secondary-subtle text-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px;">
+                <i class="bi bi-file-earmark-text fs-5"></i>
+              </div>
+              <div class="text-secondary">
+                <div class="fw-semibold ">ລໍຖ້າຈັດລົດ</div>
+                <div class="fw-semibold ">Pending Assign</div>
+              </div>
+            </div>
+            <h3 class="fw-bold text-secondary m-0">{{ bookingCounts.draft }}</h3>
           </div>
-                 <div class="text-warning">
-    <div class="fw-semibold ">ລໍຖ້າອະນຸມັດ</div>
-    <div class="fw-semibold ">Pending Approve</div>
-</div>
         </div>
-        <h3 class="fw-bold text-warning m-0">{{ bookingCounts.waiting_for_approval }}</h3>
-      </div>  
-    </div>
-
-<!-- Approved -->
-<div class="col-12 mb-2">
-  <div
-    class="status-card bg-white rounded-3 p-3 shadow-xs d-flex justify-content-between align-items-center transition-all"
-    style="border-left: 4px solid #fd7e14;"
-    @click="loadEventsByState('approved')"
-  >
-    <div class="d-flex align-items-center">
-      <div
-        class="icon-box rounded-circle me-3 d-flex align-items-center justify-content-center"
-        style="width: 38px; height: 38px; background-color: #fff0e0; color: #fd7e14;"
-      >
-        <i class="bi bi-patch-check-fill fs-5"></i>
-      </div>
-     <div>
-
-    <div class="fw-semibold"style="color: #fd7e14;">ອະນຸມັດແລ້ວ</div>
-
-    <div class="fw-semibold " style="color: #fd7e14;">Approved</div>
-
-</div>
-    </div>
-
-    <h3 class="fw-bold m-0" style="color: #fd7e14;">
-      {{ bookingCounts.approved }}
-    </h3>
-  </div>
-</div>
-    <!-- ບໍ່ອະນຸມັດ (Not Approved) -->
-    <div class="col-12">  
-      <div class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-danger d-flex justify-content-between align-items-center transition-all" @click="loadEventsByState('not_approved')">
-        <div class="d-flex align-items-center">
-          <div class="icon-box bg-danger-subtle text-danger rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-            <i class="bi bi-x-circle fs-5"></i>
+        <!-- Waiting for Approval -->
+        <div class="col-12 mb-2">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-warning d-flex justify-content-between align-items-center transition-all"
+            @click="loadEventsByState('waiting_for_approval')">
+            <div class="d-flex align-items-center">
+              <div
+                class="icon-box bg-warning-subtle text-warning rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px;">
+                <i class="bi bi-hourglass-split fs-5"></i>
+              </div>
+              <div class="text-warning">
+                <div class="fw-semibold ">ລໍຖ້າອະນຸມັດ</div>
+                <div class="fw-semibold ">Pending Approve</div>
+              </div>
+            </div>
+            <h3 class="fw-bold text-warning m-0">{{ bookingCounts.waiting_for_approval }}</h3>
           </div>
-          <div class="text-danger">
-    <div class="fw-semibold ">ບໍ່ອະນຸມັດ</div>
-    <div class="fw-semibold ">Rejected</div>
-</div>
         </div>
-        <h3 class="fw-bold text-danger m-0">{{ bookingCounts.not_approved }}</h3>
-      </div>  
-    </div>
 
-<!-- ກຳລັງໃຊ້ງານ (Start) -->
-<div class="col-12 mb-2">
-  <div
-    class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-primary d-flex justify-content-between align-items-center transition-all"
-    @click="loadEventsByState('start')"
-  >
-    <div class="d-flex align-items-center">
-      <div
-        class="icon-box bg-primary-subtle text-primary rounded-circle me-3 d-flex align-items-center justify-content-center"
-        style="width: 38px; height: 38px;"
-      >
-        <i class="bi bi-play-circle-fill fs-5"></i>
+        <!-- Approved -->
+        <div class="col-12 mb-2">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs d-flex justify-content-between align-items-center transition-all"
+            style="border-left: 4px solid #fd7e14;" @click="loadEventsByState('approved')">
+            <div class="d-flex align-items-center">
+              <div class="icon-box rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px; background-color: #fff0e0; color: #fd7e14;">
+                <i class="bi bi-patch-check-fill fs-5"></i>
+              </div>
+              <div>
+
+                <div class="fw-semibold" style="color: #fd7e14;">ອະນຸມັດແລ້ວ</div>
+
+                <div class="fw-semibold " style="color: #fd7e14;">Approved</div>
+
+              </div>
+            </div>
+
+            <h3 class="fw-bold m-0" style="color: #fd7e14;">
+              {{ bookingCounts.approved }}
+            </h3>
+          </div>
+        </div>
+        <!-- ບໍ່ອະນຸມັດ (Not Approved) -->
+        <div class="col-12">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-danger d-flex justify-content-between align-items-center transition-all"
+            @click="loadEventsByState('not_approved')">
+            <div class="d-flex align-items-center">
+              <div
+                class="icon-box bg-danger-subtle text-danger rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px;">
+                <i class="bi bi-x-circle fs-5"></i>
+              </div>
+              <div class="text-danger">
+                <div class="fw-semibold ">ບໍ່ອະນຸມັດ</div>
+                <div class="fw-semibold ">Rejected</div>
+              </div>
+            </div>
+            <h3 class="fw-bold text-danger m-0">{{ bookingCounts.not_approved }}</h3>
+          </div>
+        </div>
+
+        <!-- ກຳລັງໃຊ້ງານ (Start) -->
+        <div class="col-12 mb-2">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-primary d-flex justify-content-between align-items-center transition-all"
+            @click="loadEventsByState('start')">
+            <div class="d-flex align-items-center">
+              <div
+                class="icon-box bg-primary-subtle text-primary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px;">
+                <i class="bi bi-play-circle-fill fs-5"></i>
+              </div>
+              <div class="text-primary">
+                <div class="fw-semibold ">ກຳລັງໃຊ້ງານ</div>
+                <div class="fw-semibold ">In Use</div>
+              </div>
+            </div>
+            <h3 class="fw-bold text-primary m-0">
+              {{ bookingCounts.start }}
+            </h3>
+          </div>
+        </div>
+
+        <!-- ສຳເລັດແລ້ວ (Completed) -->
+        <div class="col-12 mb-2">
+          <div
+            class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-success d-flex justify-content-between align-items-center transition-all"
+            @click="loadEventsByState('completed')">
+            <div class="d-flex align-items-center">
+              <div
+                class="icon-box bg-success-subtle text-success rounded-circle me-3 d-flex align-items-center justify-content-center"
+                style="width: 38px; height: 38px;">
+                <i class="bi bi-check2-all fs-5"></i>
+              </div>
+              <div class="text-success">
+                <div class="fw-semibold">ສຳເລັດ</div>
+                <div class="fw-semibold">Vehicle Returned</div>
+              </div>
+            </div>
+            <h3 class="fw-bold text-success m-0">
+              {{ bookingCounts.completed }}
+            </h3>
+          </div>
+        </div>
+
+
+
+
       </div>
-      <div class="text-primary">
-    <div class="fw-semibold ">ກຳລັງໃຊ້ງານ</div>
-    <div class="fw-semibold ">In Use</div>
-</div>
     </div>
-    <h3 class="fw-bold text-primary m-0">
-      {{ bookingCounts.start }}
-    </h3>
-  </div>
-</div>
-
-<!-- ສຳເລັດແລ້ວ (Completed) -->
-<div class="col-12 mb-2">
-  <div
-    class="status-card bg-white rounded-3 p-3 shadow-xs border-start border-4 border-success d-flex justify-content-between align-items-center transition-all"
-    @click="loadEventsByState('completed')"
-  >
-    <div class="d-flex align-items-center">
-      <div
-        class="icon-box bg-success-subtle text-success rounded-circle me-3 d-flex align-items-center justify-content-center"
-        style="width: 38px; height: 38px;"
-      >
-        <i class="bi bi-check2-all fs-5"></i>
-      </div>
-        <div class="text-success">
-    <div class="fw-semibold">ສຳເລັດ</div>
-    <div class="fw-semibold">Vehicle Returned</div>
-</div>
-    </div>
-    <h3 class="fw-bold text-success m-0">
-      {{ bookingCounts.completed }}
-    </h3>
-  </div>
-</div>
-
-
-
-
-  </div>
-</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted ,computed  } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { formatDate, formatTime, isSameDate } from "../util/formatdate";
+ 
 const router = useRouter();
 import { getEvents, getBookingCounts, getEventsByState } from "../api/axios";
 import { Button } from "bootstrap";
 import { stateColors, stateTranslations } from "../util/constants";
+import QRCode from "qrcode";
+const showQrModal = ref(false);
+const qrImage = ref("");
+const qrUrl = ref("");
+
+const generateDashboardQR = async () => {
+  try {
+    // Get the current Dashboard URL
+    const currentPage = router.resolve(
+      router.currentRoute.value.fullPath
+    );
+
+    qrUrl.value = new URL(
+      currentPage.href,
+      window.location.origin
+    ).toString();
+
+    // Generate QR image
+    qrImage.value = await QRCode.toDataURL(qrUrl.value, {
+      width: 350,
+      margin: 2,
+      errorCorrectionLevel: "H",
+    });
+
+    showQrModal.value = true;
+  } catch (error) {
+    console.error("QR generation error:", error);
+    alert("Unable to generate QR Code.");
+  }
+};
+
+const downloadDashboardQR = () => {
+  if (!qrImage.value) return;
+
+  const link = document.createElement("a");
+  link.href = qrImage.value;
+  link.download = "smartbooking-dashboard-qr.png";
+  link.click();
+};
 const currentUsername = ref("");
 const currentCompany = ref("");
 const groups_ids = ref([]);
@@ -287,8 +362,8 @@ const getStateColor = (state) => {
   const stateKey = stateColors[state]
     ? state
     : Object.keys(stateTranslations).find(
-        (key) => stateTranslations[key] === state,
-      );
+      (key) => stateTranslations[key] === state,
+    );
   return stateColors[stateKey] || "";
 };
 const stateBackgroundClass = (state) => {
@@ -306,12 +381,12 @@ const stateBackgroundStyle = (state) => {
 const approvedCount = computed(() =>
   events.value.filter(item => item.row_state === 'completed').length
 )
-const goToDetail = (id) => {
+const goToDetail = (id) => { 
 
   if (!id) return;
   // Option 1: Using named route (recommended)
-  
-  router.push({ name: 'BookingDetail', params: { id }});
+
+  router.push({ name: 'BookingDetail', params: { id } });
 
   // Option 2: Using path string (uncomment if you use direct paths)
   // router.push(`/booking/detail/${id}`);
@@ -380,7 +455,7 @@ const loadEvents = async () => {
     const response = await getEvents();
     console.log(response);
     if (response.status && Array.isArray(response.data)) {
-      
+
       console.log("load events:", response);
       events.value = response.data;
     } else {
@@ -402,7 +477,25 @@ const goToNewBooking = () => {
 // ==============================
 // Mounted
 // ==============================
+
+const checkLogin = () => {
+  const token = localStorage.getItem("user-token");
+
+  if (!token) {
+    router.replace({
+      name: "Login",
+      query: {
+        redirect: route.fullPath,
+      },
+    });
+
+    return false;
+  }
+
+  return true;
+};
 onMounted(() => {
+  checkLogin();
   currentUsername.value = localStorage.getItem("username") || "User";
   currentCompany.value = localStorage.getItem("company_name") || "";
   const storedGroups = localStorage.getItem("groups_id") || "[]";
@@ -420,3 +513,34 @@ onMounted(() => {
 });
 
 </script>
+
+<style scoped>
+.qr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.qr-modal-card {
+  background: #fff;
+  width: 100%;
+  max-width: 420px;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+.qr-image {
+  width: 280px;
+  max-width: 100%;
+  padding: 10px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+</style>

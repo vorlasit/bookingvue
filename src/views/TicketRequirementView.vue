@@ -27,7 +27,7 @@
             <div class="card-header bg-light">
               <strong>
                 <i class="bi bi-plus-circle me-2"></i>
-                {{ isAssetRequest ? 'Asset Request Form' : 'Problem Report Form' }}
+                {{ isAssetRequest ? 'Asset Request Form' : 'ແບບຟອມລາຍງານບັນຫາ' }}
               </strong>
             </div>
 
@@ -68,13 +68,13 @@
                       <i class="bi bi-building"></i>
                     </div>
                     <div>
-                      <h5>Choose Department</h5>
-                      <p>Select the department related to your request.</p>
+                      <h5>ເລືອກພະແນກ</h5>
+                      <p>ເລືອກພະແນກທີ່ກ່ຽວຂ້ອງກັບຄຳຮ້ອງຂໍຂອງທ່ານ.</p>
                     </div>
                   </div>
 
                   <label class="form-label mt-4">
-                    Department <span class="text-danger">*</span>
+                    ພະແນກ <span class="text-danger">*</span>
                   </label>
 
                   <div v-if="filteredDepartments.length" class="row g-3">
@@ -111,15 +111,15 @@
                       <i class="bi bi-ui-checks"></i>
                     </div>
                     <div>
-                      <h5>Request Details</h5>
-                      <p>Select the request type and target.</p>
+                      <h5>ລາຍລະອຽດການຮ້ອງຂໍ</h5>
+                      <p>ເລືອກປະເພດການຮ້ອງຂໍ.</p>
                     </div>
                   </div>
 
                   <!-- Request Type -->
                   <div class="mt-4">
                     <label class="form-label">
-                      Request Type <span class="text-danger">*</span>
+                      ປະເພດຂອງປັນຫາ <span class="text-danger">*</span>
                     </label>
 
                     <div v-if="requestTypes.length === 0" class="alert alert-warning">
@@ -199,20 +199,20 @@
                       <i class="bi bi-card-text"></i>
                     </div>
                     <div>
-                      <h5>Describe Your Request</h5>
-                      <p>Provide details about your problem or request.</p>
+                      <h5>ອະທິບາຍຄຳຮ້ອງຂໍຂອງທ່ານ</h5>
+                      <p>ໃຫ້ລາຍລະອຽດກ່ຽວກັບບັນຫາ ຫຼື ຄຳຮ້ອງຂໍຂອງທ່ານ.</p>
                     </div>
                   </div>
 
                   <div class="mt-4">
                     <label class="form-label">
-                      Description <span class="text-danger">*</span>
+                      ລາຍລະອຽດ <span class="text-danger">*</span>
                     </label>
 
                     <textarea v-model="form.description" class="form-control wizard-description" rows="5"
                       maxlength="5000" required :placeholder="isAssetRequest
                           ? 'Describe the asset you want to request...'
-                          : 'Describe the problem...'
+                          : 'ອະທິບາຍບັນຫາ...'
                         "></textarea>
 
                     <div class="text-end small text-muted mt-1">
@@ -224,7 +224,7 @@
                   <div class="review-card mt-4">
                     <h6 class="mb-3">
                       <i class="bi bi-clipboard-check me-2"></i>
-                      Review Your Request
+                      ກວດສອບຂໍ້ມູນກ່ອນສົ່ງ
                     </h6>
 
                     <div class="review-row">
@@ -233,18 +233,18 @@
                     </div>
 
                     <div class="review-row">
-                      <span>Request Type</span>
+                      <span>ປະເພດບັນຫາ</span>
                       <strong>{{ selectedRequireTypeName }}</strong>
                     </div>
  
 
                     <div class="review-row">
-                      <span>Request Date</span>
+                      <span>ມື້ທີ່ແຈ້ງບັນຫາ</span>
                       <strong>{{ form.date || '-' }}</strong>
                     </div>
 
                     <div class="review-row">
-                      <span>Deadline</span>
+                      <span>ເວລາທີ່ຕ້ອງແລ້ວ</span>
                       <strong>{{ form.deadline || 'Not specified' }}</strong>
                     </div>
 
@@ -262,7 +262,7 @@
                   <button type="button" class="btn btn-outline-secondary" :disabled="submitting || currentStep === 1"
                     @click="previousStep">
                     <i class="bi bi-arrow-left me-1"></i>
-                    Previous
+                    ກັບກ່ອນ
                   </button>
 
                   <div class="d-flex align-items-center gap-2">
@@ -272,7 +272,7 @@
 
                     <button v-if="currentStep < wizardSteps.length" type="button" class="btn btn-primary"
                       @click="nextStep">
-                      Next
+                      ຕໍ່ໄປ
                       <i class="bi bi-arrow-right ms-1"></i>
                     </button>
 
@@ -280,7 +280,7 @@
                       <span v-if="submitting" class="spinner-border spinner-border-sm me-2"></span>
 
                       <i v-else class="bi bi-send me-1"></i>
-                      {{ submitting ? 'Submitting...' : 'Submit Request' }}
+                      {{ submitting ? 'Submitting...' : 'ແຈ້ງປັນຫາ' }}
                     </button>
                   </div>
                 </div>
@@ -334,10 +334,10 @@ const ADMIN_DEPARTMENT_ID = 1359;
 const IT_DEPARTMENT_ID = 1361;
 
 const wizardSteps = [
-  "Department",
-  "Request Type",
-  "Date & Deadline",
-  "Description",
+  "ພະແນກ",
+  "ປະເພດຂອງປັນຫາ",
+  "ມື້ ແລະ ເວລາທີ່ຕ້ອງແລ້ວ",
+  "ລາຍລະອຽດ",
 ];
 
 // =========================================================

@@ -29,9 +29,15 @@ import AdminTicketView from "../views/TicketAdminView.vue";
 import TicketITView from "../views/TicketITView.vue";
 import TicketworkView from "../views/TicketworkView.vue";
 import TicketAdminCreateView from "../views/TicketAdminCreateView.vue";
+import TicketDetailView from "../views/TicketDetailView.vue";
 import RoomBookingWizard from "../views/RoomBookingWizard.vue";
 import AssetRequestView from "../views/AssetRequestView.vue";
-
+import MyAssetRequestHistory from "../views/MyAssetRequestHistory.vue";
+import AdminAssetRequestHistory from "../views/AdminAssetRequestHistory.vue";
+import AdminAssetManagementView from "../views/AdminAssetManagementView.vue";
+import AssetRequestDetailView from "../views/AssetRequestDetailView.vue";
+import roomBookingReportView from "../views/BookingRoomReport.vue";
+import BookingCarReport from "../views/BookingCarReport.vue";
 const routes = [
   {
     path: "/choose-booking",
@@ -64,9 +70,47 @@ const routes = [
     component: MainLayout,
     children: [
       {
+        path: '/app/booking-report',
+        name: 'BookingReport',
+        component: roomBookingReportView,
+      },
+      {
+        path: '/app/booking-car-report',
+        name: 'BookingCarReport',
+        component: BookingCarReport,
+      },
+      {
+        path: "/admin/assets",
+        name: "AdminAssetManagementView",
+        component: AdminAssetManagementView,
+        meta: {
+          requiresAuth: true,
+          title: "Asset Management - Smart Booking",
+        },
+      },
+      {
+        path: "/app/asset-request/:id",
+        name: "AssetRequestDetail",
+        component: AssetRequestDetailView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "/admin/asset-requests",
+        name: "AdminAssetRequestHistory",
+        component: AdminAssetRequestHistory,
+      },
+      {
         path: "/app/asset-request",
         name: "AssetRequest",
         component: AssetRequestView,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/app/asset-request-history",
+        name: "AssetRequestHistory",
+        component: MyAssetRequestHistory,
         meta: {
           requiresAuth: true,
         },
@@ -100,6 +144,12 @@ const routes = [
         name: "TicketworkView",
         component: TicketworkView,
         meta: { requiresAuth: true, title: "ແຈ້ງບັນຫາ - Smart report" },
+      },
+      {
+        path: "/ticket/detail/:id",
+        name: "TicketDetail",
+        component: TicketDetailView,
+        meta: { requiresAuth: true },
       },
       {
         path: "/app/problem",

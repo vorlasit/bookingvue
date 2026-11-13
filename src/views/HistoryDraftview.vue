@@ -50,7 +50,8 @@
                       <span :class="statusBadgeClass(item.confirmed_state)" class="badge py-1 px-2 rounded-1 small">
                         {{ getStateLabel(item.confirmed_state) }}
                       </span> 
-                    </div>
+                    </div> 
+                    <p >{{ item.create_for_uid }}</p> 
                     <p class="text-dark small fw-medium mb-2">{{ item.description || 'ບໍ່ມີຈຸດປະສົງການເດີນທາງ' }}</p>
                     
                     <!-- Timespan Data Block -->
@@ -83,7 +84,7 @@
           </div>
         </div>
 
-      </div>
+      </div> 
     </div>
   </div>
 </template>

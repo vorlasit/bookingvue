@@ -339,10 +339,7 @@
                         class="booking-event-inline text-start w-100"
                         :style="{ color: booking.text_color || '#714b67' }"
                         :title="booking.description || booking.name"
-                        @click="
-                        
-                        (room, booking)"
-                      >
+                        @click="openBookingDetail(room, booking)" >
                         <span
                           class="booking-color-dot"
                           :style="{

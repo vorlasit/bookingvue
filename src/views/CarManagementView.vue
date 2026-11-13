@@ -19,19 +19,12 @@
           </div>
 
           <div class="d-flex gap-2">
-            <button
-              class="btn btn-outline-secondary"
-              @click="loadCars"
-              :disabled="loading"
-            >
+            <button class="btn btn-outline-secondary" @click="loadCars" :disabled="loading">
               <i class="bi bi-arrow-clockwise me-1"></i>
               ໂຫຼດໃໝ່
             </button>
 
-            <button
-              class="btn btn-primary"
-              @click="openCreateModal"
-            >
+            <button class="btn btn-primary" @click="openCreateModal">
               <i class="bi bi-plus-lg me-1"></i>
               ເພີ່ມລົດ
             </button>
@@ -47,18 +40,11 @@
     <div class="row justify-content-center">
       <div class="col-xl-11 col-12">
 
-        <div
-          v-if="errorMessage"
-          class="alert alert-danger alert-dismissible fade show"
-        >
+        <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
           {{ errorMessage }}
 
-          <button
-            type="button"
-            class="btn-close"
-            @click="errorMessage = ''"
-          ></button>
+          <button type="button" class="btn-close" @click="errorMessage = ''"></button>
         </div>
 
       </div>
@@ -149,22 +135,15 @@
                     <i class="bi bi-search"></i>
                   </span>
 
-                  <input
-                    v-model="search"
-                    type="text"
-                    class="form-control"
-                    placeholder="ຄົ້ນຫາຊື່ລົດ, ຍີ່ຫໍ້, ທະບຽນ..."
-                  />
+                  <input v-model="search" type="text" class="form-control"
+                    placeholder="ຄົ້ນຫາຊື່ລົດ, ຍີ່ຫໍ້, ທະບຽນ..." />
 
                 </div>
               </div>
 
               <div class="col-md-3">
 
-                <select
-                  v-model="stateFilter"
-                  class="form-select"
-                >
+                <select v-model="stateFilter" class="form-select">
                   <option value="">ສະຖານະທັງໝົດ</option>
                   <option value="available">ພ້ອມໃຊ້ງານ</option>
                   <option value="unavailable">ບໍ່ວ່າງ</option>
@@ -174,18 +153,15 @@
 
               </div>
               <div class="col-md-3">
-  <select v-model="useTypeFilter" class="form-select">
-    <option value="">ຮູບແບບການໃຊ້ທັງໝົດ</option>
-    <option value="borrow">ລົດສ່ວນກາງ (Borrow)</option>
-    <option value="personal">ລົດສ່ວນຕົວ (Personal)</option>
-  </select>
-</div>
+                <select v-model="useTypeFilter" class="form-select">
+                  <option value="">ຮູບແບບການໃຊ້ທັງໝົດ</option>
+                  <option value="borrow">ລົດສ່ວນກາງ (Borrow)</option>
+                  <option value="personal">ລົດສ່ວນຕົວ (Personal)</option>
+                </select>
+              </div>
               <!-- Search by Type -->
               <div class="col-md-3">
-                <select
-                  v-model="typeFilter"
-                  class="form-select"
-                >
+                <select v-model="typeFilter" class="form-select">
                   <option value="">ປະເພດລົດທັງໝົດ</option>
                   <option value="car">ເກງ</option>
                   <option value="van">ຕູ້</option>
@@ -193,7 +169,7 @@
                   <option value="truck">ບັນທຸກ</option>
                   <option value="compact">ກະປ໋ອງ</option>
                   <option value="jeep">ຈິບ</option>
-                  <option value="motorbike">ລົດຈັກ</option> 
+                  <option value="motorbike">ລົດຈັກ</option>
                 </select>
               </div>
 
@@ -207,19 +183,13 @@
 
 
     <!-- Loading -->
-    <div
-      v-if="loading"
-      class="row justify-content-center"
-    >
+    <div v-if="loading" class="row justify-content-center">
       <div class="col-xl-11 col-12">
 
         <div class="card border-0 shadow-sm rounded-3">
           <div class="card-body text-center py-5">
 
-            <div
-              class="spinner-border text-primary"
-              role="status"
-            ></div>
+            <div class="spinner-border text-primary" role="status"></div>
 
             <p class="text-muted mt-3 mb-0">
               ກຳລັງໂຫຼດຂໍ້ມູນລົດ...
@@ -233,10 +203,7 @@
 
 
     <!-- Empty -->
-    <div
-      v-else-if="filteredCars.length === 0"
-      class="row justify-content-center"
-    >
+    <div v-else-if="filteredCars.length === 0" class="row justify-content-center">
       <div class="col-xl-11 col-12">
 
         <div class="card border-0 shadow-sm rounded-3">
@@ -260,43 +227,25 @@
 
 
     <!-- Cars -->
-    <div
-      v-else
-      class="row justify-content-center"
-    >
+    <div v-else class="row justify-content-center">
       <div class="col-xl-11 col-12">
 
         <div class="row g-3">
 
-          <div
-            v-for="car in filteredCars"
-            :key="car.id"
-            class="col-12 col-md-6 col-xl-4"
-          >
+          <div v-for="car in filteredCars" :key="car.id" class="col-12 col-md-6 col-xl-4">
 
             <div class="card car-card border-0 shadow-sm rounded-3 h-100">
 
               <!-- Image -->
               <div class="car-image-wrapper">
 
-                <img
-                  v-if="car.image"
-                  :src="getImageUrl(car.image)"
-                  class="car-image"
-                  alt="car"
-                />
+                <img v-if="car.image" :src="getImageUrl(car.image)" class="car-image" alt="car" />
 
-                <div
-                  v-else
-                  class="car-image-placeholder"
-                >
+                <div v-else class="car-image-placeholder">
                   <i class="bi bi-car-front-fill"></i>
                 </div>
 
-                <span
-                  class="position-absolute top-0 end-0 m-3 badge"
-                  :class="stateBadgeClass(car.state)"
-                >
+                <span class="position-absolute top-0 end-0 m-3 badge" :class="stateBadgeClass(car.state)">
                   {{ stateLabel(car.state) }}
                 </span>
 
@@ -392,7 +341,7 @@
                     <strong>
                       {{ car.number_tanks || '-' }}
                     </strong>
-                  </div> 
+                  </div>
                   <div class="col-6">
                     <div class="text-muted">
                       <i class="bi bi-person me-1"></i>
@@ -402,9 +351,9 @@
                     <strong>
                       {{ car.number_motor || '-' }}
                     </strong>
-                  </div> 
+                  </div>
 
-                </div> 
+                </div>
 
 
                 <!-- <div
@@ -419,19 +368,12 @@
                     {{ problem.name }}
                   </span>
                 </div> -->
-<div
-  v-if="car.problem_ids?.length"
-  class="mt-3"
->
-  <button
-    type="button"
-    class="btn btn-sm btn-danger"
-    @click="showProblems(car)"
-  >
-    <i class="bi bi-exclamation-triangle me-1"></i>
-    {{ car.problem_ids.length }} ບັນຫາ
-  </button>
-</div>
+                <div v-if="car.problem_ids?.length" class="mt-3">
+                  <button type="button" class="btn btn-sm btn-danger" @click="showProblems(car)">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    {{ car.problem_ids.length }} ບັນຫາ
+                  </button>
+                </div>
               </div>
 
 
@@ -440,18 +382,12 @@
 
                 <div class="d-flex gap-2">
 
-                  <button
-                    class="btn btn-outline-primary btn-sm flex-fill"
-                    @click="openEditModal(car)"
-                  >
+                  <button class="btn btn-outline-primary btn-sm flex-fill" @click="openEditModal(car)">
                     <i class="bi bi-pencil me-1"></i>
                     ແກ້ໄຂ
                   </button>
 
-                  <button
-                    class="btn btn-outline-danger btn-sm"
-                    @click="confirmDelete(car)"
-                  >
+                  <button class="btn btn-outline-danger btn-sm" @click="confirmDelete(car)">
                     <i class="bi bi-trash"></i>
                   </button>
 
@@ -467,130 +403,87 @@
 
       </div>
     </div>
-<!-- Problem Modal -->
-<div
-  v-if="showProblemModal"
-  class="modal fade show d-block"
-  tabindex="-1"
-  style="background: rgba(0, 0, 0, 0.6);"
-  @click.self="closeProblems"
->
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <!-- Problem Modal -->
+    <div v-if="showProblemModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.6);"
+      @click.self="closeProblems">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
 
-      <div class="modal-header">
-        <div>
-          <h5 class="modal-title fw-bold">
-            <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-            ລາຍການບັນຫາລົດ
-          </h5>
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title fw-bold">
+                <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                ລາຍການບັນຫາລົດ
+              </h5>
 
-          <small
-            v-if="selectedCar"
-            class="text-muted"
-          >
-            {{ selectedCar.name }}
-            <span v-if="selectedCar.sign">
-              - {{ selectedCar.sign }}
-            </span>
-          </small>
-        </div>
+              <small v-if="selectedCar" class="text-muted">
+                {{ selectedCar.name }}
+                <span v-if="selectedCar.sign">
+                  - {{ selectedCar.sign }}
+                </span>
+              </small>
+            </div>
 
-        <button
-          type="button"
-          class="btn-close"
-          @click="closeProblems"
-        ></button>
-      </div>
+            <button type="button" class="btn-close" @click="closeProblems"></button>
+          </div>
 
-      <div class="modal-body">
+          <div class="modal-body">
 
-        <div
-          v-if="selectedCar?.problem_ids?.length"
-          class="row g-3"
-        >
-          <div
-            v-for="problem in selectedCar.problem_ids"
-            :key="problem.id"
-            class="col-md-6"
-          >
-            <div class="card h-100 border-danger shadow-sm">
+            <div v-if="selectedCar?.problem_ids?.length" class="row g-3">
+              <div v-for="problem in selectedCar.problem_ids" :key="problem.id" class="col-md-6">
+                <div class="card h-100 border-danger shadow-sm">
 
-              <!-- Problem image -->
-              <div
-                v-if="problem.image"
-                class="problem-image-wrapper"
-              >
-                <img
-                  :src="getProblemImage(problem.image)"
-                  class="problem-image"
-                  :alt="problem.name"
-                />
-              </div>
+                  <!-- Problem image -->
+                  <div v-if="problem.image" class="problem-image-wrapper">
+                    <img :src="getProblemImage(problem.image)" class="problem-image" :alt="problem.name" />
+                  </div>
 
-              <!-- No image -->
-              <div
-                v-else
-                class="problem-no-image"
-              >
-                <i class="bi bi-image text-muted fs-1"></i>
-                <small class="text-muted">
-                  ບໍ່ມີຮູບ
-                </small>
-              </div>
+                  <!-- No image -->
+                  <div v-else class="problem-no-image">
+                    <i class="bi bi-image text-muted fs-1"></i>
+                    <small class="text-muted">
+                      ບໍ່ມີຮູບ
+                    </small>
+                  </div>
 
-              <div class="card-body">
-                <h6 class="fw-bold text-danger mb-2">
-                  {{ problem.name }}
-                </h6>
+                  <div class="card-body">
+                    <h6 class="fw-bold text-danger mb-2">
+                      {{ problem.name }}
+                    </h6>
 
-                <div
-                  v-if="problem.description"
-                  class="text-muted small"
-                >
-                  {{ problem.description }}
+                    <div v-if="problem.description" class="text-muted small">
+                      {{ problem.description }}
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
             </div>
+
+            <div v-else class="text-center py-4 text-muted">
+              <i class="bi bi-check-circle fs-1 text-success"></i>
+              <p class="mt-2 mb-0">
+                ບໍ່ພົບບັນຫາ
+              </p>
+            </div>
+
           </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeProblems">
+              ປິດ
+            </button>
+          </div>
+
         </div>
-
-        <div
-          v-else
-          class="text-center py-4 text-muted"
-        >
-          <i class="bi bi-check-circle fs-1 text-success"></i>
-          <p class="mt-2 mb-0">
-            ບໍ່ພົບບັນຫາ
-          </p>
-        </div>
-
       </div>
-
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click="closeProblems"
-        >
-          ປິດ
-        </button>
-      </div>
-
     </div>
-  </div>
-</div>
 
     <!-- ====================================================== -->
     <!-- CREATE / EDIT MODAL -->
     <!-- ====================================================== -->
 
-    <div
-      v-if="showModal"
-      class="modal-backdrop-custom"
-      @click.self="closeModal"
-    >
+    <div v-if="showModal" class="modal-backdrop-custom" @click.self="closeModal">
 
       <div class="modal-dialog-custom">
 
@@ -601,9 +494,7 @@
 
             <div>
               <h5 class="modal-title fw-bold">
-                <i
-                  class="bi bi-car-front-fill text-primary me-2"
-                ></i>
+                <i class="bi bi-car-front-fill text-primary me-2"></i>
 
                 {{ editingCar ? 'ແກ້ໄຂຂໍ້ມູນລົດ' : 'ເພີ່ມລົດໃໝ່' }}
               </h5>
@@ -613,11 +504,7 @@
               </small>
             </div>
 
-            <button
-              type="button"
-              class="btn-close"
-              @click="closeModal"
-            ></button>
+            <button type="button" class="btn-close" @click="closeModal"></button>
 
           </div>
 
@@ -637,31 +524,53 @@
                     <span class="text-danger">*</span>
                   </label>
 
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="ເຊັ່ນ Toyota Fortuner"
-                    required
-                  >
+                  <input v-model="form.name" type="text" class="form-control" placeholder="ເຊັ່ນ Toyota Fortuner"
+                    required>
 
                 </div>
 
 
                 <!-- Brand -->
                 <div class="col-md-6">
-
                   <label class="form-label fw-semibold">
                     ຍີ່ຫໍ້
                   </label>
 
-                  <input
-                    v-model.number="form.brand_id"
-                    type="number"
-                    class="form-control"
-                    placeholder="Brand ID"
-                  >
+                  <div class="position-relative">
+                    <div class="input-group">
+                      <input v-model="brandSearch" type="text" class="form-control" placeholder="ຄົ້ນຫາຍີ່ຫໍ້..."
+                        autocomplete="off" @focus="showBrandDropdown = true" @input="onBrandSearch"
+                        @keydown.esc="showBrandDropdown = false" />
 
+                      <button v-if="form.brand_id" type="button" class="btn btn-outline-secondary" @click="clearBrand">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+
+                      <button v-else type="button" class="btn btn-outline-secondary"
+                        @click="showBrandDropdown = !showBrandDropdown">
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div v-if="showBrandDropdown" class="dropdown-menu show w-100 shadow"
+                      style="max-height: 250px; overflow-y: auto;">
+                      <div v-if="brandsLoading" class="dropdown-item text-muted">
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        Loading brands...
+                      </div>
+
+                      <button v-for="brand in filteredBrands" :key="brand.id" type="button" class="dropdown-item"
+                        :class="{ active: Number(form.brand_id) === Number(brand.id) }" @click="selectBrand(brand)">
+                        <i class="bi bi-tag me-2"></i>
+                        {{ brand.name }}
+                      </button>
+
+                      <div v-if="!brandsLoading && filteredBrands.length === 0" class="text-center text-muted py-3">
+                        ບໍ່ພົບຍີ່ຫໍ້
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
 
@@ -672,12 +581,7 @@
                     ປ້າຍທະບຽນ
                   </label>
 
-                  <input
-                    v-model="form.sign"
-                    type="text"
-                    class="form-control"
-                    placeholder="ເຊັ່ນ ກກ 1234"
-                  >
+                  <input v-model="form.sign" type="text" class="form-control" placeholder="ເຊັ່ນ ກກ 1234">
 
                 </div>
 
@@ -689,13 +593,7 @@
                     ຈຳນວນບ່ອນນັ່ງ
                   </label>
 
-                  <input
-                    v-model.number="form.capacity"
-                    type="number"
-                    min="0"
-                    class="form-control"
-                    placeholder="7"
-                  >
+                  <input v-model.number="form.capacity" type="number" min="0" class="form-control" placeholder="7">
 
                 </div>
 
@@ -707,10 +605,7 @@
                     ປະເພດລົດ
                   </label>
 
-                  <select
-                    v-model="form.vehicle_type"
-                    class="form-select"
-                  >
+                  <select v-model="form.vehicle_type" class="form-select">
                     <option value="car">Car</option>
                     <option value="van">Van</option>
                     <option value="pickup">Pickup</option>
@@ -731,12 +626,7 @@
                     ສີ
                   </label>
 
-                  <input
-                    v-model="form.color"
-                    type="text"
-                    class="form-control"
-                    placeholder="White"
-                  >
+                  <input v-model="form.color" type="text" class="form-control" placeholder="White">
 
                 </div>
 
@@ -748,10 +638,7 @@
                     ສະຖານະ
                   </label>
 
-                  <select
-                    v-model="form.state"
-                    class="form-select"
-                  >
+                  <select v-model="form.state" class="form-select">
                     <option value="available">
                       ພ້ອມໃຊ້ງານ
                     </option>
@@ -779,10 +666,7 @@
                     ຮູບແບບການໃຊ້
                   </label>
 
-                  <select
-                    v-model="form.use_type"
-                    class="form-select"
-                  >
+                  <select v-model="form.use_type" class="form-select">
                     <option value="borrow">
                       Borrow
                     </option>
@@ -802,11 +686,7 @@
                     ເລກ Motor
                   </label>
 
-                  <input
-                    v-model="form.number_motor"
-                    type="text"
-                    class="form-control"
-                  >
+                  <input v-model="form.number_motor" type="text" class="form-control">
 
                 </div>
 
@@ -818,11 +698,7 @@
                     ເລກຖັງ
                   </label>
 
-                  <input
-                    v-model="form.number_tanks"
-                    type="text"
-                    class="form-control"
-                  >
+                  <input v-model="form.number_tanks" type="text" class="form-control">
 
                 </div>
 
@@ -834,10 +710,7 @@
                     Tall Type
                   </label>
 
-                  <select
-                    v-model="form.tall_type"
-                    class="form-select"
-                  >
+                  <select v-model="form.tall_type" class="form-select">
                     <option value="short">
                       Short
                     </option>
@@ -850,131 +723,92 @@
                 </div>
 
 
-                <!-- Responsible User --> 
-<div class="col-md-4">
-  <label class="form-label fw-semibold">
-    ຜູ້ຮັບຜິດຊອບ
-  </label>
+                <!-- Responsible User -->
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">
+                    ຜູ້ຮັບຜິດຊອບ
+                  </label>
 
-  <div class="position-relative">
-    <div
-      class="form-control d-flex align-items-center gap-2"
-      style="cursor: text; min-height: 38px;"
-      @click="showResponsiveDropdown = true"
-    >
-      <i class="bi bi-person text-muted"></i>
+                  <div class="position-relative">
+                    <div class="form-control d-flex align-items-center gap-2" style="cursor: text; min-height: 38px;"
+                      @click="showResponsiveDropdown = true">
+                      <i class="bi bi-person text-muted"></i>
 
-      <!-- Selected responsible user -->
-      <span v-if="responsiveFilter" class="flex-grow-1">
-        {{ responsiveFilter.name }}
-      </span>
+                      <!-- Selected responsible user -->
+                      <span v-if="responsiveFilter" class="flex-grow-1">
+                        {{ responsiveFilter.name }}
+                      </span>
 
-      <!-- Search input -->
-      <input
-        v-else
-        v-model="responsiveSearch"
-        type="text"
-        class="border-0 flex-grow-1"
-        style="outline: none; min-width: 0;"
-        placeholder="ຄົ້ນຫາຜູ້ຮັບຜິດຊອບ..."
-        @focus="showResponsiveDropdown = true"
-        @input="showResponsiveDropdown = true"
-        @keydown.esc="showResponsiveDropdown = false"
-      />
+                      <!-- Search input -->
+                      <input v-else v-model="responsiveSearch" type="text" class="border-0 flex-grow-1"
+                        style="outline: none; min-width: 0;" placeholder="ຄົ້ນຫາຜູ້ຮັບຜິດຊອບ..."
+                        @focus="showResponsiveDropdown = true" @input="showResponsiveDropdown = true"
+                        @keydown.esc="showResponsiveDropdown = false" />
 
-      <!-- Clear selected user -->
-      <button
-        v-if="responsiveFilter"
-        type="button"
-        class="btn btn-sm p-0 ms-auto"
-        @click.stop="
-          responsiveFilter = null;
-          form.responsive_uid = null;
-          responsiveSearch = '';
-          showResponsiveDropdown = true;
-        "
-      >
-        <i class="bi bi-x-circle text-muted"></i>
-      </button>
+                      <!-- Clear selected user -->
+                      <button v-if="responsiveFilter" type="button" class="btn btn-sm p-0 ms-auto" @click.stop="
+                        responsiveFilter = null;
+                      form.responsive_uid = null;
+                      responsiveSearch = '';
+                      showResponsiveDropdown = true;
+                      ">
+                        <i class="bi bi-x-circle text-muted"></i>
+                      </button>
 
-      <i
-        v-else
-        class="bi bi-chevron-down ms-auto text-muted"
-      ></i>
-    </div>
+                      <i v-else class="bi bi-chevron-down ms-auto text-muted"></i>
+                    </div>
 
-    <!-- User dropdown -->
-    <div
-      v-if="showResponsiveDropdown"
-      class="dropdown-menu show w-100 shadow"
-      style="
+                    <!-- User dropdown -->
+                    <div v-if="showResponsiveDropdown" class="dropdown-menu show w-100 shadow" style="
         max-height: 250px;
         overflow-y: auto;
         position: absolute;
         top: 100%;
         left: 0;
         z-index: 1050;
-      "
-    >
-      <!-- Current selection shown first -->
-      <button
-        v-if="responsiveFilter"
-        type="button"
-        class="dropdown-item active"
-        @click="
-          form.responsive_uid = responsiveFilter.id;
-          showResponsiveDropdown = false;
-        "
-      >
-        <i class="bi bi-check-circle me-2"></i>
-        {{ responsiveFilter.name }}
-        <small class="ms-1">(Selected)</small>
-      </button>
+      ">
+                      <!-- Current selection shown first -->
+                      <button v-if="responsiveFilter" type="button" class="dropdown-item active" @click="
+                        form.responsive_uid = responsiveFilter.id;
+                      showResponsiveDropdown = false;
+                      ">
+                        <i class="bi bi-check-circle me-2"></i>
+                        {{ responsiveFilter.name }}
+                        <small class="ms-1">(Selected)</small>
+                      </button>
 
-      <!-- Other searchable users -->
-      <button
-        v-for="user in filteredResponsiveUsers.filter(
-          user => Number(user.id) !== Number(responsiveFilter?.id)
-        )"
-        :key="user.id"
-        type="button"
-        class="dropdown-item"
-        @click="
-          responsiveFilter = user;
-          form.responsive_uid = user.id;
-          responsiveSearch = '';
-          showResponsiveDropdown = false;
-        "
-      >
-        <i class="bi bi-person me-2"></i>
-        {{ user.name }}
+                      <!-- Other searchable users -->
+                      <button v-for="user in filteredResponsiveUsers.filter(
+                        user => Number(user.id) !== Number(responsiveFilter?.id)
+                      )" :key="user.id" type="button" class="dropdown-item" @click="
+                        responsiveFilter = user;
+                      form.responsive_uid = user.id;
+                      responsiveSearch = '';
+                      showResponsiveDropdown = false;
+                      ">
+                        <i class="bi bi-person me-2"></i>
+                        {{ user.name }}
 
-        <small v-if="user.login" class="text-muted ms-1">
-          ({{ user.login }})
-        </small>
-      </button>
+                        <small v-if="user.login" class="text-muted ms-1">
+                          ({{ user.login }})
+                        </small>
+                      </button>
 
-      <div
-        v-if="
-          filteredResponsiveUsers.filter(
-            user => Number(user.id) !== Number(responsiveFilter?.id)
-          ).length === 0 && !responsiveFilter
-        "
-        class="text-muted text-center py-3"
-      >
-        ບໍ່ພົບຜູ້ໃຊ້
-      </div>
-    </div>
-  </div>
-</div> 
+                      <div v-if="
+                        filteredResponsiveUsers.filter(
+                          user => Number(user.id) !== Number(responsiveFilter?.id)
+                        ).length === 0 && !responsiveFilter
+                      " class="text-muted text-center py-3">
+                        ບໍ່ພົບຜູ້ໃຊ້
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
 
               <!-- Form Error -->
-              <div
-                v-if="formError"
-                class="alert alert-danger mt-3 mb-0"
-              >
+              <div v-if="formError" class="alert alert-danger mt-3 mb-0">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 {{ formError }}
               </div>
@@ -987,31 +821,15 @@
           <!-- Modal Footer -->
           <div class="modal-footer border-0 px-4 pb-4">
 
-            <button
-              type="button"
-              class="btn btn-light"
-              @click="closeModal"
-              :disabled="saving"
-            >
+            <button type="button" class="btn btn-light" @click="closeModal" :disabled="saving">
               ຍົກເລີກ
             </button>
 
-            <button
-              type="button"
-              class="btn btn-primary px-4"
-              @click="saveCar"
-              :disabled="saving"
-            >
+            <button type="button" class="btn btn-primary px-4" @click="saveCar" :disabled="saving">
 
-              <span
-                v-if="saving"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
+              <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
 
-              <i
-                v-else
-                class="bi bi-check-lg me-1"
-              ></i>
+              <i v-else class="bi bi-check-lg me-1"></i>
 
               {{ saving ? 'ກຳລັງບັນທຶກ...' : 'ບັນທຶກ' }}
 
@@ -1030,11 +848,7 @@
     <!-- DELETE CONFIRM MODAL -->
     <!-- ====================================================== -->
 
-    <div
-      v-if="showDeleteModal"
-      class="modal-backdrop-custom"
-      @click.self="showDeleteModal = false"
-    >
+    <div v-if="showDeleteModal" class="modal-backdrop-custom" @click.self="showDeleteModal = false">
 
       <div class="delete-modal">
 
@@ -1062,29 +876,15 @@
 
           <div class="d-flex justify-content-center gap-2">
 
-            <button
-              class="btn btn-light px-4"
-              @click="showDeleteModal = false"
-              :disabled="deleting"
-            >
+            <button class="btn btn-light px-4" @click="showDeleteModal = false" :disabled="deleting">
               ຍົກເລີກ
             </button>
 
-            <button
-              class="btn btn-danger px-4"
-              @click="deleteCar"
-              :disabled="deleting"
-            >
+            <button class="btn btn-danger px-4" @click="deleteCar" :disabled="deleting">
 
-              <span
-                v-if="deleting"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
+              <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
 
-              <i
-                v-else
-                class="bi bi-trash me-1"
-              ></i>
+              <i v-else class="bi bi-trash me-1"></i>
 
               ລົບ
             </button>
@@ -1110,6 +910,7 @@ import {
   updateCar,
   deleteCar as deleteCarAPI,
   getBookingUsers,
+  getCarBrands
 } from '../api/axios'
 
 
@@ -1138,13 +939,69 @@ const deleting = ref(false)
 
 const users = ref([])
 const usersLoading = ref(false)
-const showProblemModal = ref(false) 
+const showProblemModal = ref(false)
 
 const responsiveFilter = ref(null)
 const responsiveSearch = ref('')
 const showResponsiveDropdown = ref(false)
-const typeFilter = ref(""); 
- 
+const typeFilter = ref("");
+const brands = ref([])
+const brandsLoading = ref(false)
+
+const brandSearch = ref('')
+const showBrandDropdown = ref(false)
+
+const filteredBrands = computed(() => {
+  const keyword = brandSearch.value.trim().toLowerCase()
+
+  if (!keyword) {
+    return brands.value
+  }
+
+  return brands.value.filter(brand =>
+    brand.name?.toLowerCase().includes(keyword)
+  )
+})
+const loadBrands = async () => {
+  brandsLoading.value = true
+
+  try {
+    const response = await getCarBrands()
+
+    if (response?.status === true) {
+      brands.value = Array.isArray(response.data)
+        ? response.data
+        : []
+    } else {
+      brands.value = []
+    }
+
+  } catch (error) {
+    console.error('Load brands error:', error)
+    brands.value = []
+
+  } finally {
+    brandsLoading.value = false
+  }
+}
+const selectBrand = (brand) => {
+  form.value.brand_id = Number(brand.id)
+  brandSearch.value = brand.name
+  showBrandDropdown.value = false
+}
+
+const clearBrand = () => {
+  form.value.brand_id = null
+  brandSearch.value = ''
+  showBrandDropdown.value = true
+}
+
+const onBrandSearch = () => {
+  showBrandDropdown.value = true
+
+  // Clear old selection when user changes the search text
+  form.value.brand_id = null
+}
 const filteredResponsiveUsers = computed(() => {
   const keyword = responsiveSearch.value.trim().toLowerCase()
 
@@ -1320,9 +1177,9 @@ const loadCars = async () => {
     const response = await getCars()
 
     if (response) {
-        console.log('Load cars response:', response.data)
+      console.log('Load cars response:', response.data)
       cars.value = response.data
-         
+
 
     } else {
 
@@ -1355,13 +1212,15 @@ const loadCars = async () => {
 // ============================================================
 
 const openCreateModal = () => {
-
   editingCar.value = null
   form.value = emptyForm()
 
   responsiveFilter.value = null
   responsiveSearch.value = ''
   showResponsiveDropdown.value = false
+
+  brandSearch.value = ''
+  showBrandDropdown.value = false
 
   formError.value = ''
   showModal.value = true
@@ -1371,7 +1230,7 @@ const openCreateModal = () => {
 // ============================================================
 // EDIT
 // ============================================================
- 
+
 const openEditModal = (car) => {
   editingCar.value = car
 
@@ -1394,14 +1253,14 @@ const openEditModal = (car) => {
 
     responsive_uids: Array.isArray(car.responsive_uids)
       ? car.responsive_uids.map(item =>
-          typeof item === 'object' ? Number(item.id) : Number(item)
-        )
+        typeof item === 'object' ? Number(item.id) : Number(item)
+      )
       : [],
 
     problem_ids: Array.isArray(car.problem_ids)
       ? car.problem_ids.map(item =>
-          typeof item === 'object' ? item.id : item
-        )
+        typeof item === 'object' ? item.id : item
+      )
       : [],
   }
 
@@ -1415,14 +1274,43 @@ const openEditModal = (car) => {
   const selectedUser = users.value.find(
     user => Number(user.id) === responsibleId
   )
+  // Support Odoo Many2one values:
+  // [id, name], {id, name}, or numeric ID
 
+  let brandId = null
+  let brandName = ''
+
+  if (Array.isArray(car.brand_id)) {
+    brandId = Number(car.brand_id[0])
+    brandName = car.brand_id[1] || ''
+
+  } else if (typeof car.brand_id === 'object' && car.brand_id) {
+    brandId = Number(car.brand_id.id)
+    brandName = car.brand_id.name || ''
+
+  } else if (car.brand_id) {
+    brandId = Number(car.brand_id)
+  }
+
+  const selectedBrand = brands.value.find(
+    brand => Number(brand.id) === brandId
+  )
+
+  brandSearch.value =
+    selectedBrand?.name ||
+    brandName ||
+    car.brand_name ||
+    ''
+
+  form.value.brand_id = brandId
+  showBrandDropdown.value = false
   responsiveFilter.value = selectedUser || null
   responsiveSearch.value = ''
   showResponsiveDropdown.value = false
 
   formError.value = ''
   showModal.value = true
-} 
+}
 const selectedUser = users.value.find(
   user => Number(user.id) === Number(car.responsive_uid)
 )
@@ -1683,6 +1571,7 @@ const getImageUrl = (image) => {
 onMounted(() => {
   loadCars()
   loadUsers()
+  loadBrands()
 })
 </script>
 
@@ -1709,6 +1598,7 @@ onMounted(() => {
   justify-content: center;
   background: #f8f9fa;
 }
+
 .car-card {
   overflow: hidden;
   transition: all 0.25s ease;
@@ -1763,7 +1653,7 @@ onMounted(() => {
 .modal-dialog-custom {
   width: 100%;
   max-width: 720px;
-background-color: aliceblue;
+  background-color: aliceblue;
   margin: auto;
 }
 
@@ -1817,5 +1707,4 @@ background-color: aliceblue;
   }
 
 }
-
 </style>

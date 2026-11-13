@@ -12,7 +12,15 @@
         </div>
 
         <div>
-          <div class="brand-name">{{ bookingType === 'room' ? 'Room Booking' : 'Car Booking' }}</div>
+          <div class="brand-name">
+            {{
+              bookingType === 'room' ? 'Room Booking' :
+                bookingType === 'car' ? 'Car Booking' :
+                  bookingType === 'asset' ? 'Requisition' :
+                    bookingType === 'problem' ? 'Problem Report' :
+            'Booking'
+            }}
+          </div>
           <small>Powered by KCC</small><br />
           <small>
             <a href="https://khouanchay.com" target="_self" class="text-decoration-none text-light">
@@ -34,6 +42,35 @@
             <span>Change Service</span>
           </span>
         </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/app/asset-request" class="menu-item">
+          <i class="bi bi-cloud-plus-fill"></i>
+          <span class="menu-text">
+            <span>ສ້າງໃບເບີກເຄື່ອງໃຊ້</span>
+            <span>Requisition form</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/app/asset-request-history" class="menu-item">
+          <i class="bi bi-tag-fill"></i>
+          <span class="menu-text">
+            <span>ການເບີກຂອງຂ້ອຍ</span>
+            <span>My Requisition</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/admin/asset-requests" class="menu-item">
+          <i class="bi bi-list-nested"></i>
+          <span class="menu-text">
+            <span>ລາຍການເບີກເຄື່ອງໃຊ້</span>
+            <span>Asset Requests</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/admin/assets" class="menu-item">
+          <i class="bi bi-box-seam me-2"></i>
+          <span class="menu-text">
+            <span>ຈັດການເຄື່ອງໃຊ້</span>
+            <span>Asset Management</span>
+          </span> 
+        </router-link>
+
         <router-link v-if="bookingType === 'problem'" to="/app/ticket-dashboard" class="menu-item">
           <i class="bi bi-ticket-detailed-fill"></i>
           <span class="menu-text">
@@ -41,24 +78,22 @@
             <span>Problem Report</span>
           </span>
         </router-link>
-        <router-link
-          v-if="bookingType === 'problem' && (
-      groups_ids.includes('ticket.group_kc_ticket_it_manager') ||
-      groups_ids.includes('ticket.group_kc_ticket_admin_manager')
-    )"
-          to="/app/my-ticket" class="menu-item">
+        <router-link v-if="bookingType === 'problem' && (
+          groups_ids.includes('ticket.group_kc_ticket_it_manager') ||
+          groups_ids.includes('ticket.group_kc_ticket_admin_manager')
+        )" to="/app/my-ticket" class="menu-item">
           <i class="bi bi-clock-history"></i>
           <span class="menu-text">
             <span>ປັນຫາທີ່ຕ້ອງແກ້</span>
-            <span>Problem solved</span> 
+            <span>Problem solved</span>
           </span>
-            <span v-if="draftToCount > 0" class="draft-count-badge">
-              {{ draftToCount }}
-            </span>
+          <span v-if="draftToCount > 0" class="draft-count-badge">
+            {{ draftToCount }}
+          </span>
         </router-link>
         <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_it_manager')"
           to="/app/ticket-it" class="menu-item">
-          <i class="bi bi-clock-history"></i>
+          <i class="bi bi-ticket-detailed"></i>
           <span class="menu-text">
             <span>ລາຍການບັນຫາ IT</span>
             <span>Problem List</span>
@@ -66,7 +101,7 @@
         </router-link>
         <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_admin_manager')"
           to="/app/ticket-admin" class="menu-item">
-          <i class="bi bi-clock-history"></i>
+          <i class="bi bi-ticket-detailed"></i>
           <span class="menu-text">
             <span>ລາຍການບັນຫາ ADMIN</span>
             <span>Problem List</span>
@@ -163,6 +198,15 @@
 
           </div>
         </div>
+        
+        <router-link v-if="bookingType === 'car' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+          to="/app/booking-car-report" class="menu-item">
+          <i class="bi bi-flag-fill"></i>
+          <span class="menu-text">
+            <span>ລາຍງານການຈອງ</span>
+            <span>Booking Report</span>
+          </span>
+        </router-link>
 
         <router-link v-if="bookingType === 'room'" to="/app/roomtype" class="menu-item">
           <i class="bi bi-door-open-fill"></i>
@@ -178,7 +222,7 @@
             <span>My Room Bookings</span>
           </span>
         </router-link>
-        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_book_manager')"
           to="/room-booking-approval" class="menu-item d-flex align-items-center">
           <i class="bi bi-check-circle me-2"></i>
 
@@ -191,7 +235,7 @@
             {{ draftRoomCount }}
           </span>
         </router-link>
-        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_book_manager')"
           to="/room-booking-management" class="menu-item">
           <i class="bi bi-door-open-fill"></i>
           <span class="menu-text">
@@ -199,12 +243,20 @@
             <span>Booking Management</span>
           </span>
         </router-link>
-        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_vehicle_manager')"
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_book_manager')"
           to="/room-management" class="menu-item">
           <i class="bi bi-door-open"></i>
           <span class="menu-text">
             <span>ຈັດການຫ້ອງປະຊຸມ</span>
             <span>Room Management</span>
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'room' && groups_ids.includes('booking.group_kc_book_manager')"
+          to="/app/booking-report" class="menu-item">
+          <i class="bi bi-flag-fill"></i>
+          <span class="menu-text">
+            <span>ລາຍງານການຈອງ</span>
+            <span>Booking Report</span>
           </span>
         </router-link>
         <!-- <router-link to="/profile" class="menu-item">
@@ -297,9 +349,6 @@
             aria-label="Scan another room" title="Scan another room">
             <i class="bi bi-qr-code-scan"></i>
           </button>
-
-
-
           <div class="profile-dropdown">
 
             <button class="mobile-profile" type="button" @click="toggleProfileMenu">
@@ -333,24 +382,59 @@
 
     <!-- =========================
          MOBILE BOTTOM BAR (3 items including Candybox)
-    ========================== -->
+    ========================== --> 
     <nav class="mobile-bottom-nav">
       <!-- ເມນູຫຼັກ 1: Home -->
       <router-link to="/choose-booking" class="bottom-item">
         <i class="bi bi-grid-3x3-gap-fill"></i>
         <span class="menu-text">
-          <span>ເລືອກບໍລິການ</span>
-
+          <span>ເລືອກບໍລິການ</span> 
         </span>
       </router-link>
+      
+        <router-link v-if="bookingType === 'asset'" to="/app/asset-request" class="bottom-item">
+          <i class="bi bi-cloud-plus-fill"></i>
+          <span class="menu-text">
+            <span>ສ້າງໃບເບີກເຄື່ອງໃຊ້</span> 
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/app/asset-request-history" class="bottom-item">
+          <i class="bi bi-tag-fill"></i>
+          <span class="menu-text">
+            <span>ການເບີກຂອງຂ້ອຍ</span> 
+          </span>
+        </router-link>
+        <router-link v-if="bookingType === 'asset'" to="/admin/asset-requests" class="bottom-item">
+          <i class="bi bi-list-nested"></i>
+          <span class="menu-text">
+            <span>ລາຍການເບີກເຄື່ອງໃຊ້</span> 
+          </span>
+        </router-link> 
+      <router-link v-if="bookingType === 'problem'" to="/app/ticket-dashboard" class="bottom-item">
+        <i class="bi bi-ticket-detailed-fill"></i>
+        <span class="menu-text">
+          <span>ແຈ້ງບັນຫາ</span>
+        </span>
+      </router-link>
+      <router-link v-if="bookingType === 'problem' && (
+        groups_ids.includes('ticket.group_kc_ticket_it_manager') ||
+        groups_ids.includes('ticket.group_kc_ticket_admin_manager')
+      )" to="/app/my-ticket" class="bottom-item">
+        <i class="bi bi-ticket-detailed"></i>
+        <span class="menu-text">
+          <span>ປັນຫາທີ່ຕ້ອງແກ້</span>
+        </span>
+        <span v-if="draftToCount > 0" class="draft-count-badge">
+          {{ draftToCount }}
+        </span>
+      </router-link>
+
       <router-link :to="{ path: '/app/dashboard', query: { type: bookingType } }" v-if="bookingType === 'car'"
         class="bottom-item">
         <i class="bi bi-house-door"></i>
         <span class="menu-text">
           <span>Home</span>
-
         </span>
-
       </router-link>
 
       <router-link v-if="bookingType === 'room'" to="/app/roomtype" class="bottom-item">
@@ -397,6 +481,31 @@
         </div>
         <div class="candybox-body mb-5">
           <div class="candybox-grid">
+        <router-link v-if="bookingType === 'asset'" to="/admin/assets" class="candybox-item">
+          <i class="bi bi-box-seam me-2"></i>
+          <span class="menu-text">
+            <span>ຈັດການເຄື່ອງໃຊ້</span> 
+                <span>Item Management</span>
+          </span> 
+        </router-link>
+
+            <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_it_manager')"
+              to="/app/ticket-it" class="candybox-item">
+              <i class="bi bi-ticket"></i>
+              <span class="menu-text">
+                <span>ລາຍການບັນຫາ IT</span>
+                <span>List IT</span>
+
+              </span>
+            </router-link>
+            <router-link v-if="bookingType === 'problem' && groups_ids.includes('ticket.group_kc_ticket_admin_manager')"
+              to="/app/ticket-admin" class="candybox-item">
+              <i class="bi bi-ticket"></i>
+              <span class="menu-text">
+                <span>ລາຍການບັນຫາ ADMIN</span>
+                <span>List ADMIN</span>
+              </span>
+            </router-link>
 
             <!-- Admin -->
             <router-link to="/app/DashboardAdmin" class="candybox-item"
@@ -514,7 +623,7 @@ import { getToTickets } from "../api/ticket";
 const draftToCount = ref(0);
 
 const loadDraftToCount = async () => {
- 
+
 
   try {
     const response = await getToTickets();
@@ -848,7 +957,7 @@ onMounted(async () => {
   draftCountTimer = setInterval(() => {
     fetchDraftCount();
   }, 3000);
-  
+
   // Refresh ticket draft count every 30 seconds
   draftToCountTimer = setInterval(() => {
     loadDraftToCount();

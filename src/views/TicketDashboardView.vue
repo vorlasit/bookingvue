@@ -4,13 +4,13 @@
     <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
       <div>
-        <h4 class="mb-1">Ticket Dashboard</h4> 
+        <h4 class="mb-1">ປັນຫາຂອງຂ້ອຍ</h4> 
       </div>
 
       <div class="d-flex flex-wrap gap-2">
         <button class="btn btn-outline-primary" @click="goToProblem">
           <i class="bi bi-exclamation-circle me-1"></i>
-          Report Problem
+          ລາຍງານປັນຫາ
         </button>
       </div>
     </div>
@@ -187,22 +187,30 @@
                 <span class="ticket-time">
                   {{ formatDate(ticket.date) }}
                 </span>
-
+ 
               </div>
 
               <!-- Description -->
               <div class="ticket-description">
-                {{ ticket.description || '-' }}
+                {{ ticket.description || '-' }} 
               </div>
-
-              <!-- Ticket Reference -->
-              <div class="ticket-reference">
+ 
+            <!-- Employee and status on the same line -->
+            <div class="ticket-reference d-flex justify-content-between align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
                 <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
 
-                <span v-if="getTargetReference(ticket)">
-                  · {{ getTargetReference(ticket) }}
+                <span v-if="ticket.in_progress_user_id[0] " class="badge bg-info text-dark">
+                  ຜູ້ຮັບ
+                  <i class="bi bi-person me-1"></i>
+                  {{ ticket.in_progress_user_id[1]}}
                 </span>
               </div>
+
+              <span class="status-badge" :class="statusClass(ticket.state)">
+                {{ formatStatus(ticket.state) }}
+              </span>
+            </div>
 
             </div>
 
@@ -224,6 +232,11 @@
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Ticket #{{ selectedTicket.id }}</h5>
+          
+            <div class="col-6"> 
+              <div>{{ formatStatus(selectedTicket.state) }}</div>
+            </div>
+
           <button class="btn-close" @click="selectedTicket = null"></button>
         </div>
 
@@ -241,17 +254,7 @@
             </div>
           </div>
 
-          <div class="row g-3">
-            <div class="col-6">
-              <label class="detail-label">Priority</label>
-              <div>{{ formatPriority(selectedTicket.priority) }}</div>
-            </div>
-
-            <div class="col-6">
-              <label class="detail-label">Status</label>
-              <div>{{ formatStatus(selectedTicket.state) }}</div>
-            </div>
-
+          <div class="row g-3">  
             <div class="col-6">
               <label class="detail-label">Request Date</label>
               <div>{{ formatDate(selectedTicket.date) }}</div>
@@ -260,6 +263,13 @@
             <div class="col-6">
               <label class="detail-label">Deadline</label>
               <div>{{ formatDate(selectedTicket.deadline) }}</div>
+            </div>
+            <div class="col-6" v-if="selectedTicket.in_progress_user_id[0] ">
+              <label class="detail-label">ຜູ້ຮັບ</label> 
+                <span class="badge bg-info text-dark">
+                  <i class="bi bi-person me-1"></i>
+                  {{ selectedTicket.in_progress_user_id[1]}}
+                </span>
             </div>
 
             <div class="col-12" v-if="selectedTicket.solution">

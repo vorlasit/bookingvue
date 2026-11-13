@@ -13,11 +13,11 @@
         Refresh
       </button>
     </div>
- 
+
     <!-- Statistics -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-xl-3">
-        <div class="stat-card" :class=" { 'stat-card-active': activeFilter === 'draft' }" @click="setFilter('draft')">
+        <div class="stat-card" :class="{ 'stat-card-active': activeFilter === 'draft' }" @click="setFilter('draft')">
           <div class="stat-label">Draft Tickets</div>
           <div class="stat-number">{{ countState('draft') }}</div>
         </div>
@@ -63,7 +63,7 @@
           </div>
 
           <div class="col-md-4">
-            <span class="rounded bg-secondary btn">Total {{ tickets.length }}</span>
+            <!-- <span class="rounded bg-secondary btn">Total {{ tickets.length }}</span> -->
             <!-- <select v-model="activeFilter" class="form-select">
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
@@ -71,7 +71,90 @@
               <option value="done">Done</option>
               <option value="rejected">Rejected</option>
             </select> -->
+            <!-- Ticket Ownership Filter -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <button class="btn" :class="ticketView === 'all' ? 'btn-primary' : 'btn-outline-primary'"
+                @click="setTicketView('all')">
+                <i class="bi bi-list-ul me-1"></i>
+                All
+              </button>
+
+              <button class="btn" :class="ticketView === 'received' ? 'btn-primary' : 'btn-outline-primary'"
+                @click="setTicketView('received')">
+                <i class="bi bi-person-check me-1"></i>
+                My Received Tickets
+                <span class="badge bg-light text-primary ms-1">
+                  {{ countReceivedTickets }}
+                </span>
+              </button>
+            </div>
           </div>
+        </div>
+        <!-- Ticket Type Filter Cards -->
+        <div class="row g-3 mb-4">
+
+          <!-- All Types -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'all' }"
+              @click="selectedType = 'all'">
+              <div class="stat-label">All Types</div>
+              <div class="stat-number">
+                {{ tickets.length }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Problem -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'internet' }"
+              @click="selectedType = 'internet'">
+              <div class="stat-label">Internet</div>
+              <div class="stat-number text-danger">
+                {{ countType('internet') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Problem Report -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'item_problem' }"
+              @click="selectedType = 'item_problem'">
+              <div class="stat-label">item_problem</div>
+              <div class="stat-number text-primary">
+                {{ countType('item_problem') }}
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'technical' }"
+              @click="selectedType = 'technical'">
+              <div class="stat-label">technical</div>
+              <div class="stat-number text-primary">
+                {{ countType('technical') }}
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'system_support' }"
+              @click="selectedType = 'system_support'">
+              <div class="stat-label">system_support</div>
+              <div class="stat-number text-primary">
+                {{ countType('system_support') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- other -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'other' }"
+              @click="selectedType = 'other'">
+              <div class="stat-label">Others</div>
+              <div class="stat-number text-success">
+                {{ countType('other') }}
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div v-if="loading" class="text-center py-5">
@@ -91,49 +174,41 @@
           <p class="text-muted mt-3 mb-0">No tickets found.</p>
         </div>
         <div v-else class="ticket-list">
-  <div
-    v-for="ticket in filteredTickets"
-    :key="ticket.id"
-    class="ticket-item"
-    @click="openTicket(ticket)"
-  >
-    <!-- Type and date -->
-    <div class="ticket-item-top">
-      <span class="ticket-pill ticket-type-pill">
-        {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
-      </span>
+          <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)">
+            <!-- Type and date -->
+            <div class="ticket-item-top">
+              <span class="ticket-pill ticket-type-pill">
+                {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
+              </span>
 
-      <span class="ticket-time">
-        {{ formatDate(ticket.date) }}
-      </span>
-    </div>
+              <span class="ticket-time">
+                {{ formatDate(ticket.date) }}
+              </span>
+            </div>
 
-    <!-- Description -->
-    <div class="ticket-description">
-      {{ ticket.description || '-' }}
-    </div>
+            <!-- Description -->
+            <div class="ticket-description">
+              {{ ticket.description || '-' }}
+            </div>
 
-    <!-- Employee and status on the same line -->
-    <div class="ticket-reference d-flex justify-content-between align-items-center gap-2">
-      <div class="d-flex align-items-center gap-2 flex-wrap">
-        <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
+            <!-- Employee and status on the same line -->
+            <div class="ticket-reference d-flex justify-content-between align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
 
-        <span
-          v-if="ticket.employee_name || ticket.req_employee_name"
-          class="badge bg-info text-dark"
-        >
-          <i class="bi bi-person me-1"></i>
-          {{ ticket.employee_name || ticket.req_employee_name }}
-        </span>
-      </div>
+                <span v-if="ticket.employee_name || ticket.req_employee_name" class="badge bg-info text-dark">
+                  <i class="bi bi-person me-1"></i>
+                  {{ ticket.employee_name || ticket.req_employee_name }}
+                </span>
+              </div>
 
-      <span class="status-badge" :class="statusClass(ticket.state)">
-        {{ formatStatus(ticket.state) }}
-      </span>
-    </div>
-  </div>
- 
-</div>
+              <span class="status-badge" :class="statusClass(ticket.state)">
+                {{ formatStatus(ticket.state) }}
+              </span>
+            </div>
+          </div>
+
+        </div>
 
         <div class="text-muted small mt-2">
           Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets
@@ -169,7 +244,7 @@
             </div>
           </div>
 
-          <div class="row g-3 mb-3"> 
+          <div class="row g-3 mb-3">
             <div class="col-6">
               <label class="detail-label">Request Date</label>
               <div>{{ formatDate(selectedTicket.date) }}</div>
@@ -202,17 +277,20 @@
               Cancel
             </button>
 
-            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')" v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-arrow-repeat me-1"></i>
               In Progress
             </button>
 
-            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')" v-if="selectedTicket.state === 'in_progress'">
+            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')"
+              v-if="selectedTicket.state === 'in_progress'">
               <i class="bi bi-check-circle me-1"></i>
               Done
             </button>
 
-            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"  v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-x-circle me-1"></i>
               Reject
             </button>
@@ -244,7 +322,54 @@ const selectedTicket = ref(null);
 const adminNote = ref("");
 
 const searchText = ref("");
-const activeFilter = ref("draft");
+const activeFilter = ref("all");
+const selectedType = ref("all");
+const ticketView = ref("all");
+function setTicketView(view) {
+  ticketView.value = view;
+  if (view === "received") {
+    activeFilter.value = "in_progress";
+  }
+  if (view ==="all"){
+    activeFilter.value = "all";
+  }
+}
+function showReceivedTickets() {
+  ticketView.value = "received";
+  activeFilter.value = "all";
+  selectedType.value = "all";
+}
+const countReceivedTickets = computed(() => {
+  return tickets.value.filter(ticket => {
+    const assignedId =
+      typeof ticket.in_progress_uid === "object"
+        ? ticket.in_progress_uid?.id
+        : ticket.in_progress_uid;
+
+    const currentUserId = Number(
+      JSON.parse(localStorage.getItem("user") || "{}").id ||
+      localStorage.getItem("uid") ||
+      0
+    );
+    return Number(assignedId) === currentUserId && ticket.state === "in_progress";
+  }).length;
+});
+function countType(type) {
+  return tickets.value.filter(ticket =>
+    ticket.require_type === type
+  ).length;
+}
+const statusFilteredTickets = computed(() => {
+  if (activeFilter.value === "all") {
+    return tickets.value;
+  }
+
+  return tickets.value.filter(
+    ticket => ticket.state === activeFilter.value
+  );
+});
+
+
 function setFilter(state) {
   activeFilter.value = state;
 }
@@ -269,21 +394,54 @@ async function loadTickets() {
     loading.value = false;
   }
 }
-
 const filteredTickets = computed(() => {
   let result = [...tickets.value];
 
+
+  // 1. Received tickets filter
+  if (ticketView.value === "received") {
+    const currentUser = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
+
+    const currentUserId = Number(
+      currentUser.id || localStorage.getItem("uid") || 0
+    );
+
+    result = result.filter(ticket => {
+      const assignedId =
+        typeof ticket.in_progress_uid === "object"
+          ? ticket.in_progress_uid?.id
+          : ticket.in_progress_uid;
+
+      return (
+        Number(assignedId) === currentUserId &&
+        ticket.state === "in_progress"
+      );
+    });
+  }
+
+  // 2. Status filter
   if (activeFilter.value !== "all") {
     result = result.filter(
       ticket => ticket.state === activeFilter.value
     );
   }
 
+  // 3. Type filter
+  if (selectedType.value !== "all") {
+    result = result.filter(
+      ticket => ticket.require_type === selectedType.value
+    );
+  }
+
+  // 4. Search filter
   const keyword = searchText.value.trim().toLowerCase();
 
   if (keyword) {
     result = result.filter(ticket =>
       String(ticket.id).includes(keyword) ||
+      String(ticket.ticket_number || "").toLowerCase().includes(keyword) ||
       String(ticket.description || "").toLowerCase().includes(keyword) ||
       String(ticket.req_employee_name || ticket.employee_name || "")
         .toLowerCase().includes(keyword)
@@ -294,7 +452,23 @@ const filteredTickets = computed(() => {
 });
 
 function countState(state) {
-  return tickets.value.filter(ticket => ticket.state === state).length;
+  let result = [...tickets.value];
+
+  // First filter by selected Type
+  if (selectedType.value !== "all") {
+    result = result.filter(
+      ticket => ticket.require_type === selectedType.value
+    );
+  }
+
+  // Then count by State
+  if (state === "all") {
+    return result.length;
+  }
+
+  return result.filter(
+    ticket => ticket.state === state
+  ).length;
 }
 
 function openTicket(ticket) {
@@ -387,7 +561,7 @@ const formatDate = (value) => {
   return new Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric', 
+    year: 'numeric',
   }).format(date)
 }
 function formatTime(value) {
@@ -609,6 +783,7 @@ onMounted(loadTickets);
 .ticket-dashboard {
   color: #343a40;
 }
+
 .stat-card {
   padding: 18px;
   border: 1px solid #eee;

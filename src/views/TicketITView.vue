@@ -12,13 +12,10 @@
         <i class="bi bi-arrow-clockwise me-1"></i>
         Refresh
       </button>
-      <router-link
-  to="/app/create-employee-ticket"
-  class="btn btn-primary"
->
-  <i class="bi bi-person-plus me-1"></i>
-  Create Employee Ticket
-</router-link>
+      <router-link to="/app/create-employee-ticket" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i>
+        Create Employee Ticket
+      </router-link>
     </div>
 
     <!-- Statistics -->
@@ -28,6 +25,15 @@
         <div class="stat-card" :class="{ 'stat-card-active': activeFilter === 'all' }" @click="setFilter('all')">
           <div class="stat-label">Total Tickets</div>
           <div class="stat-number">{{ tickets.length }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="stat-card" :class="{ 'stat-card-active': activeFilter === 'draft' }" @click="setFilter('draft')">
+          <div class="stat-label">Draft</div>
+          <div class="stat-number text-warning">
+            {{ countState('draft') }}
+          </div>
         </div>
       </div>
 
@@ -49,38 +55,83 @@
           </div>
         </div>
       </div>
-
-      <div class="col-6 col-xl-3">
-        <div class="stat-card" :class="{ 'stat-card-active': activeFilter === 'rejected' }"
-          @click="setFilter('rejected')">
-          <div class="stat-label">Rejected</div>
-          <div class="stat-number text-danger">
-            {{ countState('rejected') }}
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Filters -->
     <div class="card border-0 shadow-sm">
       <div class="card-body">
         <div class="row g-3 mb-3">
-          <div class="col-md-5">
+          <div class="col-md-6">
             <input v-model="searchText" type="text" class="form-control"
               placeholder="Search ticket, employee or description..." />
           </div>
 
-          <!-- <div class="col-md-4">
-            <select v-model="activeFilter" class="form-select">
+          <div class="col-md-6">
+            <!-- <select v-model="activeFilter" class="form-select">
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
               <option value="in_progress">In Progress</option>
               <option value="done">Done</option>
               <option value="rejected">Rejected</option>
-            </select>
-          </div> -->
-        </div>
+            </select> -->
+            <!-- User Filters -->
 
+            <!-- User Filters -->
+            <div class="row g-3 mb-4">
+
+              <div class="col-12 col-md-6">
+                 <select v-model="selectedInProgressUser" class="form-select">
+                  <option value="all">All In Progress Users</option>
+                  <option v-for="user in availableInProgressUsers" :key="user.id" :value="String(user.id)">
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                 <select v-model="selectedResponsibleUser" class="form-select">
+                  <option value="all">All Responsible Users</option>
+                  <option v-for="user in availableResponsibleUsers" :key="user.id" :value="String(user.id)">
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+
+            </div>
+
+          </div>
+        </div><!-- Search -->
+        <!-- <div class="row g-3 mb-3">
+          <div class="col-12">
+            <input v-model="searchText" type="text" class="form-control"
+              placeholder="Search ticket, employee or description..." />
+          </div>
+        </div> -->
+
+        <!-- Type Filter Cards -->
+        <div class="row g-3 mb-4">
+
+          <!-- All Types -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === 'all' }"
+              @click="selectedType = 'all'">
+              <div class="stat-label">All Types</div>
+              <div class="stat-number">{{ countType('all') }}</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Type Cards -->
+          <div v-for="type in availableTypes" :key="type.value" class="col-6 col-md-3">
+            <div class="stat-card" :class="{ 'stat-card-active': selectedType === type.value }"
+              @click="selectedType = type.value">
+              <div class="stat-label">{{ type.label }}</div>
+              <div class="stat-number text-primary">
+                {{ countType(type.value) }}
+              </div>
+            </div>
+          </div>
+
+        </div>
         <div v-if="loading" class="text-center py-5">
           <div class="spinner-border text-primary"></div>
           <p class="text-muted mt-2">Loading tickets...</p>
@@ -97,38 +148,63 @@
           <i class="bi bi-inbox display-5 text-muted"></i>
           <p class="text-muted mt-3 mb-0">No tickets found.</p>
         </div>
-       <div v-else class="ticket-list"> 
-            <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)"> 
-              <!-- Top: Priority, Type, Time -->
-              <div class="ticket-item-top"> 
-                <div class="d-flex flex-wrap gap-2"> 
-                  <span class="ticket-pill ticket-type-pill">
-                    {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
-                  </span>
-
-                </div>
-
-                <span class="ticket-time">
-                  {{ formatDate(ticket.date) }}
+        <div v-else class="ticket-list">
+          <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)">
+            <!-- Top: Priority, Type, Time -->
+            <div class="ticket-item-top">
+              <div class="d-flex flex-wrap gap-2">
+                <span class="ticket-pill ticket-type-pill">
+                  {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
                 </span>
 
               </div>
 
-              <!-- Description -->
-              <div class="ticket-description">
-                {{ ticket.description || '-' }}
-              </div>
-
-              <!-- Ticket Reference -->
-              <div class="ticket-reference">
-                <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>  &nbsp;
-
-                <span class="badge bg-info" v-if="ticket.employee_name || ticket.req_employee_name">
-                   {{ ticket.employee_name || ticket.req_employee_name || '-' }}
-                </span> 
-              </div>
+              <span class="ticket-time">
+                {{ formatDate(ticket.date) }}
+              </span>
 
             </div>
+
+            <!-- Description -->
+            <div class="ticket-description">
+              {{ ticket.description || '-' }}
+            </div>
+
+            <!-- Ticket Reference -->
+            <div class="ticket-reference ຍຊ1">
+              <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span> &nbsp;
+
+              <span v-if="ticket.in_progress_user_id[0]" class="badge bg-info text-dark">
+                ຜູ້ຮັບ
+                <i class="bi bi-person me-1"></i>
+                {{ ticket.in_progress_user_id[1] }}
+              </span>
+              <span class="badge bg-info" v-if="ticket.employee_name || ticket.req_employee_name">
+                ຂອງ {{ ticket.employee_name || ticket.req_employee_name || '-' }}
+              </span>
+            </div>
+
+
+            <!-- Responsible Users -->
+            <div class="ticket-responsible mt-3">
+              <span class="text-muted small me-2">
+                <i class="bi bi-people me-1"></i>
+                Responsible:
+              </span>
+
+              <template v-if="getResponsibleUsers(ticket).length">
+                <span v-for="user in getResponsibleUsers(ticket)" :key="user.id"
+                  class="badge bg-light text-dark border me-1 mb-1">
+                  {{ user.name }}
+                </span>
+              </template>
+
+              <span v-else class="text-muted small">
+                Not assigned
+              </span>
+            </div>
+
+          </div>
         </div>
 
         <div class="text-muted small mt-2">
@@ -203,17 +279,20 @@
               Cancel
             </button>
 
-            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')" v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-arrow-repeat me-1"></i>
               In Progress
             </button>
 
-            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')" v-if="selectedTicket.state === 'in_progress'">
+            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')"
+              v-if="selectedTicket.state === 'in_progress'">
               <i class="bi bi-check-circle me-1"></i>
               Done
             </button>
 
-            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"  v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-x-circle me-1"></i>
               Reject
             </button>
@@ -243,9 +322,167 @@ const actionError = ref("");
 
 const selectedTicket = ref(null);
 const adminNote = ref("");
-
 const searchText = ref("");
 const activeFilter = ref("all");
+
+
+const selectedType = ref("all");
+const selectedInProgressUser = ref("all");
+const selectedResponsibleUser = ref("all");
+// Convert Odoo Many2one / Many2many values into a consistent format.
+// Supports: [id, name], [[id, name]], IDs, and objects.
+function relationEntries(value) {
+  if (!value || value === false) return [];
+
+  // Odoo Many2one: [id, name]
+  if (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    !Array.isArray(value[0]) &&
+    (typeof value[0] === "number" || typeof value[0] === "string") &&
+    typeof value[1] === "string"
+  ) {
+    return [{
+      id: value[0],
+      name: value[1] || `User ${value[0]}`
+    }];
+  }
+
+  // Odoo Many2many: [[id, name], [id, name]]
+  if (Array.isArray(value)) {
+    return value.flatMap(item => relationEntries(item));
+  }
+
+  // Numeric ID only
+  if (typeof value === "number") {
+    return [{
+      id: value,
+      name: `User ${value}`
+    }];
+  }
+
+  // Object format
+  if (typeof value === "object") {
+    const id = value.id;
+
+    if (!id) return [];
+
+    return [{
+      id,
+      name: value.name || value.display_name || `User ${id}`
+    }];
+  }
+
+  return [];
+}
+function applyUserAndTypeFilters(data) {
+  let result = [...data];
+
+  if (selectedType.value !== "all") {
+    result = result.filter(
+      ticket => ticket.require_type === selectedType.value
+    );
+  }
+
+  if (selectedInProgressUser.value !== "all") {
+    result = result.filter(ticket =>
+      getInProgressUser(ticket).some(
+        user => String(user.id) === selectedInProgressUser.value
+      )
+    );
+  }
+
+  if (selectedResponsibleUser.value !== "all") {
+    result = result.filter(ticket =>
+      getResponsibleUsers(ticket).some(
+        user => String(user.id) === selectedResponsibleUser.value
+      )
+    );
+  }
+
+  return result;
+}
+// Get In Progress User
+function getInProgressUser(ticket) {
+  return relationEntries(
+    ticket.in_progress_user_id || ticket.in_progress_user_id
+  );
+}
+
+// Get Responsible Users
+function getResponsibleUsers(ticket) {
+  return relationEntries(
+    ticket.reponsive_ids || ticket.responsive_ids
+  );
+}
+
+// Unique In Progress Users
+const availableInProgressUsers = computed(() => {
+  const users = new Map();
+
+  tickets.value.forEach(ticket => {
+    getInProgressUser(ticket).forEach(user => {
+      users.set(String(user.id), user);
+    });
+  });
+
+  return Array.from(users.values());
+});
+
+// Unique Responsible Users
+const availableResponsibleUsers = computed(() => {
+  const users = new Map();
+
+  tickets.value.forEach(ticket => {
+    getResponsibleUsers(ticket).forEach(user => {
+      users.set(String(user.id), user);
+    });
+  });
+
+  return Array.from(users.values());
+});
+
+const availableTypes = computed(() => {
+  const types = [
+    ...new Set(
+      tickets.value
+        .map(ticket => ticket.require_type)
+        .filter(Boolean)
+    )
+  ];
+
+  return types.map(type => ({
+    value: type,
+    label: formatType(type)
+  }));
+});
+
+function countType(type) {
+  let result = [...tickets.value];
+
+  if (selectedInProgressUser.value !== "all") {
+    result = result.filter(ticket =>
+      getInProgressUser(ticket).some(
+        user => String(user.id) === selectedInProgressUser.value
+      )
+    );
+  }
+
+  if (selectedResponsibleUser.value !== "all") {
+    result = result.filter(ticket =>
+      getResponsibleUsers(ticket).some(
+        user => String(user.id) === selectedResponsibleUser.value
+      )
+    );
+  }
+
+  if (type === "all") return result.length;
+
+  return result.filter(
+    ticket => ticket.require_type === type
+  ).length;
+}
+
 function setFilter(state) {
   activeFilter.value = state;
 }
@@ -274,17 +511,45 @@ async function loadTickets() {
 const filteredTickets = computed(() => {
   let result = [...tickets.value];
 
+  // 1. Filter by Type
+  if (selectedType.value !== "all") {
+    result = result.filter(
+      ticket => ticket.require_type === selectedType.value
+    );
+  }
+
+  // 2. Filter by In Progress User
+  if (selectedInProgressUser.value !== "all") {
+    result = result.filter(ticket =>
+      getInProgressUser(ticket).some(
+        user => String(user.id) === selectedInProgressUser.value
+      )
+    );
+  }
+
+  // 3. Filter by Responsible User
+  if (selectedResponsibleUser.value !== "all") {
+    result = result.filter(ticket =>
+      getResponsibleUsers(ticket).some(
+        user => String(user.id) === selectedResponsibleUser.value
+      )
+    );
+  }
+
+  // 4. Filter by State
   if (activeFilter.value !== "all") {
     result = result.filter(
       ticket => ticket.state === activeFilter.value
     );
   }
 
+  // 5. Filter by Search
   const keyword = searchText.value.trim().toLowerCase();
 
   if (keyword) {
     result = result.filter(ticket =>
       String(ticket.id).includes(keyword) ||
+      String(ticket.ticket_number || "").toLowerCase().includes(keyword) ||
       String(ticket.description || "").toLowerCase().includes(keyword) ||
       String(ticket.req_employee_name || ticket.employee_name || "")
         .toLowerCase().includes(keyword)
@@ -294,8 +559,13 @@ const filteredTickets = computed(() => {
   return result.sort((a, b) => b.id - a.id);
 });
 
+
 function countState(state) {
-  return tickets.value.filter(ticket => ticket.state === state).length;
+  const result = applyUserAndTypeFilters(tickets.value);
+
+  if (state === "all") return result.length;
+
+  return result.filter(ticket => ticket.state === state).length;
 }
 
 function openTicket(ticket) {
@@ -388,7 +658,7 @@ const formatDate = (value) => {
   return new Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric', 
+    year: 'numeric',
   }).format(date)
 }
 
@@ -477,11 +747,23 @@ function getTargetReference(ticket) {
 
 function formatTicketNumber(id) {
   return `TKT-${String(id || 0).padStart(5, "0")}`;
-}
+} 
 onMounted(loadTickets);
 </script>
 
 <style scoped>
+.ticket-responsible {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.ticket-responsible .badge {
+  font-weight: 400;
+  padding: 6px 9px;
+  border-radius: 20px;
+}
 .ticket-list {
   display: flex;
   flex-direction: column;
@@ -560,6 +842,7 @@ onMounted(loadTickets);
   color: #6b7280;
   font-size: 12px;
 }
+
 .stat-card {
   padding: 18px;
   border: 1px solid #eee;

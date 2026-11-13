@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const odooapi = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'http://160.191.178.161:8888'),
+  baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'http://160.191.178.166:9999'),
     headers: {
         'Content-Type': 'application/json',
     },
@@ -129,6 +129,11 @@ export const getRequests = async (id) => {
 
 export const getGroups = async () => {
   const response = await odooapi.get(`/api/user/groups`)
+  return response.data
+}
+
+export const getCarBrands = async () => {
+  const response = await odooapi.get('/api/booking/car/brands')
   return response.data
 }
 export const getBookingDashboard = async () => { 

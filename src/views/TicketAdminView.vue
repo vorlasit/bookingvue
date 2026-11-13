@@ -63,15 +63,28 @@
               placeholder="Search ticket, employee or description..." />
           </div>
 
-          <!-- <div class="col-md-4">
-            <select v-model="activeFilter" class="form-select">
-              <option value="all">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Done</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div> -->
+          <div class="col-md-4">
+            <!-- User Filters -->
+            <div class="row g-3 mb-4">
+              <div class="col-12 col-md-6">
+                <select v-model="selectedInProgressUser" class="form-select">
+                  <option value="all">All In Progress Users</option>
+                  <option v-for="user in availableInProgressUsers" :key="user.id" :value="String(user.id)">
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <select v-model="selectedResponsibleUser" class="form-select">
+                  <option value="all">All Responsible Users</option>
+                  <option v-for="user in availableResponsibleUsers" :key="user.id" :value="String(user.id)">
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div v-if="loading" class="text-center py-5">
@@ -92,45 +105,45 @@
         </div>
         <div v-else class="ticket-list">
 
-            <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)">
+          <div v-for="ticket in filteredTickets" :key="ticket.id" class="ticket-item" @click="openTicket(ticket)">
 
-              <!-- Top: Priority, Type, Time -->
-              <div class="ticket-item-top">
+            <!-- Top: Priority, Type, Time -->
+            <div class="ticket-item-top">
 
-                <div class="d-flex flex-wrap gap-2">
+              <div class="d-flex flex-wrap gap-2">
 
-                  <span class="ticket-pill" :class="priorityCardClass(ticket.priority)">
-                    {{ formatPriorityCard(ticket.priority) }}
-                  </span>
+                <span class="ticket-pill" :class="priorityCardClass(ticket.priority)">
+                  {{ formatPriorityCard(ticket.priority) }}
+                </span>
 
-                  <span class="ticket-pill ticket-type-pill">
-                    {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
-                  </span>
-
-                </div>
-
-                <span class="ticket-time">
-                  {{ formatTime(ticket.date) }}
+                <span class="ticket-pill ticket-type-pill">
+                  {{ ticket.category_name || ticket.require_type_label || formatType(ticket.require_type) }}
                 </span>
 
               </div>
 
-              <!-- Description -->
-              <div class="ticket-description">
-                {{ ticket.description || '-' }}
-              </div>
-
-              <!-- Ticket Reference -->
-              <div class="ticket-reference">
-                <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
-
-                <span v-if="getTargetReference(ticket)">
-                  · {{ getTargetReference(ticket) }}
-                </span>
-              </div>
+              <span class="ticket-time">
+                {{ formatTime(ticket.date) }}
+              </span>
 
             </div>
+
+            <!-- Description -->
+            <div class="ticket-description">
+              {{ ticket.description || '-' }}
             </div>
+
+            <!-- Ticket Reference -->
+            <div class="ticket-reference">
+              <span>{{ ticket.ticket_number || formatTicketNumber(ticket.id) }}</span>
+
+              <span v-if="getTargetReference(ticket)">
+                · {{ getTargetReference(ticket) }}
+              </span>
+            </div>
+
+          </div>
+        </div>
 
         <div class="text-muted small mt-2">
           Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets
@@ -204,17 +217,20 @@
               Cancel
             </button>
 
-            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')" v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-primary" :disabled="updating" @click="updateStatus('in_progress')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-arrow-repeat me-1"></i>
               In Progress
             </button>
 
-            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')" v-if="selectedTicket.state === 'in_progress'">
+            <button class="btn btn-success" :disabled="updating" @click="updateStatus('done')"
+              v-if="selectedTicket.state === 'in_progress'">
               <i class="bi bi-check-circle me-1"></i>
               Done
             </button>
 
-            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"  v-if="selectedTicket.state === 'draft'">
+            <button class="btn btn-danger" :disabled="updating" @click="updateStatus('rejected')"
+              v-if="selectedTicket.state === 'draft'">
               <i class="bi bi-x-circle me-1"></i>
               Reject
             </button>
@@ -244,6 +260,88 @@ const actionError = ref("");
 
 const selectedTicket = ref(null);
 const adminNote = ref("");
+
+const selectedInProgressUser = ref("all");
+const selectedResponsibleUser = ref("all");
+
+function normalizeUsers(value) {
+  if (!value) return [];
+
+  // Single Many2one relation: [id, name]
+  if (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    !Array.isArray(value[0]) &&
+    typeof value[1] === "string"
+  ) {
+    return [{ id: Number(value[0]), name: value[1] }];
+  }
+
+  const items = Array.isArray(value) ? value : [value];
+
+  return items.map(item => {
+    if (Array.isArray(item)) {
+      return {
+        id: Number(item[0]),
+        name: item[1] || `User ${item[0]}`
+      };
+    }
+
+    if (typeof item === "object" && item !== null) {
+      return {
+        id: Number(item.id),
+        name: item.name || item.display_name || `User ${item.id}`
+      };
+    }
+
+    return {
+      id: Number(item),
+      name: `User ${item}`
+    };
+  }).filter(user => user.id);
+}
+
+function getInProgressUser(ticket) {
+  return normalizeUsers(
+    ticket.in_progress_user_id || ticket.in_progress_uid
+  )[0] || null;
+}
+
+function getResponsibleUsers(ticket) {
+  return normalizeUsers(
+    ticket.reponsive_ids || ticket.responsive_ids
+  );
+}
+
+const availableInProgressUsers = computed(() => {
+  const users = new Map();
+
+  tickets.value.forEach(ticket => {
+    const user = getInProgressUser(ticket);
+
+    if (user) {
+      users.set(user.id, user);
+    }
+  });
+
+  return [...users.values()].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+});
+
+const availableResponsibleUsers = computed(() => {
+  const users = new Map();
+
+  tickets.value.forEach(ticket => {
+    getResponsibleUsers(ticket).forEach(user => {
+      users.set(user.id, user);
+    });
+  });
+
+  return [...users.values()].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+});
 
 const searchText = ref("");
 const activeFilter = ref("all");
@@ -275,20 +373,48 @@ async function loadTickets() {
 const filteredTickets = computed(() => {
   let result = [...tickets.value];
 
+  // 1. Status filter
   if (activeFilter.value !== "all") {
     result = result.filter(
       ticket => ticket.state === activeFilter.value
     );
   }
 
+  // 2. In Progress User filter
+  if (selectedInProgressUser.value !== "all") {
+    result = result.filter(ticket => {
+      const user = getInProgressUser(ticket);
+
+      return user &&
+        String(user.id) === selectedInProgressUser.value;
+    });
+  }
+
+  // 3. Responsible User filter
+  if (selectedResponsibleUser.value !== "all") {
+    result = result.filter(ticket => {
+      const users = getResponsibleUsers(ticket);
+
+      return users.some(
+        user => String(user.id) === selectedResponsibleUser.value
+      );
+    });
+  }
+
+  // 4. Search filter
   const keyword = searchText.value.trim().toLowerCase();
 
   if (keyword) {
     result = result.filter(ticket =>
       String(ticket.id).includes(keyword) ||
+      String(ticket.ticket_number || "").toLowerCase().includes(keyword) ||
       String(ticket.description || "").toLowerCase().includes(keyword) ||
       String(ticket.req_employee_name || ticket.employee_name || "")
-        .toLowerCase().includes(keyword)
+        .toLowerCase().includes(keyword) ||
+      getInProgressUser(ticket)?.name.toLowerCase().includes(keyword) ||
+      getResponsibleUsers(ticket).some(user =>
+        user.name.toLowerCase().includes(keyword)
+      )
     );
   }
 
@@ -472,7 +598,7 @@ function formatTime(value) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric", 
+    year: "numeric",
   }).format(date);
 }
 
@@ -598,6 +724,7 @@ onMounted(loadTickets);
     flex-direction: column;
   }
 }
+
 .stat-card {
   padding: 18px;
   border: 1px solid #eee;

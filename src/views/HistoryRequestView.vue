@@ -89,6 +89,10 @@
                       >
                       </span>
                     </div>
+                      <h6 class="text-dark small fw-medium">
+                       ຜູ້ຂໍ {{ item.create_for_uid || "ບໍ່ມີຂໍ້ມູນ" }}
+                      </h6>
+
                     <p class="text-dark small fw-medium mb-2">
                       {{ item.description || "ບໍ່ມີຈຸດປະສົງການເດີນທາງ" }}
                     </p>

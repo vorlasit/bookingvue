@@ -14,11 +14,7 @@
         </div>
 
         <!-- TABS -->
-        <div class="d-flex gap-2 mb-4 flex-wrap">
-            <button class="btn" :class="activeTab === 'employee' ? 'btn-primary' : 'btn-outline-primary'"
-                @click="activeTab = 'employee'">
-                <i class="bi bi-person me-1"></i> My Asset Requests
-            </button>
+        <div class="d-flex gap-2 mb-1 flex-wrap"> 
 
             <button v-if="isManager" class="btn"
                 :class="activeTab === 'manager' ? 'btn-primary' : 'btn-outline-primary'"
@@ -127,40 +123,33 @@
                                 </button>
                             </div>
                         </div>
-<div class="row g-3 mb-3">
-  <div class="col-12 col-md-4" v-for="category in productCategories" :key="category.id">
-    <div
-      class="card h-100 category-card"
-      :class="{ 'category-card-selected': String(selectedCategory) === String(category.id) }"
-      @click="selectedCategory = category.id"
-      role="button"
-    >
-      <div class="card-body d-flex align-items-center gap-2">
-        <i class="bi bi-grid-fill text-primary fs-4"></i>
-        <span>{{ category.name }}</span>
-        <i
-          v-if="String(selectedCategory) === String(category.id)"
-          class="bi bi-check-circle-fill text-success ms-auto"
-        ></i>
-      </div>
-    </div>
-  </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4" v-for="category in productCategories" :key="category.id">
+                                <div class="card h-100 category-card"
+                                    :class="{ 'category-card-selected': String(selectedCategory) === String(category.id) }"
+                                    @click="selectedCategory = category.id" role="button">
+                                    <div class="card-body d-flex align-items-center gap-2">
+                                        <i class="bi bi-grid-fill text-primary fs-4"></i>
+                                        <span>{{ category.name }}</span>
+                                        <i v-if="String(selectedCategory) === String(category.id)"
+                                            class="bi bi-check-circle-fill text-success ms-auto"></i>
+                                    </div>
+                                </div>
+                            </div>
 
-  <div class="col-12 col-md-4">
-    <div
-      class="card h-100 category-card"
-      :class="{ 'category-card-selected': !selectedCategory }"
-      @click="selectedCategory = ''"
-      role="button"
-    >
-      <div class="card-body d-flex align-items-center gap-2">
-        <i class="bi bi-collection-fill text-primary fs-4"></i>
-        <span>All Categories</span>
-        <i v-if="!selectedCategory" class="bi bi-check-circle-fill text-success ms-auto"></i>
-      </div>
-    </div>
-  </div>
-</div>
+                            <div class="col-12 col-md-4">
+                                <div class="card h-100 category-card"
+                                    :class="{ 'category-card-selected': !selectedCategory }"
+                                    @click="selectedCategory = ''" role="button">
+                                    <div class="card-body d-flex align-items-center gap-2">
+                                        <i class="bi bi-collection-fill text-primary fs-4"></i>
+                                        <span>All Categories</span>
+                                        <i v-if="!selectedCategory"
+                                            class="bi bi-check-circle-fill text-success ms-auto"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div v-if="productLoading" class="text-center py-5">
                             <div class="spinner-border text-primary"></div>
                             <p class="text-muted mt-2">Loading products...</p>
@@ -168,65 +157,49 @@
 
 
                         <div class="row g-3">
-  <div
-    v-for="product in filteredProducts"
-    :key="product.id"
-    class="col-12 col-sm-6 col-lg-3"
-  >
-    <div
-      class="product-card h-100"
-      :class="{ 'product-card-selected': isProductSelected(product.id) }"
-      @click="toggleProduct(product)"
-    >
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div class="product-icon">
-          <i class="bi bi-box-seam"></i>
-        </div>
+                            <div v-for="product in filteredProducts" :key="product.id" class="col-12 col-sm-6 col-lg-3">
+                                <div class="product-card h-100"
+                                    :class="{ 'product-card-selected': isProductSelected(product.id) }"
+                                    @click="toggleProduct(product)">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="product-icon">
+                                            <i class="bi bi-box-seam"></i>
+                                        </div>
 
-        <span
-          v-if="isProductSelected(product.id)"
-          class="badge bg-primary"
-        >
-          <i class="bi bi-check-lg me-1"></i>Selected
-        </span>
-      </div>
+                                        <span v-if="isProductSelected(product.id)" class="badge bg-primary">
+                                            <i class="bi bi-check-lg me-1"></i>Selected
+                                        </span>
+                                    </div>
 
-      <h6 class="product-name">{{ product.name }}</h6>
+                                    <h6 class="product-name">{{ product.name }}</h6>
 
-      <small class="text-muted d-block mb-2">
-        {{ product.default_code || 'No product code' }}
-      </small>
+                                    <small class="text-muted d-block mb-2">
+                                        {{ product.default_code || 'No product code' }}
+                                    </small>
 
-      <div class="product-category mb-2">
-        <i class="bi bi-tag me-1"></i>
-        {{ product.category_name || 'Uncategorized' }}
-      </div>
+                                    <div class="product-category mb-2">
+                                        <i class="bi bi-tag me-1"></i>
+                                        {{ product.category_name || 'Uncategorized' }}
+                                    </div>
 
-      <div class="d-flex justify-content-between align-items-center">
-        <small class="text-muted">Available</small>
-        <strong>{{ product.quantity_free }} {{ product.uom }}</strong>
-      </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Available</small>
+                                        <strong>{{ product.quantity_free }} {{ product.uom }}</strong>
+                                    </div>
 
-      <div class="mt-3">
-        <button
-          type="button"
-          class="btn w-100"
-          :class="isProductSelected(product.id)
-            ? 'btn-primary'
-            : 'btn-outline-primary'"
-          @click.stop="toggleProduct(product)"
-        >
-          <i
-            :class="isProductSelected(product.id)
-              ? 'bi bi-check-circle me-1'
-              : 'bi bi-plus-circle me-1'"
-          ></i>
-          {{ isProductSelected(product.id) ? 'Selected' : 'Select Product' }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+                                    <div class="mt-3">
+                                        <button type="button" class="btn w-100" :class="isProductSelected(product.id)
+                                            ? 'btn-primary'
+                                            : 'btn-outline-primary'" @click.stop="toggleProduct(product)">
+                                            <i :class="isProductSelected(product.id)
+                                                ? 'bi bi-check-circle me-1'
+                                                : 'bi bi-plus-circle me-1'"></i>
+                                            {{ isProductSelected(product.id) ? 'Selected' : 'Select Product' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div v-if="selectedItems.length" class="mt-3">
                             <div class="alert alert-info py-2 mb-0">
@@ -350,7 +323,7 @@
                             Please confirm that the department, products, and quantities are correct.
                         </div>
 
-                    </section>
+                    </section> 
 
                     <!-- WIZARD BUTTONS -->
                     <hr class="my-4" />
@@ -378,89 +351,7 @@
 
                 </div>
             </div>
-
-            <!-- MY REQUEST HISTORY -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-3 p-md-4">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">
-                            <i class="bi bi-clock-history me-2"></i>
-                            My Request History
-                        </h5>
-
-                        <button class="btn btn-sm btn-outline-primary" @click="loadMyRequests">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
-                        </button>
-                    </div>
-
-                    <div v-if="myLoading" class="text-center py-4">
-                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                    </div>
-
-                    <div v-else-if="myRequests.length" class="row g-3">
-
-    <div v-for="item in myRequests" :key="item.id" class="col-12 col-md-6 col-xl-4">
-
-        <div class="request-card h-100">
-
-            <!-- Card header -->
-            <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
-                <div>
-                    <div class="fw-semibold fs-6">
-                        <i class="bi bi-box-seam text-primary me-2"></i>
-                        {{ item.name }}
-                    </div>
-                    <small class="text-muted">
-                        {{ formatDate(item.scheduled_date) }}
-                    </small>
-                </div>
-
-                <span class="badge" :class="stateClass(item.state)">
-                    {{ item.state_label }}
-                </span>
-            </div>
-
-            <hr class="my-2">
-
-            <!-- Card information -->
-            <div class="request-info">
-                <div class="info-item">
-                    <i class="bi bi-boxes text-primary"></i>
-                    <div>
-                        <small>Assets</small>
-                        <strong>{{ (item.products || []).length }} items</strong>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <i class="bi bi-geo-alt text-primary"></i>
-                    <div>
-                        <small>Destination</small>
-                        <strong>{{ item.destination_location || '-' }}</strong>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action -->
-            <button class="btn btn-outline-primary w-100 mt-3"
-                @click="showDetail(item.id)">
-                <i class="bi bi-eye me-1"></i>
-                View Details
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-                    <div v-else class="text-center text-muted py-4">
-                        No asset requests found.
-                    </div>
-
-                </div>
-            </div>
+ 
 
         </template>
 
@@ -690,10 +581,10 @@ const router = useRouter()
 const currentStep = ref(1)
 
 const steps = [
-    { number: 1, label: 'Department' },
-    { number: 2, label: 'Products' },
-    { number: 3, label: 'Quantity' },
-    { number: 4, label: 'Review' }
+    { number: 1, label: 'ພະແນກ' },
+    { number: 2, label: 'ເຄື່ອງ' },
+    { number: 3, label: 'ຈຳນວນ' },
+    { number: 4, label: 'ກວດສອບ' }
 ]
 
 const departments = ref([])
@@ -1016,7 +907,7 @@ const submitRequest = async () => {
 
         await Swal.fire(
             'Success',
-            data.message || 'Asset request submitted successfully.',
+            data.message || 'ສົ່ງການຂໍອຸປະກອນສຳເລັດ.',
             'success'
         )
 
@@ -1291,74 +1182,75 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .category-card {
-  cursor: pointer;
-  border: 1px solid #dee2e6;
-  transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
 }
 
 .category-card:hover {
-  border-color: #0d6efd;
-  background: #f8faff;
+    border-color: #0d6efd;
+    background: #f8faff;
 }
 
 .category-card-selected {
-  border: 2px solid #0d6efd;
-  background: #eef5ff;
+    border: 2px solid #0d6efd;
+    background: #eef5ff;
 }
 
 .category-card .card-body {
-  min-height: 65px;
+    min-height: 65px;
 }
 
 .product-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .product-card:hover {
-  border-color: #86b7fe;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transform: translateY(-2px);
+    border-color: #86b7fe;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
 }
 
 .product-card-selected {
-  border: 2px solid #0d6efd;
-  background: #f5f9ff;
+    border: 2px solid #0d6efd;
+    background: #f5f9ff;
 }
 
 .product-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
-  background: #eef4ff;
-  color: #0d6efd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: #eef4ff;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
 }
 
 .product-name {
-  font-size: 14px;
-  font-weight: 500;
-  min-height: 36px;
-  overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 36px;
+    overflow-wrap: anywhere;
 }
 
 .product-category {
-  font-size: 12px;
-  color: #6c757d;
+    font-size: 12px;
+    color: #6c757d;
 }
 
 @media (max-width: 576px) {
-  .product-card {
-    padding: 13px;
-  }
+    .product-card {
+        padding: 13px;
+    }
 }
+
 .request-card {
     background: #fff;
     border: 1px solid #e9ecef;
@@ -1386,7 +1278,7 @@ onBeforeUnmount(() => {
     gap: 12px;
 }
 
-.info-item > i {
+.info-item>i {
     font-size: 18px;
     margin-top: 2px;
 }
@@ -1413,6 +1305,7 @@ onBeforeUnmount(() => {
         padding: 14px;
     }
 }
+
 .asset-page {
     color: #343a40;
 }

@@ -78,7 +78,7 @@
               </div>
 
               <!-- Available Vehicles Display List -->
-              <h6 class="fw-bold text-dark mb-3">
+              <!-- <h6 class="fw-bold text-dark mb-3">
                 <i class="bi bi-car-front me-2"></i>ລົດທີ່ວ່າງໃຫ້ຈອງ
               </h6>
 
@@ -122,7 +122,7 @@
                     </span>
                   </div>
                 </button>
-              </div>
+              </div> -->
 
             </div>
           </div>
